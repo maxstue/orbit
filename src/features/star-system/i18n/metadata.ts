@@ -11,7 +11,16 @@ export function getRouteMetadata(locale: Locale, signal?: WorldId) {
   const options = { locale }
   const path = getLocalizedPath(locale, signal)
   const transmission = signal ? getTransmission(signal, locale) : undefined
-  const title = transmission ? `${transmission.title} — Orbit` : m.meta_home_title({}, options)
+  const signalTitle = signal
+    ? {
+        home: m.world_home_title({}, options),
+        current: m.world_current_title({}, options),
+        workbench: m.world_workbench_title({}, options),
+        'side-quests': m.world_side_quests_title({}, options),
+        comms: m.world_comms_title({}, options),
+      }[signal]
+    : undefined
+  const title = signalTitle ? `${signalTitle} — Orbit` : m.meta_home_title({}, options)
   const description = transmission?.lead ?? m.meta_home_description({}, options)
 
   return {

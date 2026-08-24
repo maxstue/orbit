@@ -1,6 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
 
-import { FieldLog } from '@/features/star-system/FieldLog'
 import { localeSchema, worldIdSchema } from '@/features/star-system/data/worlds'
 import { getRouteMetadata } from '@/features/star-system/i18n/metadata'
 import { m } from '@/paraglide/messages.js'
@@ -16,13 +15,12 @@ export const Route = createFileRoute('/$locale/$signal')({
     const signal = worldIdSchema.catch('home').parse(params.signal)
     return getRouteMetadata(locale, signal)
   },
-  component: SignalRoute,
+  component: EmptyRoute,
   notFoundComponent: SignalNotFound,
 })
 
-function SignalRoute() {
-  const { locale, signal } = Route.useRouteContext()
-  return <FieldLog locale={locale} selectedSignal={signal} />
+function EmptyRoute() {
+  return null
 }
 
 function SignalNotFound() {

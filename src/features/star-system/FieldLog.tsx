@@ -1,9 +1,5 @@
 import { useEffect } from 'react'
-import { ArrowUpRight, Languages } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-
-import { Button } from '@/components/ui/button'
-import { m } from '@/paraglide/messages.js'
 
 import {
   getAdjacentWorld,
@@ -18,10 +14,24 @@ import { TransmissionDialog } from './transmissions/TransmissionDialog'
 
 type FieldLogProps = { locale: Locale; selectedSignal?: WorldId }
 
+const worldClasses: Record<Exclude<WorldId, 'home'>, string> = {
+  current: 'world-now',
+  workbench: 'world-work',
+  'side-quests': 'world-quests',
+  comms: 'world-comms',
+}
+
 export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const navigate = useNavigate()
-  const otherLocale = locale === 'de' ? 'en' : 'de'
-  const options = { locale }
+  const german = locale === 'de'
+
+  function openSignal(signal: WorldId) {
+    void navigate({ to: '/$locale/$signal', params: { locale, signal } })
+  }
+
+  function closeTransmission() {
+    void navigate({ to: '/$locale', params: { locale } })
+  }
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -29,93 +39,131 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return
 
       if (event.key === 'Escape' && selectedSignal) {
-        void navigate({ to: '/$locale', params: { locale } })
+        closeTransmission()
         return
       }
 
       const shortcut = getWorldByShortcut(event.key)
       if (shortcut) {
-        void navigate({ to: '/$locale/$signal', params: { locale, signal: shortcut.id } })
+        openSignal(shortcut.id)
         return
       }
 
       if (selectedSignal && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
         const adjacent = getAdjacentWorld(selectedSignal, event.key === 'ArrowRight' ? 1 : -1)
-        if (adjacent) {
-          void navigate({ to: '/$locale/$signal', params: { locale, signal: adjacent.id } })
-        }
+        if (adjacent) openSignal(adjacent.id)
       }
     }
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [locale, navigate, selectedSignal])
+  })
 
   return (
-    <main className={`field-log${selectedSignal ? ' has-transmission' : ''}`}>
-      <header className="site-header">
+    <main className="system booted">
+      <div className="stars stars-a" aria-hidden="true" />
+      <div className="stars stars-b" aria-hidden="true" />
+
+      <header className="system-head">
         <LocalizedLink locale={locale} className="wordmark" aria-label="Orbit home">
           max<span>_</span>
         </LocalizedLink>
-        <div className="header-actions">
-          <LocalizedLink
-            locale={otherLocale}
-            signal={selectedSignal}
-            className="language-link"
-            aria-label={otherLocale === 'de' ? 'Auf Deutsch wechseln' : 'Switch to English'}
-          >
-            <Languages aria-hidden="true" />
-            {otherLocale === 'de' ? 'Deutsch' : 'English'}
-          </LocalizedLink>
-          <Button variant="outline" size="sm" className="header-action">
-            {m.about_system({}, options)}
-            <ArrowUpRight aria-hidden="true" className="size-3.5" />
-          </Button>
-        </div>
-      </header>
-      <section className="hero-copy" aria-labelledby="field-log-title">
-        <p className="eyebrow">
-          <span aria-hidden="true" />
-          {m.field_log({}, options)}
+        <p className="system-status">
+          <i aria-hidden="true" /> PERSONAL SYSTEM ONLINE <span>·</span> 49.0069° N / 8.4037° E
         </p>
-        <h1 id="field-log-title">{m.choose_destination({}, options)}</h1>
-      </section>
-      <section className="system-map" aria-label={m.orbit_destinations({}, options)}>
-        <div className="system-core" aria-hidden="true">
-          <span />
+        <button className="help" type="button" onClick={() => openSignal('home')}>
+          ABOUT THIS SYSTEM <kbd>1</kbd>
+        </button>
+      </header>
+
+      <section
+        className="galaxy"
+        aria-label={german ? 'Max persönliches Sonnensystem' : "Max's personal solar system"}
+      >
+        <div className="system-copy">
+          <span>PERSONAL HOMEPAGE / LOCAL SYSTEM</span>
+          <h1>
+            {german ? 'Wähle einen' : 'Choose a'}{' '}
+            <em>{german ? 'Zielplaneten.' : 'destination.'}</em>
+          </h1>
+          <p>
+            {german
+              ? 'Jeder Orbit trägt ein kleines Stück von mir. Anklicken, Signal öffnen und ein bisschen umsehen.'
+              : 'Every orbit carries a small piece of me. Select a planet, open its signal, and look around.'}
+          </p>
         </div>
-        {[1, 2, 3, 4, 5].map((orbit) => (
-          <div className={`orbit orbit-${orbit}`} key={orbit} aria-hidden="true" />
-        ))}
-        {worlds.map((world, index) => {
-          const content = getWorldCopy(world.id, locale)
+
+        <div className="orbit orbit-1" aria-hidden="true" />
+        <div className="orbit orbit-2" aria-hidden="true" />
+        <div className="orbit orbit-3" aria-hidden="true" />
+
+        <button
+          className="sun"
+          type="button"
+          aria-label="Home Signal öffnen"
+          onClick={() => openSignal('home')}
+        >
+          <span>M</span>
+          <i aria-hidden="true" />
+        </button>
+
+        {worlds.slice(1).map((world, index) => {
+          const copy = getWorldCopy(world.id, locale)
           return (
-            <LocalizedLink
+            <button
+              className={`world ${worldClasses[world.id as Exclude<WorldId, 'home'>]}`}
+              type="button"
               key={world.id}
-              locale={locale}
-              signal={world.id}
-              className={`world world-${world.id} world-${world.color} world-${world.size}${selectedSignal === world.id ? ' is-selected' : ''}`}
-              aria-label={`${index + 1}. ${content.title}: ${content.description}`}
+              aria-label={`${copy.label}: ${copy.description}`}
+              onClick={() => openSignal(world.id)}
             >
-              <span className="planet" aria-hidden="true">
-                <span className="planet-shine" />
+              <span className="planet">
+                <i aria-hidden="true" />
               </span>
-              <span className="world-copy">
-                <span>
-                  {index + 1} · {world.signal}
-                </span>
-                <strong>{content.title}</strong>
-                <small>{content.description}</small>
+              <span className="world-label">
+                <small>
+                  {String(index + 2).padStart(2, '0')} · {copy.label}
+                </small>
+                <strong>{copy.title}</strong>
+                <em>{german ? 'TRANSMISSION ÖFFNEN ↗' : 'OPEN TRANSMISSION ↗'}</em>
               </span>
-            </LocalizedLink>
+              <kbd>{index + 2}</kbd>
+            </button>
           )
         })}
+
+        <div className="legend" aria-hidden="true">
+          <span>
+            <i /> NAVIGIERBAR
+          </span>
+          <span>
+            <i className="live" /> LIVE SIGNAL
+          </span>
+          <small>{german ? 'TASTEN 1–5 · PLANETEN WÄHLEN' : 'KEYS 1–5 · SELECT PLANETS'}</small>
+        </div>
       </section>
-      {selectedSignal && <TransmissionDialog locale={locale} signal={selectedSignal} />}
-      <footer className="site-footer">
-        <span>ORBIT / 002</span>
-        <span>{m.navigation_hint({}, options)}</span>
-        <span>52.5200° N · 13.4050° E</span>
+
+      <button
+        className={`backdrop${selectedSignal ? ' visible' : ''}`}
+        type="button"
+        tabIndex={selectedSignal ? 0 : -1}
+        aria-label={german ? 'Transmission schließen' : 'Close transmission'}
+        onClick={closeTransmission}
+      />
+
+      {selectedSignal && (
+        <TransmissionDialog
+          locale={locale}
+          signal={selectedSignal}
+          onClose={closeTransmission}
+          onSelect={openSignal}
+        />
+      )}
+
+      <footer className="system-foot">
+        <span>MAX.FIELD.LOG © 2026</span>
+        <span>CURIOUS &amp; OPERATIONAL</span>
+        <span>NO PRODUCTION SYSTEMS WERE HARMED</span>
       </footer>
     </main>
   )

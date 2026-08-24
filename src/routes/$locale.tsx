@@ -1,6 +1,7 @@
-import { Outlet, createFileRoute, notFound } from '@tanstack/react-router'
+import { Outlet, createFileRoute, notFound, useRouterState } from '@tanstack/react-router'
 
-import { localeSchema } from '@/features/star-system/data/worlds'
+import { FieldLog } from '@/features/star-system/FieldLog'
+import { localeSchema, worldIdSchema } from '@/features/star-system/data/worlds'
 
 export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
@@ -8,9 +9,22 @@ export const Route = createFileRoute('/$locale')({
     if (!locale.success) throw notFound()
     return { locale: locale.data }
   },
-  component: Outlet,
+  component: LocaleLayout,
   notFoundComponent: LocaleNotFound,
 })
+
+function LocaleLayout() {
+  const { locale } = Route.useRouteContext()
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
+  const selectedSignal = worldIdSchema.safeParse(pathname.split('/').filter(Boolean)[1]).data
+
+  return (
+    <>
+      <FieldLog locale={locale} selectedSignal={selectedSignal} />
+      <Outlet />
+    </>
+  )
+}
 
 function LocaleNotFound() {
   return (
