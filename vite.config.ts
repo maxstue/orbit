@@ -1,15 +1,12 @@
 import tailwindcss from '@tailwindcss/vite'
-import { cloudflare } from '@cloudflare/vite-plugin'
 import { paraglideVitePlugin } from '@inlang/paraglide-js'
-import { sites } from '@openai/sites-vite-plugin'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { defineConfig } from 'vite-plus'
 
-const config = defineConfig(({ mode }) => ({
+const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
-    ...(mode === 'test' ? [] : [cloudflare({ viteEnvironment: { name: 'ssr' } })]),
     paraglideVitePlugin({
       project: './project.inlang',
       outdir: './src/paraglide',
@@ -18,7 +15,6 @@ const config = defineConfig(({ mode }) => ({
     tanstackStart(),
     tailwindcss(),
     viteReact(),
-    sites(),
   ],
   fmt: {
     ignorePatterns: ['dist/**', 'src/routeTree.gen.ts'],
@@ -35,6 +31,6 @@ const config = defineConfig(({ mode }) => ({
   test: {
     include: ['src/**/*.test.ts'],
   },
-}))
+})
 
 export default config
