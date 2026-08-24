@@ -12,13 +12,6 @@ export const Route = createRootRoute({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
-      {
-        title: 'Orbit — Max Field Log',
-      },
-      {
-        name: 'description',
-        content: 'A personal field log for work, experiments, and side quests.',
-      },
     ],
     links: [
       {

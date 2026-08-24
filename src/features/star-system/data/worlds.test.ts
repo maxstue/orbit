@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vite-plus/test'
 
-import { getAdjacentWorld, getWorld, worlds, worldSchema } from './worlds'
+import {
+  getAdjacentWorld,
+  getWorld,
+  getWorldByShortcut,
+  localeSchema,
+  worlds,
+  worldIdSchema,
+  worldSchema,
+} from './worlds'
 
 describe('world model', () => {
   it('contains five valid, unique destinations', () => {
@@ -16,5 +24,18 @@ describe('world model', () => {
   it('wraps adjacent navigation around the system', () => {
     expect(getAdjacentWorld('comms', 1)?.id).toBe('home')
     expect(getAdjacentWorld('home', -1)?.id).toBe('comms')
+  })
+
+  it('accepts only supported locales and signals', () => {
+    expect(localeSchema.safeParse('de').success).toBe(true)
+    expect(localeSchema.safeParse('fr').success).toBe(false)
+    expect(worldIdSchema.safeParse('side-quests').success).toBe(true)
+    expect(worldIdSchema.safeParse('unknown').success).toBe(false)
+  })
+
+  it('maps number shortcuts to their destination', () => {
+    expect(getWorldByShortcut('1')?.id).toBe('home')
+    expect(getWorldByShortcut('5')?.id).toBe('comms')
+    expect(getWorldByShortcut('6')).toBeUndefined()
   })
 })

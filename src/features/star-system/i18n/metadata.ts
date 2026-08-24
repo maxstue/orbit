@@ -1,0 +1,36 @@
+import { m } from '@/paraglide/messages.js'
+
+import { getTransmission } from '../transmissions/content'
+import type { Locale, WorldId } from '../data/worlds'
+
+export function getLocalizedPath(locale: Locale, signal?: WorldId) {
+  return `/${locale}${signal ? `/${signal}` : ''}`
+}
+
+export function getRouteMetadata(locale: Locale, signal?: WorldId) {
+  const options = { locale }
+  const path = getLocalizedPath(locale, signal)
+  const transmission = signal ? getTransmission(signal, locale) : undefined
+  const title = transmission ? `${transmission.title} — Orbit` : m.meta_home_title({}, options)
+  const description = transmission?.lead ?? m.meta_home_description({}, options)
+
+  return {
+    meta: [
+      { title },
+      { name: 'description', content: description },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:locale', content: locale === 'de' ? 'de_DE' : 'en_US' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+    ],
+    links: [
+      { rel: 'canonical', href: path },
+      { rel: 'alternate', hrefLang: 'en', href: getLocalizedPath('en', signal) },
+      { rel: 'alternate', hrefLang: 'de', href: getLocalizedPath('de', signal) },
+      { rel: 'alternate', hrefLang: 'x-default', href: getLocalizedPath('en', signal) },
+    ],
+  }
+}

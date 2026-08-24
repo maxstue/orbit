@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@inlang/paraglide-js": "^2.24.1",
     "@tanstack/react-router": "latest",
     "@tanstack/react-start": "latest",
     "class-variance-authority": "^0.7.1",
@@ -30,6 +31,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@inlang/plugin-message-format": "^4.4.3",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/router-cli": "^1.132.0",
     "@types/node": "^22.10.2",

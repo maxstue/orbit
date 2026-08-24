@@ -14,11 +14,16 @@ export const Route = createFileRoute('/$locale')({
 
 function LocaleNotFound() {
   return (
-    <main className="grid min-h-dvh place-items-center px-6 text-center">
-      <div>
-        <p className="eyebrow">Signal lost</p>
-        <h1 className="mt-4 text-5xl font-semibold">Unknown coordinates.</h1>
-        <a className="mt-8 inline-block underline underline-offset-4" href="/en">
+    <main className="protocol-error">
+      <div className="protocol-error-card">
+        <p className="eyebrow">LINGUA RELAY · 404</p>
+        <h1>Translation protocol unavailable.</h1>
+        <p>These coordinates do not map to a supported language. Continue in English or German.</p>
+        <nav aria-label="Available languages">
+          <a href="/en">English</a>
+          <a href="/de">Deutsch</a>
+        </nav>
+        <a className="protocol-return" href="/en">
           Return to Orbit
         </a>
       </div>
