@@ -1,10 +1,26 @@
 import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
+import { getCookie } from '@tanstack/react-start/server'
+
+import {
+  isThemePreference,
+  themeCookieName,
+  type ThemePreference,
+} from '@/features/star-system/theme'
 
 import appCss from '../styles.css?url'
 
-const themeBootstrap = `(()=>{try{const p=localStorage.getItem('orbit-theme');const v=p==='day'||p==='night'?p:matchMedia('(prefers-color-scheme: light)').matches?'day':'night';document.documentElement.dataset.theme=v;document.documentElement.style.colorScheme=v==='day'?'light':'dark'}catch{}})()`
+const getThemePreference = createServerFn({ method: 'GET' }).handler(() => {
+  const preference = getCookie(themeCookieName)
+  return isThemePreference(preference) ? preference : 'system'
+})
+
+function createThemeBootstrap(preference: ThemePreference) {
+  return `(()=>{const p=${JSON.stringify(preference)};const v=p==='system'&&matchMedia('(prefers-color-scheme: light)').matches?'day':p==='system'?'night':p;document.documentElement.dataset.theme=v;document.documentElement.style.colorScheme=v==='day'?'light':'dark'})()`
+}
 
 export const Route = createRootRoute({
+  loader: () => getThemePreference(),
   head: () => ({
     meta: [
       {
@@ -26,15 +42,20 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const themePreference = Route.useLoaderData()
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   })
   const locale = pathname.startsWith('/de') ? 'de' : 'en'
 
   return (
-    <html lang={locale} data-theme="night" suppressHydrationWarning>
+    <html
+      lang={locale}
+      data-theme={themePreference === 'day' ? 'day' : 'night'}
+      suppressHydrationWarning
+    >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+        <script dangerouslySetInnerHTML={{ __html: createThemeBootstrap(themePreference) }} />
         <HeadContent />
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">

@@ -16,7 +16,12 @@ import {
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
-import { isThemePreference, resolveTheme, themeStorageKey, type ThemePreference } from './theme'
+import {
+  createThemeCookie,
+  readThemePreferenceFromCookie,
+  resolveTheme,
+  type ThemePreference,
+} from './theme'
 
 type FieldLogProps = { locale: Locale; selectedSignal?: WorldId }
 
@@ -90,8 +95,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   useEffect(() => {
     if (!hasLoadedTheme.current) {
       hasLoadedTheme.current = true
-      const storedPreference = localStorage.getItem(themeStorageKey)
-      if (isThemePreference(storedPreference) && storedPreference !== themePreference) {
+      const storedPreference = readThemePreferenceFromCookie(document.cookie)
+      if (storedPreference && storedPreference !== themePreference) {
         setThemePreference(storedPreference)
         return
       }
@@ -117,7 +122,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   }
 
   function changeTheme(nextPreference: ThemePreference) {
-    localStorage.setItem(themeStorageKey, nextPreference)
+    document.cookie = createThemeCookie(nextPreference)
     setThemePreference(nextPreference)
     setIsThemeMenuOpen(false)
   }

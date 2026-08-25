@@ -1,11 +1,26 @@
-export const themeStorageKey = 'orbit-theme'
+export const themeCookieName = 'orbit-theme'
+export const themeCookieMaxAge = 60 * 60 * 24 * 365
 
 export const themePreferences = ['system', 'night', 'day'] as const
 export type ThemePreference = (typeof themePreferences)[number]
 export type ResolvedTheme = Exclude<ThemePreference, 'system'>
 
-export function isThemePreference(value: string | null): value is ThemePreference {
+export function isThemePreference(value: string | null | undefined): value is ThemePreference {
   return themePreferences.some((preference) => preference === value)
+}
+
+export function readThemePreferenceFromCookie(cookieHeader: string): ThemePreference | undefined {
+  const value = cookieHeader
+    .split(';')
+    .map((part) => part.trim().split('='))
+    .find(([name]) => name === themeCookieName)?.[1]
+
+  if (isThemePreference(value)) return value
+  return undefined
+}
+
+export function createThemeCookie(preference: ThemePreference) {
+  return `${themeCookieName}=${preference}; Path=/; Max-Age=${themeCookieMaxAge}; SameSite=Lax`
 }
 
 export function resolveTheme(preference: ThemePreference, prefersLight: boolean): ResolvedTheme {

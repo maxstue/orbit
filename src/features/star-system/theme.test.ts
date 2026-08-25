@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vite-plus/test'
 
-import { getNextThemePreference, isThemePreference, resolveTheme } from './theme'
+import {
+  createThemeCookie,
+  getNextThemePreference,
+  isThemePreference,
+  readThemePreferenceFromCookie,
+  resolveTheme,
+} from './theme'
 
 describe('theme preferences', () => {
   it('resolves the system preference from the light color-scheme query', () => {
@@ -23,5 +29,15 @@ describe('theme preferences', () => {
     expect(isThemePreference('day')).toBe(true)
     expect(isThemePreference('sepia')).toBe(false)
     expect(isThemePreference(null)).toBe(false)
+  })
+
+  it('reads the persisted preference from a cookie header', () => {
+    expect(readThemePreferenceFromCookie('session=abc; orbit-theme=day; locale=en')).toBe('day')
+    expect(readThemePreferenceFromCookie('orbit-theme=sepia')).toBeUndefined()
+  })
+
+  it('creates a long-lived same-site preference cookie', () => {
+    expect(createThemeCookie('night')).toContain('orbit-theme=night; Path=/')
+    expect(createThemeCookie('night')).toContain('SameSite=Lax')
   })
 })
