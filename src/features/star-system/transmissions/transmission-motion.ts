@@ -11,9 +11,9 @@ export function getTransmissionMotion(reduceMotion: boolean | null) {
   }
 
   return {
-    initial: { x: 72, opacity: 0 },
+    initial: { x: 36, opacity: 0 },
     animate: { x: 0, opacity: 1 },
-    exit: { x: 48, opacity: 0, transition: { duration: 0.32, ease } },
-    transition: { duration: 0.42, ease },
+    exit: { x: 28, opacity: 0, transition: { duration: 0.24, ease } },
+    transition: { duration: 0.32, ease },
   }
 }

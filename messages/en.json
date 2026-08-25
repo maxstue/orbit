@@ -137,5 +137,12 @@
   "language_german": "German",
   "language_english": "English",
   "language_current": "ACTIVE",
-  "language_alien_note": "Automatic translation. May contain traces of alien accent."
+  "language_alien_note": "Automatic translation. May contain traces of alien accent.",
+  "theme_system": "SYSTEM",
+  "theme_night": "NIGHT",
+  "theme_day": "DAY",
+  "theme_current": "Theme: {theme}",
+  "theme_switch_label": "Open appearance selection",
+  "theme_choose": "Choose appearance",
+  "theme_active": "ACTIVE"
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, LazyMotion } from 'motion/react'
+import { MonitorCog, MoonStar, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { m } from '@/paraglide/messages.js'
@@ -15,6 +16,7 @@ import {
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
+import { isThemePreference, resolveTheme, themeStorageKey, type ThemePreference } from './theme'
 
 type FieldLogProps = { locale: Locale; selectedSignal?: WorldId }
 
@@ -32,10 +34,14 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const navigate = useNavigate()
   const options = { locale }
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
+  const [themePreference, setThemePreference] = useState<ThemePreference>('system')
   const languageMenu = useRef<HTMLDivElement>(null)
+  const themeMenu = useRef<HTMLDivElement>(null)
   const languageTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lastSelectedSignal = useRef<WorldId | undefined>(selectedSignal)
+  const hasLoadedTheme = useRef(false)
 
   if (selectedSignal) lastSelectedSignal.current = selectedSignal
 
@@ -72,17 +78,65 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   useEffect(() => () => clearTimeout(languageTimer.current), [])
 
   useEffect(() => {
-    if (!isLanguageMenuOpen) return
+    const preloadMotion = () => void loadMotionFeatures()
+    const idleCallback = window.requestIdleCallback?.(preloadMotion)
+    if (idleCallback === undefined) {
+      const timer = window.setTimeout(preloadMotion, 250)
+      return () => window.clearTimeout(timer)
+    }
+    return () => window.cancelIdleCallback(idleCallback)
+  }, [])
+
+  useEffect(() => {
+    if (!hasLoadedTheme.current) {
+      hasLoadedTheme.current = true
+      const storedPreference = localStorage.getItem(themeStorageKey)
+      if (isThemePreference(storedPreference) && storedPreference !== themePreference) {
+        setThemePreference(storedPreference)
+        return
+      }
+    }
+
+    const colorScheme = window.matchMedia('(prefers-color-scheme: light)')
+
+    function applyTheme() {
+      const theme = resolveTheme(themePreference, colorScheme.matches)
+      document.documentElement.dataset.theme = theme
+      document.documentElement.style.colorScheme = theme === 'day' ? 'light' : 'dark'
+    }
+
+    applyTheme()
+    colorScheme.addEventListener('change', applyTheme)
+    return () => colorScheme.removeEventListener('change', applyTheme)
+  }, [themePreference])
+
+  function getThemeLabel(preference: ThemePreference) {
+    if (preference === 'day') return m.theme_day({}, options)
+    if (preference === 'night') return m.theme_night({}, options)
+    return m.theme_system({}, options)
+  }
+
+  function changeTheme(nextPreference: ThemePreference) {
+    localStorage.setItem(themeStorageKey, nextPreference)
+    setThemePreference(nextPreference)
+    setIsThemeMenuOpen(false)
+  }
+
+  useEffect(() => {
+    if (!isLanguageMenuOpen && !isThemeMenuOpen) return
 
     function closeOnOutsideClick(event: PointerEvent) {
       if (event.target instanceof Node && !languageMenu.current?.contains(event.target)) {
         setIsLanguageMenuOpen(false)
       }
+      if (event.target instanceof Node && !themeMenu.current?.contains(event.target)) {
+        setIsThemeMenuOpen(false)
+      }
     }
 
     document.addEventListener('pointerdown', closeOnOutsideClick)
     return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
-  }, [isLanguageMenuOpen])
+  }, [isLanguageMenuOpen, isThemeMenuOpen])
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -91,6 +145,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
 
       if (event.key === 'Escape' && isLanguageMenuOpen) {
         setIsLanguageMenuOpen(false)
+        return
+      }
+
+      if (event.key === 'Escape' && isThemeMenuOpen) {
+        setIsThemeMenuOpen(false)
         return
       }
 
@@ -135,14 +194,68 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           />{' '}
           {m.system_status({}, options)}
         </p>
-        <Button
-          className="h-auto justify-self-end rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent max-[620px]:text-[0]"
-          variant="ghost"
-          type="button"
-          onClick={() => openSignal('home')}
-        >
-          {m.about_system({}, options)} <kbd>1</kbd>
-        </Button>
+        <div className="flex items-center justify-self-end gap-5">
+          <div className="relative" ref={themeMenu}>
+            <Button
+              className="theme-switch h-auto rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent"
+              variant="ghost"
+              type="button"
+              aria-label={m.theme_switch_label({}, options)}
+              aria-expanded={isThemeMenuOpen}
+              aria-controls="theme-menu"
+              title={m.theme_current({ theme: getThemeLabel(themePreference) }, options)}
+              onClick={() => setIsThemeMenuOpen((open) => !open)}
+            >
+              {themePreference === 'system' ? (
+                <MonitorCog aria-hidden="true" />
+              ) : themePreference === 'night' ? (
+                <MoonStar aria-hidden="true" />
+              ) : (
+                <Sun aria-hidden="true" />
+              )}
+              <span className="max-[760px]:hidden">{getThemeLabel(themePreference)}</span>
+              <span aria-hidden="true">⌄</span>
+            </Button>
+            {isThemeMenuOpen && (
+              <div
+                id="theme-menu"
+                className="theme-menu absolute top-[calc(100%+18px)] right-0 z-10 w-44 border border-[var(--line)] bg-[var(--space)] p-2 shadow-[7px_8px_0_rgb(0_0_0_/_18%)]"
+                role="menu"
+                aria-label={m.theme_choose({}, options)}
+              >
+                <p className="px-2 pt-1 pb-2 font-mono text-[8px] tracking-[0.13em] text-[var(--dim)]">
+                  {m.theme_choose({}, options)}
+                </p>
+                {(['system', 'night', 'day'] as const).map((preference) => (
+                  <Button
+                    className="flex h-9 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
+                    variant="ghost"
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={themePreference === preference}
+                    key={preference}
+                    onClick={() => changeTheme(preference)}
+                  >
+                    {getThemeLabel(preference)}
+                    {themePreference === preference && (
+                      <small className="text-[7px] text-[var(--lime)]">
+                        {m.theme_active({}, options)}
+                      </small>
+                    )}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+          <Button
+            className="h-auto rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent max-[620px]:text-[0]"
+            variant="ghost"
+            type="button"
+            onClick={() => openSignal('home')}
+          >
+            {m.about_system({}, options)} <kbd>1</kbd>
+          </Button>
+        </div>
       </header>
 
       <section

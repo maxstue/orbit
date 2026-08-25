@@ -26,6 +26,17 @@
   --muted: #202829;
 }
 
+:root[data-theme='day'] {
+  --space: #e9e4d4;
+  --paper: #172022;
+  --coral: #d94735;
+  --cyan: #087d7d;
+  --lime: #667800;
+  --dim: #626866;
+  --line: #1720224d;
+  --muted: #d7d2c3;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -84,6 +95,66 @@ kbd {
   border: 1px solid;
   font: 8px monospace;
   box-shadow: 2px 2px;
+}
+.theme-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.theme-switch svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 1.6;
+}
+.theme-menu::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 21px;
+  width: 12px;
+  height: 12px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--space);
+  transform: rotate(45deg);
+}
+
+:root[data-theme='day'] .system {
+  background-image: radial-gradient(circle at 52% 47%, #d2d7cc 0, #e0ddcf 30%, var(--space) 72%);
+}
+:root[data-theme='day'] .stars-a {
+  opacity: 0.62;
+  filter: invert(1);
+}
+:root[data-theme='day'] .stars-b {
+  opacity: 0.42;
+}
+:root[data-theme='day'] .language-bubble,
+:root[data-theme='day'] .transmission {
+  background-color: #f2eee1;
+}
+:root[data-theme='day'] .language-bubble::before {
+  background: #f2eee1;
+}
+:root[data-theme='day'] .backdrop {
+  background: rgb(35 39 37 / 58%);
+}
+:root[data-theme='day'] .world-label small,
+:root[data-theme='day'] footer {
+  color: #626866;
+}
+:root[data-theme='day'] .text-\[\#a7adab\],
+:root[data-theme='day'] .text-\[\#c7c7bd\] {
+  color: #47504e;
+}
+:root[data-theme='day'] .orbit {
+  border-color: rgb(23 32 34 / 32%);
+}
+:root[data-theme='day'] .orbit::after {
+  border-color: rgb(8 125 125 / 24%);
+}
+:root[data-theme='day'] .planet-details {
+  border-color: rgb(23 32 34 / 34%);
 }
 
 .orbit {
@@ -590,8 +661,7 @@ kbd {
   background: rgb(2 5 6 / 76%);
   opacity: 0;
   pointer-events: none;
-  backdrop-filter: blur(5px);
-  transition: 0.35s;
+  transition: opacity 0.24s ease-out;
 }
 .backdrop:hover {
   background: rgb(2 5 6 / 76%);
@@ -607,6 +677,12 @@ kbd {
   inset: 9px;
   border: 1px solid rgb(90 217 210 / 15%);
   pointer-events: none;
+}
+.transmission {
+  contain: layout paint;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .signal-planet {

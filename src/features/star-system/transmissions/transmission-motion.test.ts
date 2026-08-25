@@ -14,10 +14,10 @@ describe('transmission motion', () => {
 
   it('uses a calmer entrance and a faster exit by default', () => {
     expect(getTransmissionMotion(false)).toMatchObject({
-      initial: { x: 72, opacity: 0 },
+      initial: { x: 36, opacity: 0 },
       animate: { x: 0, opacity: 1 },
-      exit: { x: 48, opacity: 0, transition: { duration: 0.3 } },
-      transition: { duration: 0.42 },
+      exit: { x: 28, opacity: 0, transition: { duration: 0.24 } },
+      transition: { duration: 0.32 },
     })
   })
 })

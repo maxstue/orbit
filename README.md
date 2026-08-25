@@ -25,11 +25,12 @@ dauerhaft auf die englische Standardroute `/en` weiter.
 - dekorative Decoder- und Wechselanimation mit Reduced-Motion-Fallback
 - Tailwind CSS v4 für Layout und Typografie sowie shadcn/Base UI für Controls
 - lokalisierte Metadaten, Sitemap, `robots.txt` und Fehlerzustände
+- persistierte Nacht-, Tag- und Systemdarstellung ohne Theme-Flackern beim Start
 
 Die Planeten bewegen sich in dieser Ausbaustufe bewusst noch nicht. Orbit bleibt
 eine HTML-/CSS-basierte 2D-Anwendung; Three.js, React Three Fiber, Canvas und
 WebGL sind nicht mehr Teil der Planung. Später folgen gezielte 2D-Animationen,
-Themes, Sentry, Browser-/E2E-Tests und produktives Hosting.
+Sentry, Browser-/E2E-Tests und produktives Hosting.
 
 ## Geplante 2D-Ausbaustufe
 

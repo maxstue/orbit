@@ -137,5 +137,12 @@
   "language_german": "Deutsch",
   "language_english": "Englisch",
   "language_current": "ACTIVE",
-  "language_alien_note": "Automatische Übersetzung. Alien-Akzent kann enthalten sein."
+  "language_alien_note": "Automatische Übersetzung. Alien-Akzent kann enthalten sein.",
+  "theme_system": "SYSTEM",
+  "theme_night": "NACHT",
+  "theme_day": "TAG",
+  "theme_current": "Darstellung: {theme}",
+  "theme_switch_label": "Darstellung auswählen",
+  "theme_choose": "Darstellung auswählen",
+  "theme_active": "AKTIV"
 }

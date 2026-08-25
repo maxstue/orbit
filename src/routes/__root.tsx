@@ -2,6 +2,8 @@ import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack
 
 import appCss from '../styles.css?url'
 
+const themeBootstrap = `(()=>{try{const p=localStorage.getItem('orbit-theme');const v=p==='day'||p==='night'?p:matchMedia('(prefers-color-scheme: light)').matches?'day':'night';document.documentElement.dataset.theme=v;document.documentElement.style.colorScheme=v==='day'?'light':'dark'}catch{}})()`
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -30,8 +32,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const locale = pathname.startsWith('/de') ? 'de' : 'en'
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} data-theme="night" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
         <HeadContent />
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
