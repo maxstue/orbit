@@ -3,6 +3,7 @@ import { worlds, type Locale, type WorldId } from '../data/worlds'
 import { useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { getWorldCopy } from '../i18n/world-copy'
+import { Planet } from '../Planet'
 import { getTransmission } from './content'
 import { getTransmissionMotion } from './transmission-motion'
 import { Button } from '@/components/ui/button'
@@ -13,14 +14,6 @@ type TransmissionDialogProps = {
   signal: WorldId
   onClose: () => void
   onSelect: (signal: WorldId) => void
-}
-
-const planetClasses: Record<WorldId, string> = {
-  home: 'world-home',
-  current: 'world-now',
-  workbench: 'world-work',
-  'side-quests': 'world-quests',
-  comms: 'world-comms',
 }
 
 export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
@@ -110,8 +103,8 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
           aria-hidden="true"
         >
-          <div className={`signal-planet ${planetClasses[signal]}`}>
-            <span />
+          <div className={`signal-planet signal-planet-${signal}`}>
+            <Planet worldId={signal} />
           </div>
           <div className="my-2 mt-[22px] overflow-hidden font-mono text-[22px] tracking-[-4px] whitespace-nowrap text-[var(--cyan)] max-[620px]:m-0 max-[620px]:text-lg">
             ▂▅▃▇▂▆▁▅▃▇▂▆▁▃▇▅▂▆

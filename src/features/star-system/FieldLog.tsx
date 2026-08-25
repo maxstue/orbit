@@ -15,6 +15,7 @@ import {
 } from './data/worlds'
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
+import { Planet } from './Planet'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
 import {
   createThemeCookie,
@@ -367,8 +368,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           aria-label={m.home_signal_label({}, options)}
           onClick={() => openSignal('home')}
         >
-          <span>M</span>
-          <i aria-hidden="true" />
+          <Planet worldId="home" />
         </Button>
 
         {worlds.slice(1).map((world, index) => {
@@ -383,13 +383,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               aria-label={`${copy.label}: ${copy.description}`}
               onClick={() => openSignal(world.id)}
             >
-              <span className="planet">
-                <i aria-hidden="true" />
-                <span className="planet-details" aria-hidden="true">
-                  <b />
-                  {(world.id === 'side-quests' || world.id === 'workbench') && <b />}
-                </span>
-              </span>
+              <Planet worldId={world.id} />
               <span className="world-label">
                 <small>
                   {String(index + 2).padStart(2, '0')} · {copy.label}
