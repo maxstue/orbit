@@ -213,6 +213,57 @@ kbd {
     0 0 0 12px rgb(90 217 210 / 8%),
     0 0 45px rgb(90 217 210 / 20%);
 }
+.world.signal-selected .planet,
+.sun.signal-selected {
+  outline: 2px solid var(--lime);
+  outline-offset: 7px;
+}
+.world.signal-selected .planet {
+  box-shadow:
+    inset -13px -11px rgb(0 0 0 / 18%),
+    0 0 0 13px rgb(220 239 104 / 8%),
+    0 0 50px rgb(220 239 104 / 24%);
+}
+.planet-details {
+  position: absolute;
+  inset: -18px;
+  border: 1px dashed rgb(242 238 225 / 22%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.planet-details b {
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  display: block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--paper);
+  border-radius: 50%;
+  background: var(--space);
+  box-shadow: 0 0 8px rgb(242 238 225 / 24%);
+}
+.planet-details b + b {
+  top: auto;
+  right: auto;
+  bottom: 4%;
+  left: 9%;
+  width: 5px;
+  height: 5px;
+  background: var(--coral);
+}
+.world-now .planet-details {
+  inset: -13px;
+}
+.world-comms .planet-details {
+  inset: -11px;
+}
+.world-comms .planet-details b {
+  width: 5px;
+  height: 5px;
+  border-color: var(--space);
+  background: var(--cyan);
+}
 .world-label {
   position: absolute;
   top: 50%;
@@ -254,7 +305,22 @@ kbd {
 .world-now .planet {
   width: 64px;
   height: 64px;
-  background: var(--lime);
+  background:
+    radial-gradient(circle at 29% 25%, rgb(242 238 225 / 30%) 0 5%, transparent 6%),
+    radial-gradient(ellipse at 64% 63%, rgb(111 126 42 / 34%) 0 18%, transparent 19%),
+    radial-gradient(circle at 46% 42%, #e6f47e 0, var(--lime) 58%, #a8b64a 100%);
+}
+.world-now .planet::before {
+  inset: 18% 16% 36% 29%;
+  border: 0;
+  border-radius: 52% 48% 61% 39% / 45% 58% 42% 55%;
+  background: rgb(113 131 41 / 30%);
+  transform: rotate(-18deg);
+}
+.world-now .planet::after {
+  inset: 7%;
+  border-color: rgb(242 238 225 / 18%);
+  box-shadow: inset -8px -6px rgb(12 16 17 / 9%);
 }
 .world-work {
   top: 14%;
@@ -263,7 +329,34 @@ kbd {
 .world-work .planet {
   width: 84px;
   height: 84px;
-  background: var(--cyan);
+  background:
+    radial-gradient(ellipse at 30% 60%, rgb(23 108 111 / 45%) 0 9%, transparent 10%),
+    linear-gradient(
+      172deg,
+      #8ce6df 0 13%,
+      #50c8c3 14% 25%,
+      #76ddd7 26% 37%,
+      #3fb5b4 38% 48%,
+      #88e2dc 49% 61%,
+      #48bfbd 62% 74%,
+      #69d5d0 75% 100%
+    );
+}
+.world-work .planet::before {
+  inset: auto;
+  top: 55%;
+  left: 18%;
+  width: 29%;
+  height: 13%;
+  border-color: rgb(15 82 85 / 42%);
+  border-radius: 50%;
+  background: rgb(30 126 127 / 28%);
+  transform: rotate(-9deg);
+}
+.world-work .planet::after {
+  inset: 5%;
+  border-color: rgb(242 238 225 / 20%);
+  box-shadow: inset -11px -8px rgb(12 16 17 / 8%);
 }
 .world-quests {
   top: 43%;
@@ -272,7 +365,25 @@ kbd {
 .world-quests .planet {
   width: 100px;
   height: 100px;
-  background: #7770bc;
+  background:
+    radial-gradient(circle at 33% 27%, #a49de5 0 6%, #716aaf 7% 10%, transparent 11%),
+    radial-gradient(circle at 71% 60%, #8580c8 0 9%, #635d9d 10% 13%, transparent 14%),
+    radial-gradient(circle at 45% 44%, #8f88d0 0, #7770bc 62%, #554f8e 100%);
+}
+.world-quests .planet::before {
+  inset: auto;
+  top: 55%;
+  left: 22%;
+  width: 18%;
+  height: 18%;
+  border-color: rgb(242 238 225 / 18%);
+  background: rgb(55 49 105 / 20%);
+  box-shadow: 42px -20px 0 -3px rgb(55 49 105 / 18%);
+}
+.world-quests .planet::after {
+  inset: 5%;
+  border-color: rgb(242 238 225 / 16%);
+  box-shadow: inset -13px -10px rgb(12 16 17 / 8%);
 }
 .world-comms {
   bottom: 7%;
@@ -281,7 +392,24 @@ kbd {
 .world-comms .planet {
   width: 52px;
   height: 52px;
-  background: var(--paper);
+  background:
+    radial-gradient(circle at 31% 31%, #f8f5e9 0 7%, #c9c7bd 8% 12%, transparent 13%),
+    radial-gradient(circle at 67% 61%, #c4c2b9 0 10%, #aaa99f 11% 14%, transparent 15%),
+    radial-gradient(circle at 43% 40%, var(--paper), #c9c7bd 66%, #9d9c94 100%);
+}
+.world-comms .planet::before {
+  inset: auto;
+  top: 57%;
+  left: 20%;
+  width: 16%;
+  height: 16%;
+  border-color: rgb(12 16 17 / 24%);
+  background: rgb(12 16 17 / 9%);
+}
+.world-comms .planet::after {
+  inset: 6%;
+  border-color: rgb(242 238 225 / 20%);
+  box-shadow: inset -7px -6px rgb(12 16 17 / 10%);
 }
 .world-comms .world-label {
   right: calc(100% + 23px);
@@ -501,16 +629,36 @@ kbd {
   background: var(--coral);
 }
 .signal-planet.world-now span {
-  background: var(--lime);
+  background:
+    radial-gradient(circle at 29% 25%, rgb(242 238 225 / 30%) 0 5%, transparent 6%),
+    radial-gradient(ellipse at 64% 63%, rgb(111 126 42 / 34%) 0 18%, transparent 19%),
+    radial-gradient(circle at 46% 42%, #e6f47e 0, var(--lime) 58%, #a8b64a 100%);
 }
 .signal-planet.world-work span {
-  background: var(--cyan);
+  background:
+    radial-gradient(ellipse at 30% 60%, rgb(23 108 111 / 45%) 0 9%, transparent 10%),
+    linear-gradient(
+      172deg,
+      #8ce6df 0 13%,
+      #50c8c3 14% 25%,
+      #76ddd7 26% 37%,
+      #3fb5b4 38% 48%,
+      #88e2dc 49% 61%,
+      #48bfbd 62% 74%,
+      #69d5d0 75% 100%
+    );
 }
 .signal-planet.world-quests span {
-  background: #7770bc;
+  background:
+    radial-gradient(circle at 33% 27%, #a49de5 0 6%, #716aaf 7% 10%, transparent 11%),
+    radial-gradient(circle at 71% 60%, #8580c8 0 9%, #635d9d 10% 13%, transparent 14%),
+    radial-gradient(circle at 45% 44%, #8f88d0 0, #7770bc 62%, #554f8e 100%);
 }
 .signal-planet.world-comms span {
-  background: var(--paper);
+  background:
+    radial-gradient(circle at 31% 31%, #f8f5e9 0 7%, #c9c7bd 8% 12%, transparent 13%),
+    radial-gradient(circle at 67% 61%, #c4c2b9 0 10%, #aaa99f 11% 14%, transparent 15%),
+    radial-gradient(circle at 43% 40%, var(--paper), #c9c7bd 66%, #9d9c94 100%);
 }
 
 .protocol-error {

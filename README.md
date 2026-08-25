@@ -11,7 +11,34 @@ pnpm install
 pnpm dev
 ```
 
-Die Vorschau läuft anschließend unter `http://127.0.0.1:3000/en`.
+Die Vorschau läuft anschließend unter `http://localhost:5174/en`. `/` leitet
+dauerhaft auf die englische Standardroute `/en` weiter.
+
+## Aktueller Funktionsumfang
+
+- statisches, responsives Sonnensystem im Stil von **Max — Field Log**
+- fünf per Maus, Touch und Tastatur erreichbare Transmissionen
+- URL-basierter Dialogzustand unter `/:locale/:signal`
+- vollständige deutsche und englische Inhalte über Paraglide JS
+- Englisch als Standardsprache; Deutsch unter `/de`
+- `LINGUA RELAY` als Alien-Raumschiff mit zugänglicher Sprachauswahl
+- dekorative Decoder- und Wechselanimation mit Reduced-Motion-Fallback
+- Tailwind CSS v4 für Layout und Typografie sowie shadcn/Base UI für Controls
+- lokalisierte Metadaten, Sitemap, `robots.txt` und Fehlerzustände
+
+Die Planeten bewegen sich in dieser Ausbaustufe bewusst noch nicht. Orbit bleibt
+eine HTML-/CSS-basierte 2D-Anwendung; Three.js, React Three Fiber, Canvas und
+WebGL sind nicht mehr Teil der Planung. Später folgen gezielte 2D-Animationen,
+Themes, Sentry, Browser-/E2E-Tests und produktives Hosting.
+
+## Geplante 2D-Ausbaustufe
+
+- dezente Transmission- und Signal-Lock-Animationen
+- klarer ausgewählter Zustand an den Planeten
+- leichte Monde und Satelliten
+- optionale langsame Orbitbewegung nach Accessibility- und Performance-Abnahme
+- seltene Asteroiden oder Meteore innerhalb des Motion-Budgets
+- vollständiger funktionaler Gleichstand bei Reduced Motion
 
 ## Qualitätsprüfung
 
@@ -24,3 +51,15 @@ pnpm build
 Vite+ bündelt Vite, Oxlint, Oxfmt, TypeScript-Prüfung und Vitest. Biome und
 React Testing Library werden nicht verwendet. Die Oberfläche basiert auf
 TanStack Start, Tailwind CSS v4 und shadcn-Komponenten mit Base UI.
+
+## Übersetzungen
+
+Die Kataloge liegen in `messages/en.json` und `messages/de.json`. Englisch ist
+in `project.inlang/settings.json` als `baseLocale` definiert. Generierte
+Paraglide-Dateien unter `src/paraglide/` werden nicht manuell bearbeitet.
+
+## Hosting
+
+Cloudflare wird bewusst erst später eingerichtet. Deshalb enthält das Projekt
+aktuell weder `.openai/hosting.json` noch `wrangler.jsonc`. Bis zur Hosting-Phase
+wird ausschließlich lokal gebaut und geprüft.

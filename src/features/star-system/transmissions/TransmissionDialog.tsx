@@ -1,6 +1,10 @@
+import { useEffect, useRef } from 'react'
 import { worlds, type Locale, type WorldId } from '../data/worlds'
+import { useReducedMotion } from 'motion/react'
+import * as motionElement from 'motion/react-m'
 import { getWorldCopy } from '../i18n/world-copy'
 import { getTransmission } from './content'
+import { getTransmissionMotion } from './transmission-motion'
 import { Button } from '@/components/ui/button'
 import { m } from '@/paraglide/messages.js'
 
@@ -20,18 +24,61 @@ const planetClasses: Record<WorldId, string> = {
 }
 
 export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
+  const reduceMotion = useReducedMotion()
+  const dialogRef = useRef<HTMLElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
   const transmission = getTransmission(signal, locale)
   const activeIndex = worlds.findIndex((world) => world.id === signal)
   const previous = worlds[(activeIndex - 1 + worlds.length) % worlds.length]
   const next = worlds[(activeIndex + 1) % worlds.length]
   const options = { locale }
+  const panelMotion = getTransmissionMotion(reduceMotion)
+
+  useEffect(() => {
+    closeButtonRef.current?.focus()
+  }, [])
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== 'Tab') return
+
+      const focusable = Array.from(
+        dialog?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      )
+      const first = focusable[0]
+      const last = focusable.at(-1)
+      if (!first || !last) return
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    dialog.addEventListener('keydown', trapFocus)
+    return () => dialog.removeEventListener('keydown', trapFocus)
+  }, [])
 
   return (
-    <aside
+    <motionElement.aside
+      ref={dialogRef}
       className="transmission open fixed top-[4vh] right-[3vw] bottom-[4vh] z-25 grid w-[min(850px,89vw)] grid-rows-[64px_1fr_58px] overflow-hidden border border-[rgb(242_238_225_/_55%)] bg-[#151b1c] shadow-[0_0_0_7px_rgb(90_217_210_/_6%),-25px_25px_rgb(0_0_0_/_30%)] max-[900px]:w-[94vw] max-[620px]:inset-0 max-[620px]:h-svh max-[620px]:w-screen max-[620px]:grid-rows-[58px_1fr_58px] max-[620px]:border-0"
       role="dialog"
       aria-modal="true"
       aria-labelledby="transmission-title"
+      aria-describedby="transmission-lead"
+      initial={panelMotion.initial}
+      animate={panelMotion.animate}
+      exit={panelMotion.exit}
+      transition={panelMotion.transition}
     >
       <div
         className="pointer-events-none absolute inset-0 z-4 bg-[repeating-linear-gradient(to_bottom,transparent_0_3px,var(--paper)_4px)] opacity-[0.055]"
@@ -47,6 +94,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         </div>
         <span className="text-[var(--cyan)] max-[620px]:hidden">{transmission.channel}</span>
         <Button
+          ref={closeButtonRef}
           className="h-auto justify-self-end rounded-none px-0 py-0 text-[inherit] tracking-[inherit] hover:bg-transparent max-[620px]:text-[0]"
           variant="ghost"
           type="button"
@@ -83,7 +131,9 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           >
             {transmission.title}
           </h2>
-          <p className="text-[15px] leading-[1.6] text-[#c7c7bd]">{transmission.lead}</p>
+          <p className="text-[15px] leading-[1.6] text-[#c7c7bd]" id="transmission-lead">
+            {transmission.lead}
+          </p>
           <dl className="my-[30px] mt-[35px] border-t border-[var(--line)]">
             {transmission.details.map((detail) => (
               <div
@@ -116,12 +166,16 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         aria-label={m.transmission_navigation({}, options)}
       >
         <Button
-          className="h-auto justify-self-start rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent max-[620px]:text-[0] max-[620px]:after:text-lg max-[620px]:after:content-['←']"
+          className="h-auto justify-self-start rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
           variant="ghost"
           type="button"
+          aria-label={m.previous_signal({}, options)}
           onClick={() => onSelect(previous.id)}
         >
-          {m.previous_signal({}, options)}
+          <span className="max-[620px]:hidden">{m.previous_signal({}, options)}</span>
+          <span className="hidden text-lg max-[620px]:inline" aria-hidden="true">
+            ←
+          </span>
         </Button>
         <div className="flex gap-[7px]">
           {worlds.map((world, index) => (
@@ -139,14 +193,18 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           ))}
         </div>
         <Button
-          className="h-auto justify-self-end rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent max-[620px]:text-[0] max-[620px]:after:text-lg max-[620px]:after:content-['→']"
+          className="h-auto justify-self-end rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
           variant="ghost"
           type="button"
+          aria-label={m.next_signal({}, options)}
           onClick={() => onSelect(next.id)}
         >
-          {m.next_signal({}, options)}
+          <span className="max-[620px]:hidden">{m.next_signal({}, options)}</span>
+          <span className="hidden text-lg max-[620px]:inline" aria-hidden="true">
+            →
+          </span>
         </Button>
       </nav>
-    </aside>
+    </motionElement.aside>
   )
 }

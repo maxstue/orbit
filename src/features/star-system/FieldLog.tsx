@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { AnimatePresence, LazyMotion } from 'motion/react'
 
 import { Button } from '@/components/ui/button'
 import { m } from '@/paraglide/messages.js'
@@ -24,6 +25,9 @@ const worldClasses: Record<Exclude<WorldId, 'home'>, string> = {
   comms: 'world-comms',
 }
 
+const loadMotionFeatures = () =>
+  import('./transmissions/motion-features').then((module) => module.default)
+
 export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const navigate = useNavigate()
   const options = { locale }
@@ -31,6 +35,9 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
   const languageMenu = useRef<HTMLDivElement>(null)
   const languageTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const lastSelectedSignal = useRef<WorldId | undefined>(selectedSignal)
+
+  if (selectedSignal) lastSelectedSignal.current = selectedSignal
 
   function openSignal(signal: WorldId) {
     void navigate({ to: '/$locale/$signal', params: { locale, signal } })
@@ -235,7 +242,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         </div>
 
         <Button
-          className="sun"
+          className={`sun${selectedSignal === 'home' ? ' signal-selected' : ''}`}
+          data-signal="home"
           variant="ghost"
           type="button"
           aria-label={m.home_signal_label({}, options)}
@@ -249,7 +257,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           const copy = getWorldCopy(world.id, locale)
           return (
             <Button
-              className={`world ${worldClasses[world.id as Exclude<WorldId, 'home'>]}`}
+              className={`world ${worldClasses[world.id as Exclude<WorldId, 'home'>]}${selectedSignal === world.id ? ' signal-selected' : ''}`}
+              data-signal={world.id}
               variant="ghost"
               type="button"
               key={world.id}
@@ -258,6 +267,10 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             >
               <span className="planet">
                 <i aria-hidden="true" />
+                <span className="planet-details" aria-hidden="true">
+                  <b />
+                  {(world.id === 'side-quests' || world.id === 'workbench') && <b />}
+                </span>
               </span>
               <span className="world-label">
                 <small>
@@ -293,14 +306,26 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         onClick={closeTransmission}
       />
 
-      {selectedSignal && (
-        <TransmissionDialog
-          locale={locale}
-          signal={selectedSignal}
-          onClose={closeTransmission}
-          onSelect={openSignal}
-        />
-      )}
+      <LazyMotion features={loadMotionFeatures} strict>
+        <AnimatePresence
+          initial={false}
+          onExitComplete={() => {
+            const signal = lastSelectedSignal.current
+            if (!signal) return
+            document.querySelector<HTMLElement>(`[data-signal="${signal}"]`)?.focus()
+          }}
+        >
+          {selectedSignal && (
+            <TransmissionDialog
+              key="transmission"
+              locale={locale}
+              signal={selectedSignal}
+              onClose={closeTransmission}
+              onSelect={openSignal}
+            />
+          )}
+        </AnimatePresence>
+      </LazyMotion>
 
       <footer className="absolute right-0 bottom-0 left-0 flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden">
         <span>{m.footer_left({}, options)}</span>
