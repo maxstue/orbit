@@ -313,7 +313,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           {isLanguageMenuOpen && (
             <div
               id="language-bubble"
-              className="language-bubble absolute top-[calc(100%+22px)] right-0 w-52 border border-[rgb(242_238_225_/_45%)] bg-[#151b1c] p-3 shadow-[8px_10px_0_rgb(0_0_0_/_30%)]"
+              className="language-bubble absolute top-[calc(100%+22px)] left-[38px] w-52 -translate-x-1/2 border border-[rgb(242_238_225_/_45%)] bg-[#151b1c] p-3 shadow-[8px_10px_0_rgb(0_0_0_/_30%)]"
               role="menu"
               aria-label={m.language_choose({}, options)}
             >
