@@ -41,6 +41,7 @@
   "galaxy_label": "Max persönliches Sonnensystem",
   "home_signal_label": "Home Signal öffnen",
   "open_transmission": "TRANSMISSION ÖFFNEN ↗",
+  "transmission_opened": "Transmission geöffnet: {signal}",
   "legend_navigable": "NAVIGIERBAR",
   "legend_live": "LIVE SIGNAL",
   "legend_hint": "TASTEN 1–5 · PLANETEN WÄHLEN",

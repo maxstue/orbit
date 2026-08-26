@@ -24,17 +24,19 @@
   --border: var(--line);
   --ring: var(--lime);
   --muted: #202829;
+  --active-control-foreground: var(--space);
 }
 
 :root[data-theme='day'] {
   --space: #e9e4d4;
   --paper: #172022;
   --coral: #d94735;
-  --cyan: #087d7d;
-  --lime: #667800;
-  --dim: #626866;
+  --cyan: #006f70;
+  --lime: #4b5e00;
+  --dim: #59605e;
   --line: #1720224d;
   --muted: #d7d2c3;
+  --active-control-foreground: #f2eee1;
 }
 
 @layer base {
@@ -284,6 +286,12 @@ kbd {
   border-radius: 0;
   background: transparent;
   text-align: left;
+}
+@media (pointer: coarse) {
+  .world {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 .world:hover {
   background: transparent;
@@ -837,6 +845,10 @@ kbd {
     width: 50px;
     height: 50px;
   }
+  .world-now {
+    margin: -3px;
+    padding: 3px;
+  }
   .world-work {
     top: 46%;
     left: 42%;
@@ -856,6 +868,10 @@ kbd {
   .world-comms {
     bottom: 4%;
     left: 43%;
+  }
+  .world-comms {
+    margin: -3px;
+    padding: 3px;
   }
   .signal-planet {
     height: 95px;

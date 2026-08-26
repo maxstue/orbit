@@ -60,6 +60,21 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
     return () => dialog.removeEventListener('keydown', trapFocus)
   }, [])
 
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!dialog) return
+    const activeDialog: HTMLElement = dialog
+
+    function keepFocusInDialog(event: FocusEvent) {
+      if (event.target instanceof Node && !activeDialog.contains(event.target)) {
+        closeButtonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener('focusin', keepFocusInDialog)
+    return () => document.removeEventListener('focusin', keepFocusInDialog)
+  }, [])
+
   return (
     <motionElement.aside
       ref={dialogRef}
@@ -88,7 +103,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         <span className="text-[var(--cyan)] max-[620px]:hidden">{transmission.channel}</span>
         <Button
           ref={closeButtonRef}
-          className="h-auto justify-self-end rounded-none px-0 py-0 text-[inherit] tracking-[inherit] hover:bg-transparent max-[620px]:text-[0]"
+          className="h-auto min-h-11 min-w-11 justify-self-end rounded-none px-0 py-0 text-[inherit] tracking-[inherit] hover:bg-transparent max-[620px]:text-[0]"
           variant="ghost"
           type="button"
           onClick={onClose}
@@ -98,7 +113,10 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         </Button>
       </header>
 
-      <div className="relative z-2 grid grid-cols-[250px_1fr] gap-[45px] overflow-auto px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7">
+      <div
+        className="relative z-2 grid grid-cols-[250px_1fr] gap-[45px] overflow-auto px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7"
+        tabIndex={0}
+      >
         <div
           className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
           aria-hidden="true"
@@ -159,7 +177,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         aria-label={m.transmission_navigation({}, options)}
       >
         <Button
-          className="h-auto justify-self-start rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
+          className="h-auto min-h-11 min-w-11 justify-self-start rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
           variant="ghost"
           type="button"
           aria-label={m.previous_signal({}, options)}
@@ -173,12 +191,13 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         <div className="flex gap-[7px]">
           {worlds.map((world, index) => (
             <Button
-              className="size-[27px] rounded-none border border-[#59605e] bg-transparent p-0 font-mono text-[8px] text-[var(--dim)] hover:bg-transparent data-[active=true]:border-[var(--lime)] data-[active=true]:bg-[var(--lime)] data-[active=true]:text-[var(--space)]"
+              className="size-11 rounded-none border border-[#59605e] bg-transparent p-0 font-mono text-[8px] text-[var(--dim)] hover:bg-transparent data-[active=true]:border-[var(--lime)] data-[active=true]:bg-[var(--lime)] data-[active=true]:text-[var(--active-control-foreground)] max-[620px]:size-10"
               variant="outline"
               data-active={world.id === signal}
               type="button"
               key={world.id}
               aria-label={`${getWorldCopy(world.id, locale).label} ${m.open_signal_suffix({}, options)}`}
+              aria-current={world.id === signal ? 'page' : undefined}
               onClick={() => onSelect(world.id)}
             >
               {String(index + 1).padStart(2, '0')}
@@ -186,7 +205,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           ))}
         </div>
         <Button
-          className="h-auto justify-self-end rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
+          className="h-auto min-h-11 min-w-11 justify-self-end rounded-none px-0 py-0 font-mono text-[8px] tracking-[0.1em] hover:bg-transparent"
           variant="ghost"
           type="button"
           aria-label={m.next_signal({}, options)}

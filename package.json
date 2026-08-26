@@ -13,7 +13,9 @@
     "format": "vp fmt",
     "lint": "vp lint",
     "preview": "vp preview",
-    "test": "vp test"
+    "test": "vp test",
+    "test:a11y": "pnpm build && playwright test --grep @a11y",
+    "test:e2e": "pnpm build && playwright test"
   },
   "dependencies": {
     "@base-ui/react": "catalog:",
@@ -32,7 +34,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@inlang/plugin-message-format": "catalog:",
+    "@playwright/test": "^1.62.1",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/router-cli": "catalog:",
     "@types/node": "catalog:",

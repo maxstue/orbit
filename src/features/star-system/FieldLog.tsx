@@ -45,11 +45,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const [themePreference, setThemePreference] = useState<ThemePreference>('system')
   const languageMenu = useRef<HTMLDivElement>(null)
   const themeMenu = useRef<HTMLDivElement>(null)
+  const languageMenuTrigger = useRef<HTMLButtonElement>(null)
+  const themeMenuTrigger = useRef<HTMLButtonElement>(null)
   const languageTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const lastSelectedSignal = useRef<WorldId | undefined>(selectedSignal)
+  const focusTimer = useRef<number | undefined>(undefined)
+  const previouslySelectedSignal = useRef<WorldId | undefined>(selectedSignal)
   const hasLoadedTheme = useRef(false)
-
-  if (selectedSignal) lastSelectedSignal.current = selectedSignal
 
   function openSignal(signal: WorldId) {
     void navigate({ to: '/$locale/$signal', params: { locale, signal } })
@@ -59,13 +60,23 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
     void navigate({ to: '/$locale', params: { locale } })
   }
 
+  function closeLanguageMenu({ restoreFocus = false } = {}) {
+    setIsLanguageMenuOpen(false)
+    if (restoreFocus) languageMenuTrigger.current?.focus()
+  }
+
+  function closeThemeMenu({ restoreFocus = false } = {}) {
+    setIsThemeMenuOpen(false)
+    if (restoreFocus) themeMenuTrigger.current?.focus()
+  }
+
   function changeLanguage(nextLocale: Locale) {
     if (isChangingLanguage || nextLocale === locale) {
-      setIsLanguageMenuOpen(false)
+      closeLanguageMenu()
       return
     }
 
-    setIsLanguageMenuOpen(false)
+    closeLanguageMenu()
     setIsChangingLanguage(true)
 
     languageTimer.current = setTimeout(() => {
@@ -82,6 +93,19 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   }
 
   useEffect(() => () => clearTimeout(languageTimer.current), [])
+
+  useEffect(() => {
+    const closingSignal = previouslySelectedSignal.current
+    previouslySelectedSignal.current = selectedSignal
+
+    if (selectedSignal || !closingSignal) return
+
+    focusTimer.current = window.setTimeout(() => {
+      document.querySelector<HTMLElement>(`[data-signal="${closingSignal}"]`)?.focus()
+    }, 260)
+
+    return () => clearTimeout(focusTimer.current)
+  }, [selectedSignal])
 
   useEffect(() => {
     const preloadMotion = () => void loadMotionFeatures()
@@ -125,7 +149,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   function changeTheme(nextPreference: ThemePreference) {
     document.cookie = createThemeCookie(nextPreference)
     setThemePreference(nextPreference)
-    setIsThemeMenuOpen(false)
+    closeThemeMenu({ restoreFocus: true })
   }
 
   useEffect(() => {
@@ -133,10 +157,10 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
 
     function closeOnOutsideClick(event: PointerEvent) {
       if (event.target instanceof Node && !languageMenu.current?.contains(event.target)) {
-        setIsLanguageMenuOpen(false)
+        closeLanguageMenu()
       }
       if (event.target instanceof Node && !themeMenu.current?.contains(event.target)) {
-        setIsThemeMenuOpen(false)
+        closeThemeMenu()
       }
     }
 
@@ -147,15 +171,22 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       const target = event.target
-      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) return
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return
+      }
 
       if (event.key === 'Escape' && isLanguageMenuOpen) {
-        setIsLanguageMenuOpen(false)
+        closeLanguageMenu({ restoreFocus: true })
         return
       }
 
       if (event.key === 'Escape' && isThemeMenuOpen) {
-        setIsThemeMenuOpen(false)
+        closeThemeMenu({ restoreFocus: true })
         return
       }
 
@@ -203,12 +234,14 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         <div className="flex items-center justify-self-end gap-5">
           <div className="relative" ref={themeMenu}>
             <Button
+              ref={themeMenuTrigger}
               className="theme-switch h-auto rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent"
               variant="ghost"
               type="button"
               aria-label={m.theme_switch_label({}, options)}
               aria-expanded={isThemeMenuOpen}
               aria-controls="theme-menu"
+              aria-haspopup="menu"
               title={m.theme_current({ theme: getThemeLabel(themePreference) }, options)}
               onClick={() => setIsThemeMenuOpen((open) => !open)}
             >
@@ -234,7 +267,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                 </p>
                 {(['system', 'night', 'day'] as const).map((preference) => (
                   <Button
-                    className="flex h-9 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
+                    className="flex min-h-11 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
                     variant="ghost"
                     type="button"
                     role="menuitemradio"
@@ -254,7 +287,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             )}
           </div>
           <Button
-            className="h-auto rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent max-[620px]:text-[0]"
+            className="h-auto min-h-11 rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent max-[620px]:min-w-11 max-[620px]:text-[0]"
             variant="ghost"
             type="button"
             onClick={() => openSignal('home')}
@@ -292,6 +325,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           className="absolute top-[27%] right-[3vw] z-4 max-[900px]:top-[31%] max-[900px]:right-[4vw] max-[620px]:top-[36%]"
         >
           <Button
+            ref={languageMenuTrigger}
             className="language-ship group h-auto rounded-none bg-transparent p-0 text-left hover:bg-transparent"
             variant="ghost"
             type="button"
@@ -299,6 +333,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-label={m.language_ship_label({}, options)}
             aria-expanded={isLanguageMenuOpen}
             aria-controls="language-bubble"
+            aria-haspopup="menu"
             aria-busy={isChangingLanguage}
             onClick={() => setIsLanguageMenuOpen((open) => !open)}
           >
@@ -331,7 +366,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               </p>
               {(['de', 'en'] as const).map((language) => (
                 <Button
-                  className="flex h-9 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
+                  className="flex min-h-11 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
                   variant="ghost"
                   type="button"
                   role="menuitemradio"
@@ -409,24 +444,23 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         </div>
       </section>
 
+      <p className="sr-only" aria-live="polite" aria-atomic="true">
+        {selectedSignal
+          ? m.transmission_opened({ signal: getWorldCopy(selectedSignal, locale).label }, options)
+          : ''}
+      </p>
+
       <Button
         className={`backdrop${selectedSignal ? ' visible' : ''}`}
         variant="ghost"
         type="button"
-        tabIndex={selectedSignal ? 0 : -1}
+        tabIndex={-1}
         aria-label={m.close_transmission({}, options)}
         onClick={closeTransmission}
       />
 
       <LazyMotion features={loadMotionFeatures} strict>
-        <AnimatePresence
-          initial={false}
-          onExitComplete={() => {
-            const signal = lastSelectedSignal.current
-            if (!signal) return
-            document.querySelector<HTMLElement>(`[data-signal="${signal}"]`)?.focus()
-          }}
-        >
+        <AnimatePresence initial={false}>
           {selectedSignal && (
             <TransmissionDialog
               key="transmission"

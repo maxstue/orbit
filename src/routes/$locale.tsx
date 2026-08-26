@@ -2,6 +2,7 @@ import { Outlet, createFileRoute, notFound, useRouterState } from '@tanstack/rea
 
 import { FieldLog } from '@/features/star-system/FieldLog'
 import { localeSchema, worldIdSchema } from '@/features/star-system/data/worlds'
+import { m } from '@/paraglide/messages.js'
 
 export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
@@ -10,6 +11,7 @@ export const Route = createFileRoute('/$locale')({
     return { locale: locale.data }
   },
   component: LocaleLayout,
+  errorComponent: LocaleError,
   notFoundComponent: LocaleNotFound,
 })
 
@@ -23,6 +25,24 @@ function LocaleLayout() {
       <FieldLog locale={locale} selectedSignal={selectedSignal} />
       <Outlet />
     </>
+  )
+}
+
+function LocaleError() {
+  const { locale } = Route.useRouteContext()
+  const options = { locale }
+
+  return (
+    <main className="protocol-error">
+      <div className="protocol-error-card">
+        <p className="eyebrow">SIGNAL INTERRUPTION</p>
+        <h1>{m.unknown_transmission_title({}, options)}</h1>
+        <p>{m.unknown_transmission_body({}, options)}</p>
+        <a className="protocol-return" href={`/${locale}`}>
+          {m.return_to_orbit({}, options)}
+        </a>
+      </div>
+    </main>
   )
 }
 

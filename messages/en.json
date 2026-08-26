@@ -41,6 +41,7 @@
   "galaxy_label": "Max's personal solar system",
   "home_signal_label": "Open home signal",
   "open_transmission": "OPEN TRANSMISSION ↗",
+  "transmission_opened": "Transmission opened: {signal}",
   "legend_navigable": "NAVIGABLE",
   "legend_live": "LIVE SIGNAL",
   "legend_hint": "KEYS 1–5 · SELECT PLANETS",

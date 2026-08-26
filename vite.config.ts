@@ -17,12 +17,12 @@ const config = defineConfig({
     viteReact(),
   ],
   fmt: {
-    ignorePatterns: ['dist/**', 'src/routeTree.gen.ts'],
+    ignorePatterns: ['dist/**', 'playwright-report/**', 'src/routeTree.gen.ts', 'test-results/**'],
     singleQuote: true,
     semi: false,
   },
   lint: {
-    ignorePatterns: ['dist/**', 'src/routeTree.gen.ts'],
+    ignorePatterns: ['dist/**', 'playwright-report/**', 'src/routeTree.gen.ts', 'test-results/**'],
     options: {
       typeAware: true,
       typeCheck: true,
