@@ -76,4 +76,5 @@ pnpm deploy
 deaktiviert.
 
 Der reale CI/CD-, Rollback- und Observability-Ablauf ist im
-[Operations-Runbook](docs/operations.md) beschrieben.
+[Operations-Runbook in Linear](https://linear.app/justmax/document/operations-3b5155838f0c)
+beschrieben.
