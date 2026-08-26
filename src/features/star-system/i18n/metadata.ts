@@ -3,6 +3,9 @@ import { m } from '@/paraglide/messages.js'
 import { getTransmission } from '../transmissions/content'
 import type { Locale, WorldId } from '../data/worlds'
 
+export const siteOrigin = 'https://me.justmax.xyz'
+export const socialPreviewUrl = `${siteOrigin}/social-preview.png`
+
 export function getLocalizedPath(locale: Locale, signal?: WorldId) {
   return `/${locale}${signal ? `/${signal}` : ''}`
 }
@@ -31,9 +34,14 @@ export function getRouteMetadata(locale: Locale, signal?: WorldId) {
       { property: 'og:description', content: description },
       { property: 'og:type', content: 'website' },
       { property: 'og:locale', content: locale === 'de' ? 'de_DE' : 'en_US' },
+      { property: 'og:url', content: `${siteOrigin}${path}` },
+      { property: 'og:image', content: socialPreviewUrl },
+      { property: 'og:image:width', content: '1731' },
+      { property: 'og:image:height', content: '909' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
       { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: socialPreviewUrl },
     ],
     links: [
       { rel: 'canonical', href: path },

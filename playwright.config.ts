@@ -8,7 +8,16 @@ export default defineConfig({
   reporter: process.env.CI ? 'github' : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
+    colorScheme: 'dark',
     trace: 'on-first-retry',
+  },
+  expect: {
+    toHaveScreenshot: {
+      animations: 'disabled',
+      caret: 'hide',
+      maxDiffPixelRatio: 0.01,
+      scale: 'css',
+    },
   },
   webServer: {
     command: 'pnpm preview --host 127.0.0.1 --port 4173',
@@ -23,6 +32,10 @@ export default defineConfig({
     {
       name: 'mobile-chromium',
       use: { ...devices['Pixel 5'] },
+    },
+    {
+      name: 'tablet-chromium',
+      use: { ...devices['iPad (gen 7)'], browserName: 'chromium' },
     },
     {
       name: 'zoom-400-chromium',

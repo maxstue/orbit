@@ -34,8 +34,11 @@ describe('world model', () => {
   })
 
   it('maps number shortcuts to their destination', () => {
-    expect(getWorldByShortcut('1')?.id).toBe('home')
-    expect(getWorldByShortcut('5')?.id).toBe('comms')
-    expect(getWorldByShortcut('6')).toBeUndefined()
+    for (const [index, world] of worlds.entries()) {
+      expect(getWorldByShortcut(String(index + 1))?.id).toBe(world.id)
+    }
+    expect(
+      ['0', '6', '1.5', 'x'].every((shortcut) => getWorldByShortcut(shortcut) === undefined),
+    ).toBe(true)
   })
 })

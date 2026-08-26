@@ -15,7 +15,9 @@
     "lint": "vp lint",
     "preview": "vp preview",
     "deploy": "vp build && vp exec wrangler deploy --keep-vars",
-    "test": "vp test",
+    "test": "pnpm test:unit && pnpm test:browser",
+    "test:browser": "ORBIT_BROWSER_TESTS=true vp test",
+    "test:unit": "vp test",
     "test:a11y": "pnpm build && playwright test --grep @a11y",
     "test:e2e": "pnpm build && playwright test"
   },
@@ -49,10 +51,12 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "@vitest/browser-playwright": "4.1.11",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:",
+    "vitest-browser-react": "2.2.0",
     "wrangler": "catalog:"
   },
   "devEngines": {

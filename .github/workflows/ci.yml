@@ -42,14 +42,14 @@ jobs:
       - name: Check formatting, linting, and types
         run: vp check
 
-      - name: Run unit tests
-        run: vp test
-
       - name: Install Playwright browser
         run: vp exec playwright install --with-deps chromium
 
-      - name: Run selected browser smoke and accessibility tests
-        run: vp exec playwright test --grep @a11y --project desktop-chromium
+      - name: Run unit and component browser tests
+        run: pnpm test
+
+      - name: Run browser end-to-end, visual, and accessibility tests
+        run: vp exec playwright test
 
       - name: Upload Playwright report
         if: always()

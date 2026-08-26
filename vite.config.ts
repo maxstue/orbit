@@ -4,10 +4,12 @@ import { paraglideVitePlugin } from '@inlang/paraglide-js'
 import { sentryTanstackStart } from '@sentry/tanstackstart-react/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
+import { playwright } from 'vite-plus/test/browser-playwright'
 import { defineConfig, loadEnv } from 'vite-plus'
 
 const config = defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const browserTests = process.env.ORBIT_BROWSER_TESTS === 'true'
   const uploadSourceMaps = mode === 'production' && Boolean(env.SENTRY_AUTH_TOKEN)
 
   return {
@@ -66,7 +68,19 @@ const config = defineConfig(({ mode }) => {
       },
     },
     test: {
-      include: ['src/**/*.test.ts'],
+      browser: browserTests
+        ? {
+            enabled: true,
+            headless: true,
+            instances: [{ browser: 'chromium' }],
+            provider: playwright(),
+            screenshotFailures: true,
+            trace: 'on-first-retry',
+          }
+        : undefined,
+      exclude: browserTests ? undefined : ['src/**/*.browser.test.tsx'],
+      include: browserTests ? ['src/**/*.browser.test.tsx'] : ['src/**/*.test.ts'],
+      name: browserTests ? 'browser' : 'unit',
       reporters:
         process.env.GITHUB_ACTIONS === 'true' ? ['default', 'github-actions'] : ['default'],
     },

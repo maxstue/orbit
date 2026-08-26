@@ -31,7 +31,13 @@ German version is available under `/de`.
 pnpm check
 pnpm test
 pnpm build
+pnpm test:e2e
 ```
+
+`pnpm test:e2e` builds the application and runs the Playwright suite across
+desktop, tablet, and mobile Chromium profiles. The suite covers the primary
+localized navigation flow, JavaScript fallbacks, keyboard behavior, appearance
+preferences, reduced motion, accessibility, and two stable visual snapshots.
 
 Translations are maintained in `messages/en.json` and `messages/de.json`.
 Generated files under `src/paraglide/` must not be edited manually.

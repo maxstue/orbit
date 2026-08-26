@@ -38,8 +38,21 @@ export const Route = createRootRoute({
         name: 'viewport',
         content: 'width=device-width, initial-scale=1',
       },
+      {
+        name: 'theme-color',
+        content: '#0c1011',
+      },
     ],
     links: [
+      {
+        rel: 'icon',
+        type: 'image/svg+xml',
+        href: '/favicon.svg',
+      },
+      {
+        rel: 'manifest',
+        href: '/site.webmanifest',
+      },
       {
         rel: 'stylesheet',
         href: appCss,

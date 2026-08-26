@@ -111,15 +111,17 @@ export function getTransmission(id: WorldId, locale: Locale): Transmission {
         {
           label: m.comms_detail_one_label({}, options),
           value: m.comms_detail_one_value({}, options),
-          href: 'mailto:max@example.com',
+          href: 'mailto:dev@justmax.xyz',
         },
         {
           label: m.comms_detail_two_label({}, options),
           value: m.comms_detail_two_value({}, options),
+          href: 'https://github.com/maxstue',
         },
         {
           label: m.comms_detail_three_label({}, options),
           value: m.comms_detail_three_value({}, options),
+          href: 'https://www.linkedin.com/in/maximilian-st%C3%BCmpfl-ba2832205/',
         },
       ],
       quote: m.comms_quote({}, options),
