@@ -21,6 +21,7 @@ const config = defineConfig(({ mode }) => {
         emitTsDeclarations: true,
       }),
       tanstackStart({
+        start: { entry: 'start.ts' },
         router: { entry: 'router.tsx' },
         client: { entry: 'client.tsx' },
         server: { entry: 'server.ts' },
