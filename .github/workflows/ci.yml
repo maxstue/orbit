@@ -113,6 +113,11 @@ jobs:
         run: |
           set -euo pipefail
           for route in /en /de /en/workbench; do
-            curl --fail --retry 5 --retry-delay 3 --retry-all-errors \
-              "https://me.justmax.xyz${route}" >/dev/null
+            status="$(curl --silent --show-error --location --output /dev/null \
+              --write-out '%{http_code}' --retry 5 --retry-delay 3 --retry-all-errors \
+              --user-agent 'Mozilla/5.0 (compatible; OrbitProductionSmoke/1.0)' \
+              --header 'Accept: text/html,application/xhtml+xml' \
+              "https://me.justmax.xyz${route}")"
+            printf '%s -> %s\n' "$route" "$status"
+            test "$status" = "200"
           done
