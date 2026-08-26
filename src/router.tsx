@@ -1,4 +1,7 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
+
+import { createSentryClient } from '@/instrument-client'
+
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
@@ -8,6 +11,8 @@ export function getRouter() {
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,
   })
+
+  if (!router.isServer) createSentryClient(router)
 
   return router
 }

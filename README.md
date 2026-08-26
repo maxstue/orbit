@@ -61,6 +61,19 @@ Paraglide-Dateien unter `src/paraglide/` werden nicht manuell bearbeitet.
 
 ## Hosting
 
-Cloudflare wird bewusst erst später eingerichtet. Deshalb enthält das Projekt
-aktuell weder `.openai/hosting.json` noch `wrangler.jsonc`. Bis zur Hosting-Phase
-wird ausschließlich lokal gebaut und geprüft.
+Orbit läuft als serverseitig gerenderte Anwendung auf Cloudflare Workers. Das
+Cloudflare-Vite-Plugin verwendet lokal, für die Vorschau und beim Build dieselbe
+Workers-Runtime wie in Produktion.
+
+```bash
+pnpm cf:typegen # nach Änderungen an wrangler.jsonc oder neuen Bindings
+pnpm deploy
+```
+
+`pnpm deploy` baut die Anwendung und veröffentlicht den Worker
+`orbit-field-log`. Die Produktionsanwendung ist unter
+[me.justmax.xyz](https://me.justmax.xyz) erreichbar; die `workers.dev`-Route ist
+deaktiviert.
+
+Der reale CI/CD-, Rollback- und Observability-Ablauf ist im
+[Operations-Runbook](docs/operations.md) beschrieben.

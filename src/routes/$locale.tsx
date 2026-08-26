@@ -1,8 +1,16 @@
-import { Outlet, createFileRoute, notFound, useRouterState } from '@tanstack/react-router'
+import {
+  Outlet,
+  createFileRoute,
+  notFound,
+  useRouterState,
+  type ErrorComponentProps,
+} from '@tanstack/react-router'
+import { useEffect } from 'react'
 
 import { FieldLog } from '@/features/star-system/FieldLog'
 import { localeSchema, worldIdSchema } from '@/features/star-system/data/worlds'
 import { m } from '@/paraglide/messages.js'
+import { Errors } from '@/lib/observability/errors'
 
 export const Route = createFileRoute('/$locale')({
   beforeLoad: ({ params }) => {
@@ -28,9 +36,11 @@ function LocaleLayout() {
   )
 }
 
-function LocaleError() {
+function LocaleError({ error }: ErrorComponentProps) {
   const { locale } = Route.useRouteContext()
   const options = { locale }
+
+  useEffect(() => Errors.captureRouteError(error), [error])
 
   return (
     <main className="protocol-error">

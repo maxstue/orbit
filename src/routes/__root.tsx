@@ -1,12 +1,20 @@
-import { HeadContent, Scripts, createRootRoute, useRouterState } from '@tanstack/react-router'
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  useRouterState,
+  type ErrorComponentProps,
+} from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getCookie } from '@tanstack/react-start/server'
+import { useEffect } from 'react'
 
 import {
   isThemePreference,
   themeCookieName,
   type ThemePreference,
 } from '@/features/star-system/theme'
+import { Errors } from '@/lib/observability/errors'
 
 import appCss from '../styles.css?url'
 
@@ -38,8 +46,29 @@ export const Route = createRootRoute({
       },
     ],
   }),
+  errorComponent: RootError,
   shellComponent: RootDocument,
 })
+
+function RootError({ error, reset }: ErrorComponentProps) {
+  useEffect(() => Errors.captureRouteError(error), [error])
+
+  return (
+    <main className="protocol-error">
+      <div className="protocol-error-card">
+        <p className="eyebrow">SIGNAL INTERRUPTION</p>
+        <h1>Orbit could not establish this connection.</h1>
+        <p>Retry the transmission or return to the English field log.</p>
+        <button className="protocol-return" type="button" onClick={reset}>
+          Retry transmission
+        </button>
+        <a className="protocol-return" href="/en">
+          Return to Orbit
+        </a>
+      </div>
+    </main>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   const themePreference = Route.useLoaderData()

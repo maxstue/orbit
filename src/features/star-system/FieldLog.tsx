@@ -4,6 +4,8 @@ import { AnimatePresence, LazyMotion } from 'motion/react'
 import { MonitorCog, MoonStar, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { updateObservabilityContext } from '@/lib/observability/context'
+import { Errors } from '@/lib/observability/errors'
 import { m } from '@/paraglide/messages.js'
 
 import {
@@ -108,7 +110,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   }, [selectedSignal])
 
   useEffect(() => {
-    const preloadMotion = () => void loadMotionFeatures()
+    const preloadMotion = () => {
+      void loadMotionFeatures().catch((error: unknown) =>
+        Errors.captureUiDegradation('motion-init', error),
+      )
+    }
     const idleCallback = window.requestIdleCallback?.(preloadMotion)
     if (idleCallback === undefined) {
       const timer = window.setTimeout(preloadMotion, 250)
@@ -116,6 +122,21 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
     }
     return () => window.cancelIdleCallback(idleCallback)
   }, [])
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const updateContext = () =>
+      updateObservabilityContext({
+        locale,
+        reducedMotion: reducedMotion.matches,
+        selectedSignal,
+        theme: themePreference,
+      })
+
+    updateContext()
+    reducedMotion.addEventListener('change', updateContext)
+    return () => reducedMotion.removeEventListener('change', updateContext)
+  }, [locale, selectedSignal, themePreference])
 
   useEffect(() => {
     if (!hasLoadedTheme.current) {
