@@ -24,5 +24,12 @@ export default defineConfig({
       name: 'mobile-chromium',
       use: { ...devices['Pixel 5'] },
     },
+    {
+      name: 'zoom-400-chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 320, height: 720 },
+      },
+    },
   ],
 })

@@ -235,7 +235,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           <div className="relative" ref={themeMenu}>
             <Button
               ref={themeMenuTrigger}
-              className="theme-switch h-auto rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent"
+              className="theme-switch h-auto min-h-11 min-w-11 rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent"
               variant="ghost"
               type="button"
               aria-label={m.theme_switch_label({}, options)}

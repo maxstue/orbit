@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test, type Page, type TestInfo } from '@playwright/test'
 
-const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
+const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']
 const signals = ['home', 'current', 'workbench', 'side-quests', 'comms'] as const
 
 async function expectNoA11yViolations(page: Page, testInfo: TestInfo) {
@@ -74,4 +74,20 @@ test('@a11y transmission traps focus and restores it to its planet', async ({ pa
   await page.keyboard.press('Escape')
   await expect(dialog).toBeHidden()
   await expect(planet).toBeFocused()
+})
+
+test('@a11y visible controls meet the WCAG 2.2 minimum target size', async ({ page }) => {
+  await page.goto('/en')
+
+  const undersizedControls = await page.getByRole('button').evaluateAll((buttons) =>
+    buttons.flatMap((button) => {
+      const bounds = button.getBoundingClientRect()
+      const isVisible = bounds.width > 0 && bounds.height > 0
+      return isVisible && (bounds.width < 24 || bounds.height < 24)
+        ? [button.getAttribute('aria-label') ?? button.textContent?.trim() ?? 'unnamed control']
+        : []
+    }),
+  )
+
+  expect(undersizedControls).toEqual([])
 })
