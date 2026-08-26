@@ -36,14 +36,14 @@ jobs:
       - name: Install dependencies
         run: vp install
 
+      - name: Build Cloudflare Worker
+        run: vp build
+
       - name: Check formatting, linting, and types
         run: vp check
 
       - name: Run unit tests
         run: vp test
-
-      - name: Build Cloudflare Worker
-        run: vp build
 
       - name: Install Playwright browser
         run: vp exec playwright install --with-deps chromium
