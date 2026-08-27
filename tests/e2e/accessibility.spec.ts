@@ -59,7 +59,13 @@ test('@a11y transmission traps focus and restores it to its planet', async ({ pa
     name: 'Current: What has my attention right now.',
   })
 
-  await planet.click()
+  await expect
+    .poll(async () => {
+      if (new URL(page.url()).pathname !== '/en/current') await planet.click()
+      return new URL(page.url()).pathname
+    })
+    .toBe('/en/current')
+
   const dialog = page.getByRole('dialog')
   await expect(dialog).toBeVisible()
   await expect(dialog.getByRole('button', { name: 'Close transmission' })).toBeFocused()
