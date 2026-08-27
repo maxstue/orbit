@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './coverage-fixture'
 
 const signals = ['home', 'current', 'workbench', 'side-quests', 'comms'] as const
 const socialPreviewUrl = 'https://me.justmax.xyz/social-preview.png'

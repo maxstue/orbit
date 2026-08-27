@@ -20,9 +20,12 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'pnpm preview --host 127.0.0.1 --port 4173',
+    command: 'pnpm run test:e2e:server',
+    env: {
+      VITE_COVERAGE: 'true',
+    },
     url: 'http://127.0.0.1:4173/en',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: process.env.PLAYWRIGHT_REUSE_EXISTING_SERVER === 'true',
   },
   projects: [
     {

@@ -45,18 +45,36 @@ jobs:
       - name: Install Playwright browser
         run: vp exec playwright install --with-deps chromium
 
-      - name: Run unit and component browser tests
-        run: vp run test
+      - name: Run unit tests with coverage
+        run: vp run test:coverage
+
+      - name: Run component browser tests
+        run: vp run test:browser
+
+      - name: Upload Vitest coverage report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: vitest-coverage-report
+          path: coverage/unit
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Run browser end-to-end, visual, and accessibility tests
-        run: vp exec playwright test
+        run: vp run test:e2e
+
+      - name: Generate Playwright coverage report
+        if: always()
+        run: vp run test:e2e:coverage-report
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: playwright-report
-          path: playwright-report
+          path: |
+            playwright-report
+            coverage/e2e
           if-no-files-found: warn
           retention-days: 14
 
@@ -70,6 +88,8 @@ jobs:
             -Dsonar.sources=src
             -Dsonar.tests=src,tests/e2e
             -Dsonar.test.inclusions=src/**/*.test.ts,src/**/*.test.tsx,tests/e2e/**/*.spec.ts
+            -Dsonar.coverage.exclusions=src/paraglide/**,src/routeTree.gen.ts
+            -Dsonar.javascript.lcov.reportPaths=coverage/unit/lcov.info,coverage/e2e/lcov.info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 

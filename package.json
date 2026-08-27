@@ -17,9 +17,13 @@
     "deploy": "vp build && vp exec wrangler deploy --keep-vars",
     "test": "vp run test:unit && vp run test:browser",
     "test:browser": "ORBIT_BROWSER_TESTS=true vp test",
+    "test:coverage": "vp test --coverage",
     "test:unit": "vp test",
-    "test:a11y": "vp run build && playwright test --grep @a11y",
-    "test:e2e": "vp run build && playwright test"
+    "test:a11y": "playwright test --grep @a11y",
+    "test:e2e": "playwright test",
+    "test:e2e:coverage": "vp run test:e2e && vp run test:e2e:coverage-report",
+    "test:e2e:coverage-report": "nyc report --temp-dir .nyc_output --report-dir coverage/e2e --reporter=lcov --reporter=text-summary --exclude-after-remap=false",
+    "test:e2e:server": "vp build && vp preview --host 127.0.0.1 --port 4173"
   },
   "dependencies": {
     "@base-ui/react": "catalog:",
@@ -52,9 +56,12 @@
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@vitest/browser-playwright": "4.1.11",
+    "@vitest/coverage-v8": "catalog:",
+    "nyc": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
+    "vite-plugin-istanbul": "catalog:",
     "vite-plus": "catalog:",
     "vitest-browser-react": "2.2.0",
     "wrangler": "catalog:"

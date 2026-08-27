@@ -1,4 +1,6 @@
-import { expect, test, type Browser, type Page } from '@playwright/test'
+import { type Browser, type Page } from '@playwright/test'
+
+import { expect, test } from './coverage-fixture'
 
 async function openLanguageMenu(page: Page) {
   await page.getByRole('button', { name: /language.*selection|sprachauswahl/i }).click()

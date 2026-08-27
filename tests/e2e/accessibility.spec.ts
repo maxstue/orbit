@@ -1,5 +1,7 @@
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type Page, type TestInfo } from '@playwright/test'
+import { type Page, type TestInfo } from '@playwright/test'
+
+import { expect, test } from './coverage-fixture'
 
 const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa']
 const signals = ['home', 'current', 'workbench', 'side-quests', 'comms'] as const

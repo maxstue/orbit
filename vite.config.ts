@@ -6,10 +6,12 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import { playwright } from 'vite-plus/test/browser-playwright'
 import { defineConfig, loadEnv } from 'vite-plus'
+import istanbul from 'vite-plugin-istanbul'
 
 const config = defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const browserTests = process.env.ORBIT_BROWSER_TESTS === 'true'
+  const collectE2ECoverage = env.VITE_COVERAGE === 'true'
   const uploadSourceMaps = mode === 'production' && Boolean(env.SENTRY_AUTH_TOKEN)
 
   return {
@@ -30,6 +32,22 @@ const config = defineConfig(({ mode }) => {
       }),
       tailwindcss(),
       viteReact(),
+      collectE2ECoverage
+        ? istanbul({
+            include: ['src/**/*'],
+            exclude: [
+              'node_modules/**',
+              'tests/**',
+              'src/**/*.server.ts',
+              'src/**/*.test.{ts,tsx}',
+              'src/**/*.browser.test.tsx',
+              'src/paraglide/**',
+              'src/routeTree.gen.ts',
+            ],
+            extension: ['.js', '.jsx', '.ts', '.tsx'],
+            requireEnv: true,
+          })
+        : undefined,
       uploadSourceMaps
         ? sentryTanstackStart({
             org: 'maxstue',
@@ -83,6 +101,17 @@ const config = defineConfig(({ mode }) => {
       name: browserTests ? 'browser' : 'unit',
       reporters:
         process.env.GITHUB_ACTIONS === 'true' ? ['default', 'github-actions'] : ['default'],
+      coverage: {
+        exclude: [
+          'src/**/*.test.{ts,tsx}',
+          'src/**/*.browser.test.tsx',
+          'src/paraglide/**',
+          'src/routeTree.gen.ts',
+        ],
+        provider: 'v8',
+        reporter: ['text', 'html', 'lcov'],
+        reportsDirectory: 'coverage/unit',
+      },
     },
   }
 })
