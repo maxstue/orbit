@@ -30,6 +30,7 @@
     "@inlang/paraglide-js": "catalog:",
     "@sentry/cloudflare": "catalog:",
     "@sentry/tanstackstart-react": "catalog:",
+    "@tanstack/react-hotkeys": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-start": "catalog:",
     "class-variance-authority": "catalog:",

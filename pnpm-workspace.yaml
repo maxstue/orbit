@@ -13,6 +13,7 @@ catalog:
   '@sentry/cloudflare': 10.70.0
   '@sentry/tanstackstart-react': 10.70.0
   '@tailwindcss/vite': ^4.3.3
+  '@tanstack/react-hotkeys': ^0.10.0
   '@tanstack/react-router': ^1.132.0
   '@tanstack/react-start': ^1.132.0
   '@tanstack/router-cli': ^1.132.0

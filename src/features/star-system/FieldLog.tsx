@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, LazyMotion } from 'motion/react'
 import { MonitorCog, MoonStar, Sun } from 'lucide-react'
@@ -8,13 +9,7 @@ import { updateObservabilityContext } from '@/lib/observability/context'
 import { Errors } from '@/lib/observability/errors'
 import { m } from '@/paraglide/messages.js'
 
-import {
-  getAdjacentWorld,
-  getWorldByShortcut,
-  worlds,
-  type Locale,
-  type WorldId,
-} from './data/worlds'
+import { getAdjacentWorld, worlds, type Locale, type WorldId } from './data/worlds'
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { Planet } from './Planet'
@@ -37,6 +32,8 @@ const worldClasses: Record<Exclude<WorldId, 'home'>, string> = {
 
 const loadMotionFeatures = () =>
   import('./transmissions/motion-features').then((module) => module.default)
+
+const worldHotkeys = ['1', '2', '3', '4', '5'] as const
 
 export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const navigate = useNavigate()
@@ -189,48 +186,52 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
     return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
   }, [isLanguageMenuOpen, isThemeMenuOpen])
 
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      const target = event.target
-      if (
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        (target instanceof HTMLElement && target.isContentEditable)
-      ) {
-        return
-      }
+  useHotkeys(
+    [
+      {
+        hotkey: 'Escape',
+        callback: () => {
+          if (isLanguageMenuOpen) {
+            closeLanguageMenu({ restoreFocus: true })
+            return
+          }
 
-      if (event.key === 'Escape' && isLanguageMenuOpen) {
-        closeLanguageMenu({ restoreFocus: true })
-        return
-      }
+          if (isThemeMenuOpen) {
+            closeThemeMenu({ restoreFocus: true })
+            return
+          }
 
-      if (event.key === 'Escape' && isThemeMenuOpen) {
-        closeThemeMenu({ restoreFocus: true })
-        return
-      }
-
-      if (event.key === 'Escape' && selectedSignal) {
-        closeTransmission()
-        return
-      }
-
-      const shortcut = getWorldByShortcut(event.key)
-      if (shortcut) {
-        openSignal(shortcut.id)
-        return
-      }
-
-      if (selectedSignal && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
-        const adjacent = getAdjacentWorld(selectedSignal, event.key === 'ArrowRight' ? 1 : -1)
-        if (adjacent) openSignal(adjacent.id)
-      }
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  })
+          if (selectedSignal) closeTransmission()
+        },
+        options: {
+          enabled: isLanguageMenuOpen || isThemeMenuOpen || Boolean(selectedSignal),
+        },
+      },
+      ...worlds.map((world, index): UseHotkeyDefinition => ({
+        hotkey: worldHotkeys[index]!,
+        callback: () => openSignal(world.id),
+      })),
+      {
+        hotkey: 'ArrowLeft',
+        callback: () => {
+          if (!selectedSignal) return
+          const adjacent = getAdjacentWorld(selectedSignal, -1)
+          if (adjacent) openSignal(adjacent.id)
+        },
+        options: { enabled: Boolean(selectedSignal) },
+      },
+      {
+        hotkey: 'ArrowRight',
+        callback: () => {
+          if (!selectedSignal) return
+          const adjacent = getAdjacentWorld(selectedSignal, 1)
+          if (adjacent) openSignal(adjacent.id)
+        },
+        options: { enabled: Boolean(selectedSignal) },
+      },
+    ],
+    { ignoreInputs: true },
+  )
 
   return (
     <main className="system booted relative min-h-svh overflow-hidden bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)]">
