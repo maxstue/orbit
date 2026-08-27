@@ -83,7 +83,7 @@ jobs:
       group: orbit-production
       cancel-in-progress: false
     environment:
-      name: production
+      name: Production
       url: https://me.justmax.xyz
     steps:
       - name: Check out repository
