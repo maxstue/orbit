@@ -60,6 +60,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Publish SonarQube Cloud analysis
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8
+        with:
+          args: >
+            -Dsonar.projectKey=maxstue_orbit
+            -Dsonar.organization=maxstue
+            -Dsonar.sources=src
+            -Dsonar.tests=src,tests/e2e
+            -Dsonar.test.inclusions=src/**/*.test.ts,src/**/*.test.tsx,tests/e2e/**/*.spec.ts
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   deploy:
     name: Deploy production
     needs: quality
