@@ -11,7 +11,7 @@ import istanbul from 'vite-plugin-istanbul'
 const config = defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const browserTests = process.env.ORBIT_BROWSER_TESTS === 'true'
-  const collectE2ECoverage = env.VITE_COVERAGE === 'true'
+  const collectE2ECoverage = process.env.VITE_COVERAGE === 'true'
   const uploadSourceMaps = mode === 'production' && Boolean(env.SENTRY_AUTH_TOKEN)
 
   return {
@@ -34,6 +34,7 @@ const config = defineConfig(({ mode }) => {
       viteReact(),
       collectE2ECoverage
         ? istanbul({
+            forceBuildInstrument: true,
             include: ['src/**/*'],
             exclude: [
               'node_modules/**',

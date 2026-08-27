@@ -64,7 +64,9 @@ jobs:
         run: vp run test:e2e
 
       - name: Generate Playwright coverage report
-        if: always()
+        # The report requires raw coverage emitted by the preceding E2E run.
+        # Do not mask an earlier build/test failure with an ENOENT for .nyc_output.
+        if: success()
         run: vp run test:e2e:coverage-report
 
       - name: Upload Playwright report
