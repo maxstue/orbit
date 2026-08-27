@@ -101,7 +101,21 @@ const config = defineConfig(({ mode }) => {
       include: browserTests ? ['src/**/*.browser.test.tsx'] : ['src/**/*.test.ts'],
       name: browserTests ? 'browser' : 'unit',
       reporters:
-        process.env.GITHUB_ACTIONS === 'true' ? ['default', 'github-actions'] : ['default'],
+        process.env.GITHUB_ACTIONS === 'true'
+          ? [
+              'default',
+              [
+                'github-actions',
+                {
+                  jobSummary: {
+                    title: browserTests
+                      ? 'Vitest Browser Test Report (Playwright)'
+                      : 'Vitest Unit Test Report',
+                  },
+                },
+              ],
+            ]
+          : ['default'],
       coverage: {
         exclude: [
           'src/**/*.test.{ts,tsx}',
