@@ -156,7 +156,12 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
                 </dt>
                 <dd className="m-0 font-mono text-xs leading-[1.4]">
                   {detail.href ? (
-                    <a className="text-[var(--lime)]" href={detail.href}>
+                    <a
+                      className="text-[var(--lime)]"
+                      href={detail.href}
+                      target={detail.href.startsWith('http') ? '_blank' : undefined}
+                      rel={detail.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    >
                       {detail.value}
                     </a>
                   ) : (
