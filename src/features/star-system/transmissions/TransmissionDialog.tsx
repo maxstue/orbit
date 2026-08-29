@@ -14,7 +14,6 @@ type TransmissionDialogProps = {
   signal: WorldId
   onClose: () => void
   onSelect: (signal: WorldId) => void
-  viewTransitionName?: string
 }
 
 const signalGraphHeights = [42, 78, 55, 92, 48, 84, 36, 68, 57, 88, 45, 73, 38, 82, 62, 94, 51, 76]
@@ -64,13 +63,7 @@ function SignalGraph({
   )
 }
 
-export function TransmissionDialog({
-  locale,
-  signal,
-  onClose,
-  onSelect,
-  viewTransitionName = 'none',
-}: TransmissionDialogProps) {
+export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
   const reduceMotion = useReducedMotion()
   const dialogRef = useRef<HTMLElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
@@ -192,14 +185,20 @@ export function TransmissionDialog({
             >
               <div className="grid h-[190px] place-items-center max-[620px]:h-[95px]">
                 <div className="relative grid size-[132px] place-items-center rounded-full border border-dashed border-[color-mix(in_srgb,var(--cyan)_42%,transparent)] max-[620px]:size-[74px]">
-                  <div
-                    className={`signal-planet signal-planet-${signal} absolute inset-0 z-0 grid place-items-center opacity-25 saturate-50`}
+                  <motionElement.div
+                    className={`signal-planet signal-planet-${signal} absolute inset-0 z-0 grid place-items-center saturate-50`}
+                    initial={
+                      reduceMotion ? false : { opacity: 0, scale: 1.14, filter: 'blur(4px)' }
+                    }
+                    animate={{ opacity: 0.25, scale: 1, filter: 'blur(0px)' }}
+                    exit={{ opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.48,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                   >
-                    <Planet
-                      worldId={signal}
-                      viewTransitionName={isTuning ? viewTransitionName : 'none'}
-                    />
-                  </div>
+                    <Planet worldId={signal} />
+                  </motionElement.div>
                   <div className="absolute inset-[13%] z-1 rounded-full border border-[color-mix(in_srgb,var(--cyan)_24%,transparent)]" />
                   <div className="absolute top-1/2 left-1/2 z-1 h-px w-[76%] -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
                   <div className="absolute top-1/2 left-1/2 z-1 h-[76%] w-px -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
@@ -316,11 +315,17 @@ export function TransmissionDialog({
               reduceMotion
                 ? undefined
                 : {
+                    opacity: isTuning ? 0 : 1,
+                    scale: isTuning ? 0.94 : 1,
+                    filter: isTuning ? 'blur(3px)' : 'blur(0px)',
                     y: [0, -3, 0, 2, 0],
                     rotate: signal === 'home' ? [-1.5, 1.5, -1.5] : [0, 360],
                   }
             }
             transition={{
+              opacity: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+              scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+              filter: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
               y: { duration: 7, ease: 'easeInOut', repeat: Infinity },
               rotate: {
                 duration: signal === 'home' ? 9 : 36,
@@ -329,7 +334,7 @@ export function TransmissionDialog({
               },
             }}
           >
-            <Planet worldId={signal} viewTransitionName={isTuning ? 'none' : viewTransitionName} />
+            <Planet worldId={signal} />
           </motionElement.div>
           <SignalGraph reduceMotion={Boolean(reduceMotion)} />
           <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">

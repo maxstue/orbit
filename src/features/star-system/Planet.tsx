@@ -4,7 +4,6 @@ import * as motionElement from 'motion/react-m'
 import type { WorldId } from './data/worlds'
 
 type PlanetProps = {
-  viewTransitionName?: string
   worldId: WorldId
 }
 
@@ -99,12 +98,11 @@ function OrbitalCompanions({ worldId }: { worldId: WorldId }) {
   })
 }
 
-export function Planet({ viewTransitionName = 'none', worldId }: PlanetProps) {
+export function Planet({ worldId }: PlanetProps) {
   if (worldId === 'home') {
     return (
       <span
         className="planet planet-home relative grid size-[var(--planet-size,115px)] place-items-center overflow-visible rounded-full border border-[rgb(255_226_167_/_88%)] text-[var(--space)]"
-        style={{ viewTransitionName }}
         aria-hidden="true"
       >
         <span className="planet-monogram relative z-2 rotate-[-7deg] text-[3.65rem] leading-none font-black text-[var(--space)] opacity-[0.88] max-[900px]:text-[3.5rem] max-[620px]:text-5xl">
@@ -118,7 +116,6 @@ export function Planet({ viewTransitionName = 'none', worldId }: PlanetProps) {
   return (
     <span
       className={`planet planet-${worldId} relative block rounded-full transition-[transform,box-shadow] duration-[280ms]`}
-      style={{ viewTransitionName }}
       aria-hidden="true"
     >
       <i />
