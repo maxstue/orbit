@@ -67,11 +67,8 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
   expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
-  expect(document.body.style.cursor).toBe('none')
-  expect(getComputedStyle(document.querySelector('h1')!).cursor).toBe('none')
-  await expect
-    .element(document.querySelector<HTMLImageElement>('img[src="/cursors/satellite.png"]')!)
-    .toHaveClass(/opacity-100/)
+  expect(document.body.style.cursor).toContain('/cursors/satellite.svg')
+  expect(getComputedStyle(document.querySelector('h1')!).cursor).toContain('/cursors/satellite.svg')
   expect(navigation.navigate).not.toHaveBeenCalled()
 
   await userEvent.keyboard('{Escape}')

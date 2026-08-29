@@ -13,10 +13,9 @@ import { m } from '@/paraglide/messages.js'
 import { getAdjacentWorld, worlds, type Locale, type WorldId } from './data/worlds'
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
-import { ObjectCursorOverlay } from './ObjectCursorOverlay'
 import { Planet } from './Planet'
 import { SpaceDebris } from './SpaceDebris'
-import type { ObjectCursor } from './object-cursor'
+import { objectCursorStyles, type ObjectCursor } from './object-cursor'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
 import {
   createThemeCookie,
@@ -120,9 +119,10 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
 
   useEffect(() => {
     if (objectCursor) {
+      const cursor = objectCursorStyles[objectCursor]
       document.documentElement.dataset.orbitCursor = objectCursor
-      document.documentElement.style.cursor = 'none'
-      document.body.style.cursor = 'none'
+      document.documentElement.style.cursor = cursor
+      document.body.style.cursor = cursor
     } else {
       delete document.documentElement.dataset.orbitCursor
       document.documentElement.style.removeProperty('cursor')
@@ -294,7 +294,6 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           aria-hidden="true"
         />
         <SpaceDebris onObjectCursorChange={toggleObjectCursor} />
-        <ObjectCursorOverlay cursor={objectCursor} />
 
         <motionElement.header
           className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
