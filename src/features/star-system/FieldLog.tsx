@@ -24,10 +24,14 @@ import {
 type FieldLogProps = { locale: Locale; selectedSignal?: WorldId }
 
 const worldClasses: Record<Exclude<WorldId, 'home'>, string> = {
-  current: 'world-now',
-  workbench: 'world-work',
-  'side-quests': 'world-quests',
-  comms: 'world-comms',
+  current:
+    'world-now top-[52%] left-[31%] max-[900px]:top-[55%] max-[900px]:left-[13%] max-[620px]:top-[62%] max-[620px]:left-[8%] max-[620px]:-m-[3px] max-[620px]:p-[3px]',
+  workbench:
+    'world-work top-[14%] left-[59%] max-[900px]:top-[39%] max-[900px]:left-[46%] max-[620px]:top-[46%] max-[620px]:left-[42%]',
+  'side-quests':
+    'world-quests top-[43%] right-[12%] max-[900px]:top-[58%] max-[900px]:right-[4%] max-[620px]:top-[64%] max-[620px]:right-[2%]',
+  comms:
+    'world-comms bottom-[7%] left-[54%] max-[900px]:left-[44%] max-[620px]:bottom-[4%] max-[620px]:left-[43%] max-[620px]:-m-[3px] max-[620px]:p-[3px]',
 }
 
 const loadMotionFeatures = () =>
@@ -235,13 +239,13 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
 
   return (
     <main className="system booted relative min-h-svh overflow-hidden bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)]">
-      <div className="stars stars-a" aria-hidden="true" />
-      <div className="stars stars-b" aria-hidden="true" />
+      <div className="stars-a pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="stars-b pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
 
       <header className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16">
         <LocalizedLink
           locale={locale}
-          className="font-mono text-[21px] font-black no-underline"
+          className="font-mono text-[21px] font-black no-underline [&>span]:text-[var(--coral)]"
           aria-label="Orbit home"
         >
           max<span>_</span>
@@ -257,7 +261,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           <div className="relative" ref={themeMenu}>
             <Button
               ref={themeMenuTrigger}
-              className="theme-switch h-auto min-h-11 min-w-11 rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent"
+              className="h-auto min-h-11 min-w-11 gap-[7px] rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent [&_svg]:size-3.5 [&_svg]:stroke-[1.6]"
               variant="ghost"
               type="button"
               aria-label={m.theme_switch_label({}, options)}
@@ -314,7 +318,10 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             type="button"
             onClick={() => openSignal('home')}
           >
-            {m.about_system({}, options)} <kbd>1</kbd>
+            {m.about_system({}, options)}{' '}
+            <kbd className="ml-[9px] border p-[4px_7px] font-mono text-[8px] shadow-[2px_2px]">
+              1
+            </kbd>
           </Button>
         </div>
       </header>
@@ -338,9 +345,18 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           </p>
         </div>
 
-        <div className="orbit orbit-1" aria-hidden="true" />
-        <div className="orbit orbit-2" aria-hidden="true" />
-        <div className="orbit orbit-3" aria-hidden="true" />
+        <div
+          className="orbit orbit-1 absolute top-[52%] left-[59%] -z-1 size-[min(28vw,430px)] -translate-1/2 rounded-full border border-[rgb(242_238_225_/_16%)] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[45vw]"
+          aria-hidden="true"
+        />
+        <div
+          className="orbit orbit-2 absolute top-[52%] left-[59%] -z-1 size-[min(52vw,780px)] -translate-1/2 rounded-full border border-[rgb(242_238_225_/_16%)] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[78vw]"
+          aria-hidden="true"
+        />
+        <div
+          className="orbit orbit-3 absolute top-[52%] left-[59%] -z-1 size-[min(76vw,1120px)] -translate-1/2 rounded-full border border-[rgb(242_238_225_/_16%)] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[115vw]"
+          aria-hidden="true"
+        />
 
         <div
           ref={languageMenu}
@@ -359,9 +375,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-busy={isChangingLanguage}
             onClick={() => setIsLanguageMenuOpen((open) => !open)}
           >
-            <span className="ship-body" aria-hidden="true">
-              <i className="ship-dome" />
-              <i className="ship-beam" />
+            <span
+              className="ship-body relative block h-6 w-[76px] rounded-[50%] border border-[var(--cyan)] bg-[#273839] transition-all duration-250"
+              aria-hidden="true"
+            >
+              <i className="ship-dome absolute bottom-[13px] left-1/2 h-[21px] w-[31px] -translate-x-1/2 rounded-t-[30px] border border-b-0 border-[var(--cyan)] bg-[rgb(90_217_210_/_14%)]" />
+              <i className="ship-beam absolute top-[23px] left-1/2 h-0 w-[42px] -translate-x-1/2 border-x-[12px] border-b-[42px] border-x-transparent border-b-transparent opacity-0 transition-all duration-250" />
             </span>
             <span className="ml-3 flex min-w-32 flex-col gap-1 font-mono text-[8px] tracking-[0.12em]">
               <strong className="font-normal text-[var(--cyan)]">
@@ -369,7 +388,9 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                   ? m.language_ship_processing({}, options)
                   : m.language_ship_ready({}, options)}
               </strong>
-              <i className={`language-progress${isChangingLanguage ? ' active' : ''}`} />
+              <i
+                className={`language-progress block h-0.5 w-full overflow-hidden bg-[rgb(242_238_225_/_14%)]${isChangingLanguage ? ' active' : ''}`}
+              />
             </span>
           </Button>
 
@@ -406,9 +427,16 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                       {m.language_current({}, options)}
                     </small>
                   ) : (
-                    <small className="alien-decoder ml-2" aria-hidden="true">
-                      <span className="alien-glyphs">⌁ ⋔ ⟟ ◬ ∷ ⌬</span>
-                      <span className="alien-decoding">DECODING</span>
+                    <small
+                      className="alien-decoder relative ml-2 h-[18px] w-[76px] overflow-hidden border border-[rgb(90_217_210_/_28%)] text-[var(--cyan)] shadow-[inset_0_0_8px_rgb(90_217_210_/_7%)]"
+                      aria-hidden="true"
+                    >
+                      <span className="alien-glyphs absolute inset-0 grid place-items-center font-mono text-[7px] tracking-[0.05em] whitespace-nowrap">
+                        ⌁ ⋔ ⟟ ◬ ∷ ⌬
+                      </span>
+                      <span className="alien-decoding absolute inset-0 grid place-items-center font-mono text-[7px] tracking-[0.05em] whitespace-nowrap text-[var(--lime)] opacity-0">
+                        DECODING
+                      </span>
                     </small>
                   )}
                 </Button>
@@ -418,7 +446,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         </div>
 
         <Button
-          className={`sun${selectedSignal === 'home' ? ' signal-selected' : ''}`}
+          className={`sun absolute top-[52%] left-[59%] z-3 grid size-[115px] -translate-1/2 place-items-center rounded-full border-0 bg-transparent p-0 transition-transform duration-250 [--planet-size:115px] hover:scale-[1.08] hover:bg-transparent focus-visible:scale-[1.08] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[85px] max-[900px]:[--planet-size:85px] max-[620px]:top-[67%] max-[620px]:size-[72px] max-[620px]:[--planet-size:72px]${selectedSignal === 'home' ? ' signal-selected' : ''}`}
           data-signal="home"
           variant="ghost"
           type="button"
@@ -432,7 +460,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           const copy = getWorldCopy(world.id, locale)
           return (
             <Button
-              className={`world ${worldClasses[world.id as Exclude<WorldId, 'home'>]}${selectedSignal === world.id ? ' signal-selected' : ''}`}
+              className={`world group absolute z-3 h-auto rounded-none border-0 bg-transparent p-0 text-left hover:bg-transparent [@media(pointer:coarse)]:min-h-11 [@media(pointer:coarse)]:min-w-11 ${worldClasses[world.id as Exclude<WorldId, 'home'>]}${selectedSignal === world.id ? ' signal-selected' : ''}`}
               data-signal={world.id}
               variant="ghost"
               type="button"
@@ -441,12 +469,16 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               onClick={() => openSignal(world.id)}
             >
               <Planet worldId={world.id} />
-              <span className="world-label">
-                <small>
+              <span
+                className={`world-label pointer-events-none absolute top-1/2 flex w-[210px] -translate-y-1/2 flex-col gap-1 max-[900px]:hidden ${world.id === 'comms' ? 'right-[calc(100%+23px)] text-right' : 'left-[calc(100%+24px)]'}`}
+              >
+                <small className="font-mono text-[8px] tracking-[0.12em] text-[var(--dim)]">
                   {String(index + 2).padStart(2, '0')} · {copy.label}
                 </small>
-                <strong>{copy.title}</strong>
-                <em>{m.open_transmission({}, options)}</em>
+                <strong className="text-[15px]">{copy.title}</strong>
+                <em className="-translate-x-1.5 font-mono text-[8px] tracking-[0.12em] text-[var(--cyan)] not-italic opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
+                  {m.open_transmission({}, options)}
+                </em>
               </span>
             </Button>
           )
@@ -457,10 +489,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           aria-hidden="true"
         >
           <span>
-            <i /> {m.legend_navigable({}, options)}
+            <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--paper)]" />{' '}
+            {m.legend_navigable({}, options)}
           </span>
           <span>
-            <i className="live" /> {m.legend_live({}, options)}
+            <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--lime)]" />{' '}
+            {m.legend_live({}, options)}
           </span>
           <small className="border-l border-[#3b4140] pl-6">{m.legend_hint({}, options)}</small>
         </div>
@@ -473,7 +507,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       </p>
 
       <Button
-        className={`backdrop${selectedSignal ? ' visible' : ''}`}
+        className={`backdrop fixed inset-0 z-20 h-auto rounded-none border-0 bg-[rgb(2_5_6_/_76%)] transition-opacity duration-[240ms] hover:bg-[rgb(2_5_6_/_76%)] ${selectedSignal ? 'visible pointer-events-auto opacity-100' : 'invisible pointer-events-none opacity-0'}`}
         variant="ghost"
         type="button"
         tabIndex={-1}

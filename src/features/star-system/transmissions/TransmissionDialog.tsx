@@ -78,7 +78,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
   return (
     <motionElement.aside
       ref={dialogRef}
-      className="transmission open fixed top-[4vh] right-[3vw] bottom-[4vh] z-25 grid w-[min(850px,89vw)] grid-rows-[64px_1fr_58px] overflow-hidden border border-[rgb(242_238_225_/_55%)] bg-[#151b1c] shadow-[0_0_0_7px_rgb(90_217_210_/_6%),-25px_25px_rgb(0_0_0_/_30%)] max-[900px]:w-[94vw] max-[620px]:inset-0 max-[620px]:h-svh max-[620px]:w-screen max-[620px]:grid-rows-[58px_1fr_58px] max-[620px]:border-0"
+      className="transmission open fixed top-[4vh] right-[3vw] bottom-[4vh] z-25 grid w-[min(850px,89vw)] grid-rows-[64px_1fr_58px] overflow-hidden border border-[rgb(242_238_225_/_55%)] bg-[#151b1c] shadow-[0_0_0_7px_rgb(90_217_210_/_6%),-25px_25px_rgb(0_0_0_/_30%)] [backface-visibility:hidden] [contain:layout_paint] [will-change:transform,opacity] max-[900px]:w-[94vw] max-[620px]:inset-0 max-[620px]:h-svh max-[620px]:w-screen max-[620px]:grid-rows-[58px_1fr_58px] max-[620px]:border-0"
       role="dialog"
       aria-modal="true"
       aria-labelledby="transmission-title"
@@ -109,7 +109,10 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           onClick={onClose}
           aria-label={m.close_transmission({}, options)}
         >
-          {m.disconnect({}, options)} <kbd>ESC</kbd>
+          {m.disconnect({}, options)}{' '}
+          <kbd className="ml-[9px] border p-[4px_7px] font-mono text-[8px] shadow-[2px_2px]">
+            ESC
+          </kbd>
         </Button>
       </header>
 
@@ -121,7 +124,9 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
           aria-hidden="true"
         >
-          <div className={`signal-planet signal-planet-${signal}`}>
+          <div
+            className={`signal-planet signal-planet-${signal} grid h-[190px] place-items-center bg-[radial-gradient(circle,rgb(90_217_210_/_12%),transparent_65%)] max-[620px]:h-[95px]`}
+          >
             <Planet worldId={signal} />
           </div>
           <div className="my-2 mt-[22px] overflow-hidden font-mono text-[22px] tracking-[-4px] whitespace-nowrap text-[var(--cyan)] max-[620px]:m-0 max-[620px]:text-lg">

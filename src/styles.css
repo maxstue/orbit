@@ -63,12 +63,7 @@
   }
 }
 
-/* Scene graphics stay in CSS; layout, typography and responsive UI use Tailwind. */
-.stars {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
+/* Only theme state, generated artwork, pseudo-elements and keyframes stay in CSS. */
 .stars-a {
   background-image:
     radial-gradient(circle at 10% 20%, #fff 0 1px, transparent 1.4px),
@@ -80,33 +75,12 @@
     277px 251px;
 }
 .stars-b {
-  opacity: 0.4;
   background-image:
     radial-gradient(circle at 55% 33%, var(--cyan) 0 1px, transparent 1.6px),
     radial-gradient(circle at 20% 80%, var(--coral) 0 1px, transparent 1.6px);
   background-size:
     263px 229px,
     331px 283px;
-}
-a span {
-  color: var(--coral);
-}
-kbd {
-  margin-left: 9px;
-  padding: 4px 7px;
-  border: 1px solid;
-  font: 8px monospace;
-  box-shadow: 2px 2px;
-}
-.theme-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-.theme-switch svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 1.6;
 }
 .theme-menu::before {
   content: '';
@@ -159,15 +133,6 @@ kbd {
   border-color: rgb(23 32 34 / 34%);
 }
 
-.orbit {
-  position: absolute;
-  z-index: -1;
-  top: 52%;
-  left: 59%;
-  border: 1px solid rgb(242 238 225 / 16%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
 .orbit::after {
   content: '';
   position: absolute;
@@ -176,52 +141,10 @@ kbd {
   border-radius: 50%;
   transform: rotate(34deg);
 }
-.orbit-1 {
-  width: min(28vw, 430px);
-  height: min(28vw, 430px);
-}
-.orbit-2 {
-  width: min(52vw, 780px);
-  height: min(52vw, 780px);
-}
-.orbit-3 {
-  width: min(76vw, 1120px);
-  height: min(76vw, 1120px);
-}
-
-.sun {
-  --planet-size: 115px;
-  position: absolute;
-  z-index: 3;
-  top: 52%;
-  left: 59%;
-  display: grid;
-  width: 115px;
-  height: 115px;
-  padding: 0;
-  place-items: center;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  transform: translate(-50%, -50%);
-  transition: 0.25s;
-}
-.sun:hover,
-.sun:focus-visible {
-  background: transparent;
-  transform: translate(-50%, -50%) scale(1.08);
-}
 .planet.planet-home {
-  display: grid;
-  width: var(--planet-size, 115px);
-  height: var(--planet-size, 115px);
-  place-items: center;
-  overflow: visible;
-  border: 1px solid rgb(255 226 167 / 88%);
   background:
     radial-gradient(circle, rgb(255 241 162 / 34%) 0 12%, transparent 48%),
     radial-gradient(circle, #ffc35a 0 22%, #ff9148 52%, #ed6240 77%, #ca3d3d 100%);
-  color: var(--space);
   box-shadow:
     inset 0 0 17px rgb(255 237 145 / 22%),
     0 0 0 10px rgb(255 129 75 / 7%),
@@ -229,28 +152,12 @@ kbd {
     0 0 58px rgb(255 101 80 / 32%);
 }
 .planet-home .planet-monogram {
-  position: relative;
-  z-index: 2;
-  color: var(--space);
-  font: 900 3.65rem/1 Arial;
-  opacity: 0.88;
-  transform: rotate(-7deg);
+  font-family: Arial, Helvetica, sans-serif;
 }
 .planet-home .planet-marker {
-  position: absolute;
-  z-index: 3;
-  top: -5px;
-  right: -7px;
-  left: auto;
-  width: 11px;
-  height: 11px;
-  border: 2px solid var(--paper);
-  border-radius: 50%;
-  background: var(--lime);
   box-shadow:
     0 0 0 3px var(--space),
     0 0 12px rgb(220 239 104 / 42%);
-  transform: none;
 }
 .planet.planet-home::before {
   z-index: 1;
@@ -277,33 +184,10 @@ kbd {
   transform: rotate(-8deg);
 }
 
-.world {
-  position: absolute;
-  z-index: 3;
-  height: auto;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  text-align: left;
-}
-@media (pointer: coarse) {
-  .world {
-    min-width: 44px;
-    min-height: 44px;
-  }
-}
-.world:hover {
-  background: transparent;
-}
 .planet {
-  position: relative;
-  display: block;
-  border-radius: 50%;
   box-shadow:
     inset -13px -11px rgb(0 0 0 / 18%),
     0 0 0 8px rgb(242 238 225 / 2.4%);
-  transition: 0.28s;
 }
 .planet::before,
 .planet::after {
@@ -347,83 +231,17 @@ kbd {
     0 0 0 13px rgb(220 239 104 / 8%),
     0 0 50px rgb(220 239 104 / 24%);
 }
-.planet-details {
-  position: absolute;
-  inset: -18px;
-  border: 1px dashed rgb(242 238 225 / 22%);
-  border-radius: 50%;
-  pointer-events: none;
-}
 .planet-details b {
-  position: absolute;
-  top: 10%;
-  right: 5%;
-  display: block;
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--paper);
-  border-radius: 50%;
-  background: var(--space);
   box-shadow: 0 0 8px rgb(242 238 225 / 24%);
 }
 .planet-details b + b {
-  top: auto;
-  right: auto;
-  bottom: 4%;
-  left: 9%;
-  width: 5px;
-  height: 5px;
-  background: var(--coral);
-}
-.planet-current .planet-details {
-  inset: -13px;
-}
-.planet-comms .planet-details {
-  inset: -11px;
+  box-shadow: 0 0 8px rgb(255 101 80 / 18%);
 }
 .planet-comms .planet-details b {
   width: 5px;
   height: 5px;
   border-color: var(--space);
   background: var(--cyan);
-}
-.world-label {
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 24px);
-  display: flex;
-  width: 210px;
-  flex-direction: column;
-  gap: 4px;
-  pointer-events: none;
-  transform: translateY(-50%);
-}
-.world-label small,
-.world-label em {
-  font: 8px monospace;
-  letter-spacing: 0.12em;
-}
-.world-label small {
-  color: var(--dim);
-}
-.world-label strong {
-  font-size: 15px;
-}
-.world-label em {
-  color: var(--cyan);
-  font-style: normal;
-  opacity: 0;
-  transform: translateX(-6px);
-  transition: 0.2s;
-}
-.world:hover .world-label em,
-.world:focus-visible .world-label em {
-  opacity: 1;
-  transform: none;
-}
-.world-now {
-  top: 52%;
-  left: 31%;
 }
 .planet-current {
   width: 64px;
@@ -445,10 +263,6 @@ kbd {
   border-color: rgb(242 238 225 / 18%);
   box-shadow: inset -8px -6px rgb(12 16 17 / 9%);
 }
-.world-work {
-  top: 14%;
-  left: 59%;
-}
 .planet-workbench {
   width: 84px;
   height: 84px;
@@ -463,10 +277,6 @@ kbd {
   inset: 5%;
   border-color: rgb(242 238 225 / 20%);
   box-shadow: inset -11px -8px rgb(12 16 17 / 8%);
-}
-.world-quests {
-  top: 43%;
-  right: 12%;
 }
 .planet-side-quests {
   width: 100px;
@@ -491,10 +301,6 @@ kbd {
   border-color: rgb(242 238 225 / 16%);
   box-shadow: inset -13px -10px rgb(12 16 17 / 8%);
 }
-.world-comms {
-  bottom: 7%;
-  left: 54%;
-}
 .planet-comms {
   width: 52px;
   height: 52px;
@@ -517,36 +323,10 @@ kbd {
   border-color: rgb(242 238 225 / 20%);
   box-shadow: inset -7px -6px rgb(12 16 17 / 10%);
 }
-.world-comms .world-label {
-  right: calc(100% + 23px);
-  left: auto;
-  text-align: right;
-}
-
 .ship-body {
-  position: relative;
-  display: block;
-  width: 76px;
-  height: 24px;
-  border: 1px solid var(--cyan);
-  border-radius: 50%;
-  background: #273839;
   box-shadow:
     0 0 0 6px rgb(90 217 210 / 5%),
     0 0 25px rgb(90 217 210 / 18%);
-  transition: 0.25s;
-}
-.ship-dome {
-  position: absolute;
-  bottom: 13px;
-  left: 50%;
-  width: 31px;
-  height: 21px;
-  border: 1px solid var(--cyan);
-  border-bottom: 0;
-  border-radius: 30px 30px 0 0;
-  background: rgb(90 217 210 / 14%);
-  transform: translateX(-50%);
 }
 .ship-dome::after {
   content: '';
@@ -558,19 +338,6 @@ kbd {
   border-radius: 50%;
   background: var(--lime);
   box-shadow: 9px 2px 0 var(--coral);
-}
-.ship-beam {
-  position: absolute;
-  top: 23px;
-  left: 50%;
-  width: 42px;
-  height: 0;
-  border-right: 12px solid transparent;
-  border-bottom: 42px solid rgb(90 217 210 / 0%);
-  border-left: 12px solid transparent;
-  opacity: 0;
-  transform: translateX(-50%);
-  transition: 0.25s;
 }
 .language-ship:hover .ship-body {
   transform: translateY(-3px) rotate(-2deg);
@@ -584,13 +351,6 @@ kbd {
 .language-ship[aria-busy='true'] .ship-beam {
   border-bottom-color: rgb(90 217 210 / 22%);
   opacity: 1;
-}
-.language-progress {
-  display: block;
-  width: 100%;
-  height: 2px;
-  overflow: hidden;
-  background: rgb(242 238 225 / 14%);
 }
 .language-progress::after {
   content: '';
@@ -613,24 +373,6 @@ kbd {
   border-left: 1px solid rgb(242 238 225 / 45%);
   background: #151b1c;
   transform: translateX(-50%) rotate(45deg);
-}
-.alien-decoder {
-  position: relative;
-  width: 76px;
-  height: 18px;
-  overflow: hidden;
-  border: 1px solid rgb(90 217 210 / 28%);
-  color: var(--cyan);
-  box-shadow: inset 0 0 8px rgb(90 217 210 / 7%);
-}
-.alien-decoder span {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font: 7px monospace;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
 }
 .alien-glyphs {
   animation: glyph-fade 4.2s ease-in-out infinite;
@@ -674,57 +416,12 @@ kbd {
   }
 }
 
-[aria-hidden='true'] > span > i {
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 7px;
-  border-radius: 50%;
-  background: var(--paper);
-}
-[aria-hidden='true'] > span > i.live {
-  background: var(--lime);
-}
-.backdrop {
-  position: fixed;
-  z-index: 20;
-  inset: 0;
-  visibility: hidden;
-  height: auto;
-  border: 0;
-  border-radius: 0;
-  background: rgb(2 5 6 / 76%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.24s ease-out;
-}
-.backdrop:hover {
-  background: rgb(2 5 6 / 76%);
-}
-.backdrop.visible {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-}
 .transmission::before {
   content: '';
   position: absolute;
   inset: 9px;
   border: 1px solid rgb(90 217 210 / 15%);
   pointer-events: none;
-}
-.transmission {
-  contain: layout paint;
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-.signal-planet {
-  display: grid;
-  height: 190px;
-  place-items: center;
-  background: radial-gradient(circle, rgb(90 217 210 / 12%), transparent 65%);
 }
 .signal-planet .planet {
   transition: none;
@@ -745,136 +442,18 @@ kbd {
   transform: scale(2.02);
 }
 
-.protocol-error {
-  display: grid;
-  min-height: 100dvh;
-  place-items: center;
-  padding: 1.5rem;
-  background: radial-gradient(circle at 50% 30%, #1b2525, var(--space) 68%);
-}
-.protocol-error-card {
-  width: min(680px, 100%);
-  padding: clamp(2rem, 7vw, 5rem);
-  border: 1px solid var(--line);
-}
-.protocol-error-card h1 {
-  margin: 1.2rem 0;
-  font-size: clamp(3rem, 9vw, 6.5rem);
-  line-height: 0.88;
-  letter-spacing: -0.07em;
-}
-.protocol-error-card > p,
-.protocol-error-card a {
-  color: #a7adab;
-}
-.protocol-error-card nav {
-  display: flex;
-  gap: 0.75rem;
-  margin: 2rem 0;
-}
-
-@media (width <= 900px) {
-  .orbit {
-    top: 61%;
-    left: 52%;
-  }
-  .orbit-1 {
-    width: 45vw;
-    height: 45vw;
-  }
-  .orbit-2 {
-    width: 78vw;
-    height: 78vw;
-  }
-  .orbit-3 {
-    width: 115vw;
-    height: 115vw;
-  }
-  .sun {
-    --planet-size: 85px;
-    top: 61%;
-    left: 52%;
-    width: 85px;
-    height: 85px;
-  }
-  .sun .planet-monogram {
-    font-size: 3.5rem;
-  }
-  .world-label {
-    display: none;
-  }
-  .world-now {
-    top: 55%;
-    left: 13%;
-  }
-  .world-work {
-    top: 39%;
-    left: 46%;
-  }
-  .world-quests {
-    top: 58%;
-    right: 4%;
-  }
-  .world-comms {
-    bottom: 7%;
-    left: 44%;
-  }
-}
-
 @media (width <= 620px) {
-  kbd {
-    font-size: 8px;
-  }
-  .orbit,
-  .sun {
-    --planet-size: 72px;
-    top: 67%;
-  }
-  .sun {
-    width: 72px;
-    height: 72px;
-  }
-  .sun .planet-monogram {
-    font-size: 3rem;
-  }
-  .world-now {
-    top: 62%;
-    left: 8%;
-  }
   .world-now .planet {
     width: 50px;
     height: 50px;
-  }
-  .world-now {
-    margin: -3px;
-    padding: 3px;
-  }
-  .world-work {
-    top: 46%;
-    left: 42%;
   }
   .world-work .planet {
     width: 65px;
     height: 65px;
   }
-  .world-quests {
-    top: 64%;
-    right: 2%;
-  }
   .world-quests .planet {
     width: 78px;
     height: 78px;
-  }
-  .world-comms {
-    bottom: 4%;
-    left: 43%;
-  }
-  .world-comms {
-    margin: -3px;
-    padding: 3px;
-  }
-  .signal-planet {
-    height: 95px;
   }
   .signal-planet span {
     width: 68px;
