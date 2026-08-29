@@ -18,3 +18,4 @@ test-results
 coverage
 .nyc_output
 .vitest-attachments/
+__screenshots__/
