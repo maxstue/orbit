@@ -75,9 +75,28 @@
 ::view-transition-old(orbit-planet),
 ::view-transition-new(orbit-planet) {
   z-index: 40;
-  animation-duration: 0.65s;
+  animation-duration: 0.32s;
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   mix-blend-mode: normal;
+}
+
+::view-transition-old(orbit-planet) {
+  animation-name: orbit-planet-source;
+}
+
+::view-transition-new(orbit-planet) {
+  opacity: 0;
+}
+
+@keyframes orbit-planet-source {
+  0% {
+    opacity: 1;
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Only theme state, generated artwork, pseudo-elements and keyframes stay in CSS. */

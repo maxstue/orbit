@@ -62,7 +62,10 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const focusTimer = useRef<number | undefined>(undefined)
   const previouslySelectedSignal = useRef<WorldId | undefined>(selectedSignal)
   const hasLoadedTheme = useRef(false)
+  const viewTransitionTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
   function openSignal(signal: WorldId) {
+    clearTimeout(viewTransitionTimer.current)
     flushSync(() => setTransitionSignal(signal))
     void navigate({
       to: '/$locale/$signal',
@@ -70,10 +73,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       resetScroll: false,
       viewTransition: true,
     })
+    viewTransitionTimer.current = setTimeout(() => setTransitionSignal(undefined), 450)
   }
 
   function closeTransmission() {
     if (selectedSignal) {
+      clearTimeout(viewTransitionTimer.current)
       flushSync(() => setTransitionSignal(selectedSignal))
     }
     void navigate({
@@ -82,6 +87,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       resetScroll: false,
       viewTransition: true,
     })
+    viewTransitionTimer.current = setTimeout(() => setTransitionSignal(undefined), 450)
   }
 
   function closeLanguageMenu({ restoreFocus = false } = {}) {
@@ -116,7 +122,13 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
     }, 950)
   }
 
-  useEffect(() => () => clearTimeout(languageTimer.current), [])
+  useEffect(
+    () => () => {
+      clearTimeout(languageTimer.current)
+      clearTimeout(viewTransitionTimer.current)
+    },
+    [],
+  )
 
   useEffect(() => {
     const closingSignal = previouslySelectedSignal.current

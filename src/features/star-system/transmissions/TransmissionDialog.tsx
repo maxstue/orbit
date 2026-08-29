@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { worlds, type Locale, type WorldId } from '../data/worlds'
 import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
@@ -87,7 +87,7 @@ export function TransmissionDialog({
       ? { label: 'SIGNAL WIRD SYNCHRONISIERT', phase: 'TRÄGERWELLE WIRD DEKODIERT' }
       : { label: 'ACQUIRING SIGNAL', phase: 'DECODING CARRIER WAVE' }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setIsTuning(true)
     setTuningFrame(0)
     const timer = window.setTimeout(() => setIsTuning(false), reduceMotion ? 150 : 800)
