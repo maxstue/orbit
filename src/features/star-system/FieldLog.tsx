@@ -264,7 +264,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
           initial={reduceMotion ? false : { opacity: 0, y: -10, filter: 'blur(4px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: reduceMotion ? 0 : 0.58, delay: reduceMotion ? 0 : 0.62 }}
+          transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : 0.72 }}
         >
           <LocalizedLink
             locale={locale}
@@ -363,7 +363,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]"
             initial={reduceMotion ? false : { opacity: 0, x: -12, filter: 'blur(4px)' }}
             animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-            transition={{ duration: reduceMotion ? 0 : 0.62, delay: reduceMotion ? 0 : 0.7 }}
+            transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : 0.75 }}
           >
             <span className="font-mono text-[9px] font-bold tracking-[0.15em] text-[var(--dim)]">
               {m.field_log({}, options)}
@@ -397,7 +397,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             className="absolute top-[27%] right-[3vw] z-4 max-[900px]:top-[31%] max-[900px]:right-[4vw] max-[620px]:top-[36%]"
             initial={reduceMotion ? false : { opacity: 0, scale: 0.9, filter: 'blur(3px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: reduceMotion ? 0 : 0.58, delay: reduceMotion ? 0 : 0.8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.55, delay: reduceMotion ? 0 : 0.8 }}
           >
             <Button
               ref={languageMenuTrigger}
@@ -540,8 +540,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                           }
                           animate={{ opacity: 1, x: 0 }}
                           transition={{
-                            duration: reduceMotion ? 0 : 0.42,
-                            delay: reduceMotion ? 0 : 0.76 + index * 0.055,
+                            duration: reduceMotion ? 0 : 0.45,
+                            delay: reduceMotion ? 0 : 0.76 + index * 0.03,
                           }}
                         >
                           <small className="font-mono text-[8px] tracking-[0.12em] text-[var(--dim)]">
@@ -565,7 +565,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-hidden="true"
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: reduceMotion ? 0 : 0.52, delay: reduceMotion ? 0 : 0.96 }}
+            transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.84 }}
           >
             <span>
               <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--paper)]" />{' '}
@@ -610,7 +610,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           className="absolute right-0 bottom-0 left-0 flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden"
           initial={reduceMotion ? false : { opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduceMotion ? 0 : 0.52, delay: reduceMotion ? 0 : 1.02 }}
+          transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.86 }}
         >
           <span>{m.footer_left({}, options)}</span>
           <span>{m.footer_center({}, options)}</span>
