@@ -44,18 +44,15 @@ test('uses number, arrow, and escape keys to request signal navigation', async (
     params: { locale: 'en', signal: 'workbench' },
     resetScroll: false,
     to: '/$locale/$signal',
-    viewTransition: true,
   })
   expect(navigation.navigate).toHaveBeenNthCalledWith(2, {
     params: { locale: 'en', signal: 'side-quests' },
     resetScroll: false,
     to: '/$locale/$signal',
-    viewTransition: true,
   })
   expect(navigation.navigate).toHaveBeenNthCalledWith(3, {
     params: { locale: 'en' },
     resetScroll: false,
     to: '/$locale',
-    viewTransition: true,
   })
 })

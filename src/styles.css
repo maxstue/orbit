@@ -65,12 +65,6 @@
   }
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
 /* Only theme state, generated artwork, pseudo-elements and keyframes stay in CSS. */
 .stars-a {
   background-image:

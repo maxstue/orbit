@@ -65,7 +65,6 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       to: '/$locale/$signal',
       params: { locale, signal },
       resetScroll: false,
-      viewTransition: true,
     })
   }
 
@@ -74,7 +73,6 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       to: '/$locale',
       params: { locale },
       resetScroll: false,
-      viewTransition: true,
     })
   }
 
@@ -346,9 +344,15 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           </div>
         </header>
 
-        <section
+        <motionElement.section
           className="relative isolate mx-auto h-[calc(100svh-76px)] w-full max-w-[1600px] max-[620px]:h-[calc(100svh-64px)]"
           aria-label={m.galaxy_label({}, options)}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.68, filter: 'blur(10px)', y: 18 }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 }}
+          transition={{
+            duration: reduceMotion ? 0 : 1.35,
+            ease: [0.16, 1, 0.3, 1],
+          }}
         >
           <div className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]">
             <span className="font-mono text-[9px] font-bold tracking-[0.15em] text-[var(--dim)]">
@@ -497,11 +501,13 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               >
                 <motionElement.div
                   className="absolute inset-0"
+                  initial={{ rotate: orbit.startAngle }}
                   animate={{ rotate: orbitRotation }}
                   transition={orbitTransition}
                 >
                   <div className="pointer-events-auto absolute top-1/2 left-full -translate-1/2">
                     <motionElement.div
+                      initial={{ rotate: -orbit.startAngle }}
                       animate={{ rotate: planetRotation }}
                       transition={orbitTransition}
                     >
@@ -547,7 +553,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             </span>
             <small className="border-l border-[#3b4140] pl-6">{m.legend_hint({}, options)}</small>
           </div>
-        </section>
+        </motionElement.section>
 
         <p className="sr-only" aria-live="polite" aria-atomic="true">
           {selectedSignal
