@@ -15,7 +15,7 @@ import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { Planet } from './Planet'
 import { SpaceDebris } from './SpaceDebris'
-import type { ObjectCursor } from './object-cursor'
+import { objectCursorStyles, type ObjectCursor } from './object-cursor'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
 import {
   createThemeCookie,
@@ -118,11 +118,21 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   useEffect(() => () => clearTimeout(languageTimer.current), [])
 
   useEffect(() => {
-    if (objectCursor) document.documentElement.dataset.orbitCursor = objectCursor
-    else delete document.documentElement.dataset.orbitCursor
+    if (objectCursor) {
+      const cursor = objectCursorStyles[objectCursor]
+      document.documentElement.dataset.orbitCursor = objectCursor
+      document.documentElement.style.cursor = cursor
+      document.body.style.cursor = cursor
+    } else {
+      delete document.documentElement.dataset.orbitCursor
+      document.documentElement.style.removeProperty('cursor')
+      document.body.style.removeProperty('cursor')
+    }
 
     return () => {
       delete document.documentElement.dataset.orbitCursor
+      document.documentElement.style.removeProperty('cursor')
+      document.body.style.removeProperty('cursor')
     }
   }, [objectCursor])
 
