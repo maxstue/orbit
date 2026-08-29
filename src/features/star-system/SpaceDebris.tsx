@@ -69,7 +69,7 @@ export function SpaceDebris() {
       if (state.impactAt >= 0) {
         const progress = Math.min(1, (time - state.impactAt) / 460)
         explosion.style.opacity = String((1 - progress) * 0.95)
-        explosion.style.transform = `translate3d(${state.impactX}px, ${state.impactY}px, 0) scale(${0.35 + progress * 2.5})`
+        explosion.style.transform = `translate3d(${state.impactX}px, ${state.impactY}px, 0) scale(${0.3 + progress * 1.45})`
         if (progress >= 1) state.impactAt = -1
       }
 
@@ -174,7 +174,7 @@ export function SpaceDebris() {
             }}
             className="absolute top-0 left-0 block opacity-0 will-change-transform"
           >
-            <i className="relative block size-5 -translate-1/2 rounded-full border border-[#ffbd68] bg-[radial-gradient(circle,#fff4bd_0_8%,#ff9a50_28%,#ff4f2f_52%,transparent_72%)] shadow-[0_0_10px_#ffb15c,0_0_24px_#ff5b35,0_0_42px_rgb(255_79_47_/_65%)] before:absolute before:top-1/2 before:left-1/2 before:h-px before:w-10 before:-translate-1/2 before:bg-[linear-gradient(90deg,transparent,#ffbd68,transparent)] after:absolute after:top-1/2 after:left-1/2 after:h-10 after:w-px after:-translate-1/2 after:bg-[linear-gradient(transparent,#ffbd68,transparent)]" />
+            <i className="relative block size-3 -translate-1/2 rounded-full border border-[#ffbd68] bg-[radial-gradient(circle,#fff4bd_0_8%,#ff9a50_28%,#ff4f2f_52%,transparent_72%)] shadow-[0_0_6px_#ffb15c,0_0_14px_#ff5b35,0_0_24px_rgb(255_79_47_/_58%)] before:absolute before:top-1/2 before:left-1/2 before:h-px before:w-6 before:-translate-1/2 before:bg-[linear-gradient(90deg,transparent,#ffbd68,transparent)] after:absolute after:top-1/2 after:left-1/2 after:h-6 after:w-px after:-translate-1/2 after:bg-[linear-gradient(transparent,#ffbd68,transparent)]" />
           </span>
           <span
             ref={(element) => {

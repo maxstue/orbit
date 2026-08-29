@@ -260,7 +260,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         />
         <SpaceDebris />
 
-        <header className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16">
+        <motionElement.header
+          className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
+          initial={reduceMotion ? false : { opacity: 0, y: -10, filter: 'blur(4px)' }}
+          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 1.02 }}
+        >
           <LocalizedLink
             locale={locale}
             className="font-mono text-[21px] font-black no-underline [&>span]:text-[var(--coral)]"
@@ -342,7 +347,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               </kbd>
             </Button>
           </div>
-        </header>
+        </motionElement.header>
 
         <motionElement.section
           className="relative isolate mx-auto h-[calc(100svh-76px)] w-full max-w-[1600px] max-[620px]:h-[calc(100svh-64px)]"
@@ -354,7 +359,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             ease: [0.16, 1, 0.3, 1],
           }}
         >
-          <div className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]">
+          <motionElement.div
+            className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]"
+            initial={reduceMotion ? false : { opacity: 0, x: -12, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+            transition={{ duration: reduceMotion ? 0 : 0.55, delay: reduceMotion ? 0 : 1.08 }}
+          >
             <span className="font-mono text-[9px] font-bold tracking-[0.15em] text-[var(--dim)]">
               {m.field_log({}, options)}
             </span>
@@ -367,7 +377,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             <p className="max-w-[350px] font-mono text-xs leading-[1.55] text-[#a7adab] max-[620px]:max-w-[78vw]">
               {m.field_intro({}, options)}
             </p>
-          </div>
+          </motionElement.div>
 
           <div
             className="orbit orbit-1 absolute top-[52%] left-[59%] -z-1 size-[min(28vw,430px)] -translate-1/2 rounded-full border border-[rgb(242_238_225_/_16%)] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[45vw]"
@@ -382,9 +392,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-hidden="true"
           />
 
-          <div
+          <motionElement.div
             ref={languageMenu}
             className="absolute top-[27%] right-[3vw] z-4 max-[900px]:top-[31%] max-[900px]:right-[4vw] max-[620px]:top-[36%]"
+            initial={reduceMotion ? false : { opacity: 0, scale: 0.9, filter: 'blur(3px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 1.18 }}
           >
             <Button
               ref={languageMenuTrigger}
@@ -467,7 +480,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                 ))}
               </div>
             )}
-          </div>
+          </motionElement.div>
 
           <Button
             className={`sun absolute top-[52%] left-[59%] z-3 grid size-[115px] -translate-1/2 place-items-center rounded-full border-0 bg-transparent p-0 transition-transform duration-250 [--planet-size:115px] hover:scale-[1.08] hover:bg-transparent focus-visible:scale-[1.08] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[85px] max-[900px]:[--planet-size:85px] max-[620px]:top-[67%] max-[620px]:size-[72px] max-[620px]:[--planet-size:72px]${selectedSignal === 'home' ? ' signal-selected' : ''}`}
@@ -520,8 +533,16 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                         onClick={() => openSignal(world.id)}
                       >
                         <Planet worldId={world.id} />
-                        <span
+                        <motionElement.span
                           className={`world-label pointer-events-none absolute top-1/2 flex w-[210px] -translate-y-1/2 flex-col gap-1 max-[900px]:hidden ${world.id === 'comms' ? 'right-[calc(100%+23px)] text-right' : 'left-[calc(100%+24px)]'}`}
+                          initial={
+                            reduceMotion ? false : { opacity: 0, x: world.id === 'comms' ? 8 : -8 }
+                          }
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            duration: reduceMotion ? 0 : 0.42,
+                            delay: reduceMotion ? 0 : 1.14 + index * 0.06,
+                          }}
                         >
                           <small className="font-mono text-[8px] tracking-[0.12em] text-[var(--dim)]">
                             {String(index + 2).padStart(2, '0')} · {copy.label}
@@ -530,7 +551,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                           <em className="-translate-x-1.5 font-mono text-[8px] tracking-[0.12em] text-[var(--cyan)] not-italic opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
                             {m.open_transmission({}, options)}
                           </em>
-                        </span>
+                        </motionElement.span>
                       </Button>
                     </motionElement.div>
                   </div>
@@ -539,9 +560,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             )
           })}
 
-          <div
+          <motionElement.div
             className="absolute bottom-[4vh] left-[4vw] flex items-center gap-6 font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] max-[900px]:hidden"
             aria-hidden="true"
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 1.36 }}
           >
             <span>
               <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--paper)]" />{' '}
@@ -552,7 +576,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               {m.legend_live({}, options)}
             </span>
             <small className="border-l border-[#3b4140] pl-6">{m.legend_hint({}, options)}</small>
-          </div>
+          </motionElement.div>
         </motionElement.section>
 
         <p className="sr-only" aria-live="polite" aria-atomic="true">
@@ -582,11 +606,16 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           )}
         </AnimatePresence>
 
-        <footer className="absolute right-0 bottom-0 left-0 flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden">
+        <motionElement.footer
+          className="absolute right-0 bottom-0 left-0 flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden"
+          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: reduceMotion ? 0 : 0.45, delay: reduceMotion ? 0 : 1.42 }}
+        >
           <span>{m.footer_left({}, options)}</span>
           <span>{m.footer_center({}, options)}</span>
           <span>{m.footer_right({}, options)}</span>
-        </footer>
+        </motionElement.footer>
       </main>
     </LazyMotion>
   )
