@@ -1,6 +1,8 @@
 import { useRef } from 'react'
 import { useAnimationFrame, useReducedMotion } from 'motion/react'
 
+import type { ObjectCursor } from './object-cursor'
+
 const debris = [
   { delay: 4, kind: 'meteor', repeatDelay: 19, reverse: false, slope: 0.27, speed: 540, top: 8 },
   {
@@ -30,7 +32,11 @@ type DebrisState = {
 const interactionDistance = 90
 const gravityDistance = 180
 
-export function SpaceDebris() {
+export function SpaceDebris({
+  onObjectCursorChange,
+}: {
+  onObjectCursorChange?: (cursor: ObjectCursor) => void
+}) {
   const reduceMotion = useReducedMotion()
   const particleRefs = useRef<Array<HTMLSpanElement | null>>([])
   const bodyRefs = useRef<Array<HTMLElement | null>>([])
@@ -180,7 +186,12 @@ export function SpaceDebris() {
             ref={(element) => {
               particleRefs.current[index] = element
             }}
-            className="absolute top-0 left-0 block opacity-0 transition-opacity duration-150"
+            className="pointer-events-auto absolute top-0 left-0 block cursor-crosshair opacity-0 transition-opacity duration-150"
+            data-object-cursor={item.kind}
+            onClick={(event) => {
+              event.stopPropagation()
+              onObjectCursorChange?.(item.kind)
+            }}
           >
             {item.kind === 'meteor' && (
               <i

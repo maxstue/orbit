@@ -15,6 +15,7 @@ import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { Planet } from './Planet'
 import { SpaceDebris } from './SpaceDebris'
+import type { ObjectCursor } from './object-cursor'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
 import {
   createThemeCookie,
@@ -52,6 +53,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
   const [themePreference, setThemePreference] = useState<ThemePreference>('system')
+  const [objectCursor, setObjectCursor] = useState<ObjectCursor>()
   const languageMenu = useRef<HTMLDivElement>(null)
   const themeMenu = useRef<HTMLDivElement>(null)
   const languageMenuTrigger = useRef<HTMLButtonElement>(null)
@@ -60,6 +62,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const focusTimer = useRef<number | undefined>(undefined)
   const previouslySelectedSignal = useRef<WorldId | undefined>(selectedSignal)
   const hasLoadedTheme = useRef(false)
+
+  function toggleObjectCursor(cursor: ObjectCursor) {
+    setObjectCursor((activeCursor) => (activeCursor === cursor ? undefined : cursor))
+  }
+
   function openSignal(signal: WorldId) {
     void navigate({
       to: '/$locale/$signal',
@@ -109,6 +116,15 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   }
 
   useEffect(() => () => clearTimeout(languageTimer.current), [])
+
+  useEffect(() => {
+    if (objectCursor) document.documentElement.dataset.orbitCursor = objectCursor
+    else delete document.documentElement.dataset.orbitCursor
+
+    return () => {
+      delete document.documentElement.dataset.orbitCursor
+    }
+  }, [objectCursor])
 
   useEffect(() => {
     const closingSignal = previouslySelectedSignal.current
@@ -208,6 +224,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
       {
         hotkey: 'Escape',
         callback: () => {
+          if (objectCursor) {
+            setObjectCursor(undefined)
+            return
+          }
+
           if (isLanguageMenuOpen) {
             closeLanguageMenu({ restoreFocus: true })
             return
@@ -221,7 +242,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           if (selectedSignal) closeTransmission()
         },
         options: {
-          enabled: isLanguageMenuOpen || isThemeMenuOpen || Boolean(selectedSignal),
+          enabled:
+            isLanguageMenuOpen ||
+            isThemeMenuOpen ||
+            Boolean(selectedSignal) ||
+            Boolean(objectCursor),
         },
       },
       ...worlds.map((world, index): UseHotkeyDefinition => ({
@@ -258,7 +283,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           className="stars-b pointer-events-none absolute inset-0 opacity-40"
           aria-hidden="true"
         />
-        <SpaceDebris />
+        <SpaceDebris onObjectCursorChange={toggleObjectCursor} />
 
         <motionElement.header
           className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
@@ -502,7 +527,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-label={m.home_signal_label({}, options)}
             onClick={() => openSignal('home')}
           >
-            <Planet worldId="home" />
+            <Planet worldId="home" onObjectCursorChange={toggleObjectCursor} />
           </Button>
 
           {worlds.slice(1).map((world, index) => {
@@ -544,7 +569,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                         aria-label={`${copy.label}: ${copy.description}`}
                         onClick={() => openSignal(world.id)}
                       >
-                        <Planet worldId={world.id} />
+                        <Planet worldId={world.id} onObjectCursorChange={toggleObjectCursor} />
                         <motionElement.span
                           className={`world-label pointer-events-none absolute top-1/2 flex w-[210px] -translate-y-1/2 flex-col gap-1 max-[900px]:hidden ${world.id === 'comms' ? 'right-[calc(100%+23px)] text-right' : 'left-[calc(100%+24px)]'}`}
                           initial={

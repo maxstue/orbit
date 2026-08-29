@@ -16,6 +16,7 @@ beforeEach(() => {
   navigation.navigate.mockReset()
   document.cookie = 'orbit-theme=; Max-Age=0; Path=/'
   delete document.documentElement.dataset.theme
+  delete document.documentElement.dataset.orbitCursor
 })
 
 test('offers theme and language controls through browser locators', async () => {
@@ -55,4 +56,19 @@ test('uses number, arrow, and escape keys to request signal navigation', async (
     resetScroll: false,
     to: '/$locale',
   })
+})
+
+test('turns the cursor into a clicked satellite until escape', async () => {
+  await render(<FieldLog locale="en" />)
+
+  const satellite = document.querySelector<HTMLElement>('[data-object-cursor="satellite"]')
+  expect(satellite).not.toBeNull()
+  satellite?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+
+  expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
+  expect(navigation.navigate).not.toHaveBeenCalled()
+
+  await userEvent.keyboard('{Escape}')
+  expect(document.documentElement.dataset.orbitCursor).toBeUndefined()
 })

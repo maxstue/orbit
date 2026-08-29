@@ -2,8 +2,10 @@ import { useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 
 import type { WorldId } from './data/worlds'
+import type { ObjectCursor } from './object-cursor'
 
 type PlanetProps = {
+  onObjectCursorChange?: (cursor: ObjectCursor) => void
   worldId: WorldId
 }
 
@@ -60,7 +62,13 @@ const companionsByWorld: Partial<Record<WorldId, Companion[]>> = {
   ],
 }
 
-function OrbitalCompanions({ worldId }: { worldId: WorldId }) {
+function OrbitalCompanions({
+  onObjectCursorChange,
+  worldId,
+}: {
+  onObjectCursorChange?: (cursor: ObjectCursor) => void
+  worldId: WorldId
+}) {
   const reduceMotion = useReducedMotion()
   const companions = companionsByWorld[worldId] ?? []
 
@@ -85,7 +93,15 @@ function OrbitalCompanions({ worldId }: { worldId: WorldId }) {
         >
           <span className="absolute top-1/2 -right-px -translate-y-1/2">
             {companion.kind === 'satellite' ? (
-              <span className="relative block h-[7px] w-3 rounded-[2px] border border-[var(--paper)] bg-[#263536] shadow-[0_0_9px_rgb(90_217_210_/_35%)] before:absolute before:top-1/2 before:right-full before:h-1 before:w-2 before:-translate-y-1/2 before:border before:border-[var(--cyan)] before:bg-[rgb(90_217_210_/_28%)] after:absolute after:top-1/2 after:left-full after:h-1 after:w-2 after:-translate-y-1/2 after:border after:border-[var(--cyan)] after:bg-[rgb(90_217_210_/_28%)]" />
+              <span
+                className="pointer-events-auto relative block h-[7px] w-3 cursor-crosshair rounded-[2px] border border-[var(--paper)] bg-[#263536] shadow-[0_0_9px_rgb(90_217_210_/_35%)] before:absolute before:top-1/2 before:right-full before:h-1 before:w-2 before:-translate-y-1/2 before:border before:border-[var(--cyan)] before:bg-[rgb(90_217_210_/_28%)] after:absolute after:top-1/2 after:left-full after:h-1 after:w-2 after:-translate-y-1/2 after:border after:border-[var(--cyan)] after:bg-[rgb(90_217_210_/_28%)]"
+                data-object-cursor="satellite"
+                onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  onObjectCursorChange?.('satellite')
+                }}
+              />
             ) : (
               <span
                 className={`block rounded-full border border-[rgb(242_238_225_/_65%)] shadow-[inset_-2px_-2px_rgb(0_0_0_/_20%),0_0_8px_rgb(242_238_225_/_18%)] ${companion.visualClassName}`}
@@ -98,7 +114,7 @@ function OrbitalCompanions({ worldId }: { worldId: WorldId }) {
   })
 }
 
-export function Planet({ worldId }: PlanetProps) {
+export function Planet({ onObjectCursorChange, worldId }: PlanetProps) {
   if (worldId === 'home') {
     return (
       <span
@@ -122,7 +138,7 @@ export function Planet({ worldId }: PlanetProps) {
       <span
         className={`planet-details pointer-events-none absolute rounded-full border border-dashed border-[rgb(242_238_225_/_22%)] ${worldId === 'current' ? '-inset-[13px]' : worldId === 'comms' ? '-inset-[11px]' : '-inset-[18px]'}`}
       />
-      <OrbitalCompanions worldId={worldId} />
+      <OrbitalCompanions worldId={worldId} onObjectCursorChange={onObjectCursorChange} />
     </span>
   )
 }
