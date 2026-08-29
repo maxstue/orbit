@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { worlds, type Locale, type WorldId } from '../data/worlds'
-import { useReducedMotion } from 'motion/react'
+import { AnimatePresence, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { getWorldCopy } from '../i18n/world-copy'
 import { Planet } from '../Planet'
@@ -16,16 +16,82 @@ type TransmissionDialogProps = {
   onSelect: (signal: WorldId) => void
 }
 
+const signalGraphHeights = [42, 78, 55, 92, 48, 84, 36, 68, 57, 88, 45, 73, 38, 82, 62, 94, 51, 76]
+
+function SignalGraph({
+  loading,
+  loadingFrame = 0,
+  reduceMotion,
+}: {
+  loading?: boolean
+  loadingFrame?: number
+  reduceMotion: boolean
+}) {
+  return (
+    <div
+      className={`my-2 mt-[22px] flex h-8 items-end gap-1 overflow-hidden border-y border-[rgb(90_217_210_/_16%)] py-1 transition-opacity max-[620px]:m-0 ${loading ? 'opacity-85' : 'opacity-100'}`}
+      aria-hidden="true"
+    >
+      {signalGraphHeights.map((height, index) => (
+        <motionElement.i
+          className="block w-1 origin-bottom bg-[var(--cyan)] shadow-[0_0_8px_rgb(90_217_210_/_38%)]"
+          style={{
+            height: `${height}%`,
+            transform: loading
+              ? `scaleY(${0.32 + (Math.sin((loadingFrame + index * 1.7) * 0.55) + 1) * 0.29})`
+              : undefined,
+          }}
+          key={index}
+          animate={
+            reduceMotion || loading
+              ? undefined
+              : {
+                  scaleY: [0.18 + (index % 3) * 0.12, 1, 0.32 + (index % 4) * 0.12],
+                  opacity: [0.35, 1, 0.5],
+                }
+          }
+          transition={{
+            delay: index * 0.045,
+            duration: 0.75 + (index % 5) * 0.11,
+            ease: 'easeInOut',
+            repeat: Infinity,
+            repeatType: 'mirror',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
 export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
   const reduceMotion = useReducedMotion()
   const dialogRef = useRef<HTMLElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const [isTuning, setIsTuning] = useState(true)
+  const [tuningFrame, setTuningFrame] = useState(0)
   const transmission = getTransmission(signal, locale)
   const activeIndex = worlds.findIndex((world) => world.id === signal)
   const previous = worlds[(activeIndex - 1 + worlds.length) % worlds.length]
   const next = worlds[(activeIndex + 1) % worlds.length]
   const options = { locale }
   const panelMotion = getTransmissionMotion(reduceMotion)
+  const tuningCopy =
+    locale === 'de'
+      ? { label: 'SIGNAL WIRD SYNCHRONISIERT', phase: 'TRÄGERWELLE WIRD DEKODIERT' }
+      : { label: 'ACQUIRING SIGNAL', phase: 'DECODING CARRIER WAVE' }
+
+  useEffect(() => {
+    setIsTuning(true)
+    setTuningFrame(0)
+    const timer = window.setTimeout(() => setIsTuning(false), reduceMotion ? 250 : 1550)
+    const ticker = reduceMotion
+      ? undefined
+      : window.setInterval(() => setTuningFrame((frame) => Math.min(frame + 1, 14)), 110)
+    return () => {
+      window.clearTimeout(timer)
+      if (ticker !== undefined) window.clearInterval(ticker)
+    }
+  }, [reduceMotion, signal])
 
   useEffect(() => {
     closeButtonRef.current?.focus()
@@ -92,6 +158,107 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         className="pointer-events-none absolute inset-0 z-4 bg-[repeating-linear-gradient(to_bottom,transparent_0_3px,var(--paper)_4px)] opacity-[0.055]"
         aria-hidden="true"
       />
+      <AnimatePresence initial={false}>
+        {isTuning && (
+          <motionElement.div
+            className="pointer-events-none absolute top-16 right-0 bottom-[58px] left-0 z-6 grid grid-cols-[250px_1fr] gap-[45px] overflow-hidden bg-[#151b1c] px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:top-[58px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7"
+            role="status"
+            aria-live="polite"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: reduceMotion ? 1 : [0.72, 1, 0.86, 1] }}
+            exit={{ opacity: 0 }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.58,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            {!reduceMotion && (
+              <motionElement.div
+                className="absolute inset-y-0 z-2 w-[46%] bg-[linear-gradient(90deg,transparent,rgb(90_217_210_/_28%),rgb(242_238_225_/_14%),transparent)] opacity-80 mix-blend-screen blur-sm transition-[left] duration-100 ease-linear"
+                aria-hidden="true"
+                style={{ left: `${-42 + tuningFrame * 11}%` }}
+              />
+            )}
+            <div
+              className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
+              aria-hidden="true"
+            >
+              <div className="grid h-[190px] place-items-center max-[620px]:h-[95px]">
+                <div className="relative grid size-[132px] place-items-center rounded-full border border-dashed border-[rgb(90_217_210_/_32%)] max-[620px]:size-[74px]">
+                  <div
+                    className={`signal-planet signal-planet-${signal} absolute inset-0 z-0 grid place-items-center opacity-25 saturate-50`}
+                  >
+                    <Planet worldId={signal} />
+                  </div>
+                  <div className="absolute inset-[13%] z-1 rounded-full border border-[rgb(90_217_210_/_18%)]" />
+                  <div className="absolute top-1/2 left-1/2 z-1 h-px w-[76%] -translate-1/2 bg-[rgb(90_217_210_/_16%)]" />
+                  <div className="absolute top-1/2 left-1/2 z-1 h-[76%] w-px -translate-1/2 bg-[rgb(90_217_210_/_16%)]" />
+                  <div
+                    className="absolute inset-0 z-2 rounded-full transition-transform duration-100 ease-linear"
+                    style={{ transform: `rotate(${reduceMotion ? 0 : tuningFrame * 12}deg)` }}
+                  >
+                    <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0_82%,rgb(90_217_210_/_24%)_92%,transparent_100%)]" />
+                    <i className="absolute top-0 left-1/2 h-1/2 w-px -translate-x-1/2 bg-[linear-gradient(to_bottom,var(--cyan),transparent)] shadow-[0_0_7px_var(--cyan)]" />
+                    <i className="absolute top-[-3px] left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-[var(--lime)] shadow-[0_0_9px_var(--lime)]" />
+                  </div>
+                </div>
+              </div>
+              <SignalGraph
+                loading
+                loadingFrame={tuningFrame}
+                reduceMotion={Boolean(reduceMotion)}
+              />
+              <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
+                SIGNAL SEARCH // {String(activeIndex + 1).padStart(2, '0')}
+              </small>
+            </div>
+
+            <motionElement.div
+              aria-hidden="true"
+              animate={reduceMotion ? undefined : { opacity: [0.62, 0.9, 0.7, 1] }}
+              transition={{
+                delay: 0.12,
+                duration: 1.2,
+                ease: 'easeInOut',
+                repeat: Infinity,
+                repeatType: 'mirror',
+              }}
+            >
+              <div className="mb-5 h-2 w-28 bg-[rgb(255_101_80_/_34%)]" />
+              <div className="mb-3 h-10 w-[82%] bg-[rgb(242_238_225_/_13%)] max-[620px]:h-7" />
+              <div className="mb-8 h-10 w-[58%] bg-[rgb(242_238_225_/_9%)] max-[620px]:h-7" />
+
+              <div className="space-y-3">
+                <div className="h-2.5 w-full bg-[rgb(199_199_189_/_13%)]" />
+                <div className="h-2.5 w-[92%] bg-[rgb(199_199_189_/_11%)]" />
+                <div className="h-2.5 w-[68%] bg-[rgb(199_199_189_/_9%)]" />
+              </div>
+
+              <div className="mt-[35px] border-t border-[var(--line)]">
+                {[74, 88, 62, 80].map((width, index) => (
+                  <div
+                    className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
+                    key={index}
+                  >
+                    <div className="h-2 w-14 bg-[rgb(140_146_144_/_18%)]" />
+                    <div
+                      className="h-2 bg-[rgb(90_217_210_/_16%)]"
+                      style={{ width: `${width}%` }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-7 border-l-[3px] border-[rgb(255_101_80_/_34%)] py-1 pl-[18px]">
+                <div className="h-2.5 w-[76%] bg-[rgb(242_238_225_/_11%)]" />
+              </div>
+              <p className="mt-6 font-mono text-[7px] tracking-[0.13em] text-[var(--cyan)]">
+                {tuningCopy.label} // {tuningCopy.phase}
+              </p>
+            </motionElement.div>
+          </motionElement.div>
+        )}
+      </AnimatePresence>
       <header className="relative z-5 grid grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[22px] font-mono text-[8px] tracking-[0.12em] max-[620px]:grid-cols-[1fr_auto] max-[620px]:px-[15px]">
         <div>
           <i
@@ -116,28 +283,60 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
         </Button>
       </header>
 
-      <div
+      <motionElement.div
         className="relative z-2 grid grid-cols-[250px_1fr] gap-[45px] overflow-auto px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7"
         tabIndex={0}
+        animate={{
+          opacity: isTuning ? 0 : 1,
+          scale: isTuning && !reduceMotion ? 0.99 : 1,
+          filter: isTuning && !reduceMotion ? 'blur(2px)' : 'blur(0px)',
+        }}
+        transition={{
+          duration: reduceMotion ? 0 : 0.58,
+          ease: [0.22, 1, 0.36, 1],
+        }}
       >
-        <div
+        <motionElement.div
           className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
           aria-hidden="true"
         >
-          <div
+          <motionElement.div
             className={`signal-planet signal-planet-${signal} grid h-[190px] place-items-center bg-[radial-gradient(circle,rgb(90_217_210_/_12%),transparent_65%)] max-[620px]:h-[95px]`}
+            animate={
+              reduceMotion
+                ? undefined
+                : {
+                    y: [0, -3, 0, 2, 0],
+                    rotate: signal === 'home' ? [-1.5, 1.5, -1.5] : [0, 360],
+                  }
+            }
+            transition={{
+              y: { duration: 7, ease: 'easeInOut', repeat: Infinity },
+              rotate: {
+                duration: signal === 'home' ? 9 : 36,
+                ease: signal === 'home' ? 'easeInOut' : 'linear',
+                repeat: Infinity,
+              },
+            }}
           >
             <Planet worldId={signal} />
-          </div>
-          <div className="my-2 mt-[22px] overflow-hidden font-mono text-[22px] tracking-[-4px] whitespace-nowrap text-[var(--cyan)] max-[620px]:m-0 max-[620px]:text-lg">
-            ▂▅▃▇▂▆▁▅▃▇▂▆▁▃▇▅▂▆
-          </div>
+          </motionElement.div>
+          <SignalGraph reduceMotion={Boolean(reduceMotion)} />
           <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
             {m.signal_locked({}, options)}
           </small>
-        </div>
+        </motionElement.div>
 
-        <article>
+        <motionElement.article
+          animate={{
+            y: isTuning && !reduceMotion ? 6 : 0,
+            filter: isTuning && !reduceMotion ? 'blur(1.5px)' : 'blur(0px)',
+          }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.58,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        >
           <p className="font-mono text-[8px] tracking-[0.15em] text-[var(--coral)]">
             {transmission.kicker}
           </p>
@@ -179,8 +378,8 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           <blockquote className="mt-[25px] border-l-[3px] border-[var(--coral)] py-1.5 pl-[18px] font-mono text-sm leading-[1.5] font-bold text-[var(--paper)]">
             {transmission.quote}
           </blockquote>
-        </article>
-      </div>
+        </motionElement.article>
+      </motionElement.div>
 
       <nav
         className="relative z-5 grid grid-cols-[1fr_auto_1fr] items-center border-t border-[var(--line)] px-[22px] max-[620px]:px-3"

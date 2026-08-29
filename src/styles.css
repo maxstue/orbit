@@ -231,18 +231,6 @@
     0 0 0 13px rgb(220 239 104 / 8%),
     0 0 50px rgb(220 239 104 / 24%);
 }
-.planet-details b {
-  box-shadow: 0 0 8px rgb(242 238 225 / 24%);
-}
-.planet-details b + b {
-  box-shadow: 0 0 8px rgb(255 101 80 / 18%);
-}
-.planet-comms .planet-details b {
-  width: 5px;
-  height: 5px;
-  border-color: var(--space);
-  background: var(--cyan);
-}
 .planet-current {
   width: 64px;
   height: 64px;
@@ -266,7 +254,6 @@
 .planet-workbench {
   width: 84px;
   height: 84px;
-  overflow: hidden;
   background-color: #5acdc9;
   background-image:
     radial-gradient(circle at 28% 20%, rgb(242 238 225 / 18%), transparent 34%),
