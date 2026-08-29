@@ -17,3 +17,4 @@ playwright-report
 test-results
 coverage
 .nyc_output
+.vitest-attachments/
