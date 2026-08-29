@@ -8,6 +8,7 @@ import { MonitorCog, MoonStar, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { updateObservabilityContext } from '@/lib/observability/context'
 import { Errors } from '@/lib/observability/errors'
+import { Metrics } from '@/lib/observability/metrics'
 import { m } from '@/paraglide/messages.js'
 
 import { getAdjacentWorld, worlds, type Locale, type WorldId } from './data/worlds'
@@ -64,7 +65,14 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const hasLoadedTheme = useRef(false)
 
   function toggleObjectCursor(cursor: ObjectCursor) {
-    setObjectCursor((activeCursor) => (activeCursor === cursor ? undefined : cursor))
+    if (objectCursor === cursor) {
+      Metrics.captureObjectCursor(cursor, 'deactivated', 'object-click')
+      setObjectCursor(undefined)
+      return
+    }
+
+    Metrics.captureObjectCursor(cursor, objectCursor ? 'switched' : 'activated', 'object-click')
+    setObjectCursor(cursor)
   }
 
   function openSignal(signal: WorldId) {
@@ -235,6 +243,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
         hotkey: 'Escape',
         callback: () => {
           if (objectCursor) {
+            Metrics.captureObjectCursor(objectCursor, 'deactivated', 'escape')
             setObjectCursor(undefined)
             return
           }

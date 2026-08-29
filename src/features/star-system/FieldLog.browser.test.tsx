@@ -4,16 +4,20 @@ import { userEvent } from 'vite-plus/test/browser'
 import { render } from 'vitest-browser-react'
 
 const navigation = vi.hoisted(() => ({ navigate: vi.fn() }))
+const metrics = vi.hoisted(() => ({ captureObjectCursor: vi.fn() }))
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: ReactNode }) => <a href="/en">{children}</a>,
   useNavigate: () => navigation.navigate,
 }))
 
+vi.mock('@/lib/observability/metrics', () => ({ Metrics: metrics }))
+
 import { FieldLog } from './FieldLog'
 
 beforeEach(() => {
   navigation.navigate.mockReset()
+  metrics.captureObjectCursor.mockReset()
   document.cookie = 'orbit-theme=; Max-Age=0; Path=/'
   delete document.documentElement.dataset.theme
   delete document.documentElement.dataset.orbitCursor
@@ -67,11 +71,23 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
   expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
+  expect(metrics.captureObjectCursor).toHaveBeenNthCalledWith(
+    1,
+    'satellite',
+    'activated',
+    'object-click',
+  )
   expect(document.body.style.cursor).toContain('/cursors/satellite.svg')
   expect(getComputedStyle(document.querySelector('h1')!).cursor).toContain('/cursors/satellite.svg')
   expect(navigation.navigate).not.toHaveBeenCalled()
 
   await userEvent.keyboard('{Escape}')
+  expect(metrics.captureObjectCursor).toHaveBeenNthCalledWith(
+    2,
+    'satellite',
+    'deactivated',
+    'escape',
+  )
   expect(document.documentElement.dataset.orbitCursor).toBeUndefined()
   expect(document.body.style.cursor).toBe('')
 })
