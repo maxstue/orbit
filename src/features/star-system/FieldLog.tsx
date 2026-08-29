@@ -265,8 +265,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           initial={reduceMotion ? false : { opacity: 0, y: -10, filter: 'blur(4px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           transition={{
-            duration: reduceMotion ? 0 : 1.15,
-            delay: reduceMotion ? 0 : 0.12,
+            duration: reduceMotion ? 0 : 1.02,
+            delay: reduceMotion ? 0 : 0.26,
             ease: [0.16, 1, 0.3, 1],
           }}
         >
@@ -368,8 +368,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             initial={reduceMotion ? false : { opacity: 0, x: -12, filter: 'blur(4px)' }}
             animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
             transition={{
-              duration: reduceMotion ? 0 : 1.16,
-              delay: reduceMotion ? 0 : 0.14,
+              duration: reduceMotion ? 0 : 1.05,
+              delay: reduceMotion ? 0 : 0.28,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
@@ -406,8 +406,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             initial={reduceMotion ? false : { opacity: 0, scale: 0.9, filter: 'blur(3px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             transition={{
-              duration: reduceMotion ? 0 : 1.12,
-              delay: reduceMotion ? 0 : 0.18,
+              duration: reduceMotion ? 0 : 1,
+              delay: reduceMotion ? 0 : 0.32,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
@@ -552,8 +552,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                           }
                           animate={{ opacity: 1, x: 0 }}
                           transition={{
-                            duration: reduceMotion ? 0 : 1.1,
-                            delay: reduceMotion ? 0 : 0.16 + index * 0.018,
+                            duration: reduceMotion ? 0 : 0.96,
+                            delay: reduceMotion ? 0 : 0.3 + index * 0.02,
                             ease: [0.16, 1, 0.3, 1],
                           }}
                         >
@@ -579,8 +579,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             initial={reduceMotion ? false : { opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              duration: reduceMotion ? 0 : 1.12,
-              delay: reduceMotion ? 0 : 0.2,
+              duration: reduceMotion ? 0 : 0.98,
+              delay: reduceMotion ? 0 : 0.34,
               ease: [0.16, 1, 0.3, 1],
             }}
           >
@@ -628,8 +628,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           initial={reduceMotion ? false : { opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: reduceMotion ? 0 : 1.12,
-            delay: reduceMotion ? 0 : 0.22,
+            duration: reduceMotion ? 0 : 0.98,
+            delay: reduceMotion ? 0 : 0.37,
             ease: [0.16, 1, 0.3, 1],
           }}
         >
