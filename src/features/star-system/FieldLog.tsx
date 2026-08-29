@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, LazyMotion, useReducedMotion } from 'motion/react'
@@ -52,6 +53,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false)
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
   const [themePreference, setThemePreference] = useState<ThemePreference>('system')
+  const [transitionSignal, setTransitionSignal] = useState<WorldId>()
   const languageMenu = useRef<HTMLDivElement>(null)
   const themeMenu = useRef<HTMLDivElement>(null)
   const languageMenuTrigger = useRef<HTMLButtonElement>(null)
@@ -60,13 +62,26 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const focusTimer = useRef<number | undefined>(undefined)
   const previouslySelectedSignal = useRef<WorldId | undefined>(selectedSignal)
   const hasLoadedTheme = useRef(false)
-
   function openSignal(signal: WorldId) {
-    void navigate({ to: '/$locale/$signal', params: { locale, signal } })
+    flushSync(() => setTransitionSignal(signal))
+    void navigate({
+      to: '/$locale/$signal',
+      params: { locale, signal },
+      resetScroll: false,
+      viewTransition: true,
+    })
   }
 
   function closeTransmission() {
-    void navigate({ to: '/$locale', params: { locale } })
+    if (selectedSignal) {
+      flushSync(() => setTransitionSignal(selectedSignal))
+    }
+    void navigate({
+      to: '/$locale',
+      params: { locale },
+      resetScroll: false,
+      viewTransition: true,
+    })
   }
 
   function closeLanguageMenu({ restoreFocus = false } = {}) {
@@ -464,7 +479,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-label={m.home_signal_label({}, options)}
             onClick={() => openSignal('home')}
           >
-            <Planet worldId="home" />
+            <Planet
+              worldId="home"
+              viewTransitionName={
+                transitionSignal === 'home' && selectedSignal !== 'home' ? 'orbit-planet' : 'none'
+              }
+            />
           </Button>
 
           {worlds.slice(1).map((world, index) => {
@@ -504,7 +524,14 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                         aria-label={`${copy.label}: ${copy.description}`}
                         onClick={() => openSignal(world.id)}
                       >
-                        <Planet worldId={world.id} />
+                        <Planet
+                          worldId={world.id}
+                          viewTransitionName={
+                            transitionSignal === world.id && selectedSignal !== world.id
+                              ? 'orbit-planet'
+                              : 'none'
+                          }
+                        />
                         <span
                           className={`world-label pointer-events-none absolute top-1/2 flex w-[210px] -translate-y-1/2 flex-col gap-1 max-[900px]:hidden ${world.id === 'comms' ? 'right-[calc(100%+23px)] text-right' : 'left-[calc(100%+24px)]'}`}
                         >
@@ -563,6 +590,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               signal={selectedSignal}
               onClose={closeTransmission}
               onSelect={openSignal}
+              viewTransitionName={transitionSignal === selectedSignal ? 'orbit-planet' : 'none'}
             />
           )}
         </AnimatePresence>

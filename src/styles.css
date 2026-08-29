@@ -65,6 +65,21 @@
   }
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(orbit-planet),
+::view-transition-old(orbit-planet),
+::view-transition-new(orbit-planet) {
+  z-index: 40;
+  animation-duration: 0.65s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  mix-blend-mode: normal;
+}
+
 /* Only theme state, generated artwork, pseudo-elements and keyframes stay in CSS. */
 .stars-a {
   background-image:
