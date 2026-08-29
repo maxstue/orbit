@@ -14,6 +14,7 @@ import { getAdjacentWorld, worlds, type Locale, type WorldId } from './data/worl
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
 import { Planet } from './Planet'
+import { SpaceDebris } from './SpaceDebris'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
 import {
   createThemeCookie,
@@ -250,6 +251,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           className="stars-b pointer-events-none absolute inset-0 opacity-40"
           aria-hidden="true"
         />
+        <SpaceDebris />
 
         <header className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16">
           <LocalizedLink

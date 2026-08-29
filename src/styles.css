@@ -25,6 +25,7 @@
   --ring: var(--lime);
   --muted: #202829;
   --active-control-foreground: var(--space);
+  --transmission-background: #151b1c;
 }
 
 :root[data-theme='day'] {
@@ -37,6 +38,7 @@
   --line: #1720224d;
   --muted: #d7d2c3;
   --active-control-foreground: #f2eee1;
+  --transmission-background: #f2eee1;
 }
 
 @layer base {
@@ -105,8 +107,7 @@
 :root[data-theme='day'] .stars-b {
   opacity: 0.42;
 }
-:root[data-theme='day'] .language-bubble,
-:root[data-theme='day'] .transmission {
+:root[data-theme='day'] .language-bubble {
   background-color: #f2eee1;
 }
 :root[data-theme='day'] .language-bubble::before {
