@@ -8,6 +8,8 @@ export type Transmission = {
   kicker: string
   lead: string
   details: { label: string; value: string; href?: string }[]
+  downloads?: { label: string; href: string }[]
+  portrait?: { src: string; alt: string }
   quote: string
 }
 
@@ -33,6 +35,20 @@ export function getTransmission(id: WorldId, locale: Locale): Transmission {
           value: m.home_detail_three_value({}, options),
         },
       ],
+      downloads: [
+        {
+          label: m.resume_download_de({}, options),
+          href: '/downloads/Maximilian-Stuempfl-Lebenslauf-DE.pdf',
+        },
+        {
+          label: m.resume_download_en({}, options),
+          href: '/downloads/Maximilian-Stuempfl-Resume-EN.pdf',
+        },
+      ],
+      portrait: {
+        src: '/images/maximilian-stuempfl.jpg',
+        alt: m.home_portrait_alt({}, options),
+      },
       quote: m.home_quote({}, options),
     },
     current: {
@@ -73,6 +89,16 @@ export function getTransmission(id: WorldId, locale: Locale): Transmission {
         {
           label: m.workbench_detail_three_label({}, options),
           value: m.workbench_detail_three_value({}, options),
+        },
+      ],
+      downloads: [
+        {
+          label: m.resume_download_de({}, options),
+          href: '/downloads/Maximilian-Stuempfl-Lebenslauf-DE.pdf',
+        },
+        {
+          label: m.resume_download_en({}, options),
+          href: '/downloads/Maximilian-Stuempfl-Resume-EN.pdf',
         },
       ],
       quote: m.workbench_quote({}, options),

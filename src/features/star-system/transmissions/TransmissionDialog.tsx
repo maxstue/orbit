@@ -334,7 +334,19 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
               },
             }}
           >
-            <Planet worldId={signal} />
+            {transmission.portrait ? (
+              <div className="portrait-scan relative size-[115px] overflow-hidden rounded-full border border-[rgb(255_226_167_/_88%)] bg-[var(--space)] shadow-[0_0_0_7px_rgb(90_217_210_/_8%),0_0_30px_rgb(90_217_210_/_16%)] max-[620px]:size-[74px]">
+                <img
+                  className="h-full w-full object-cover object-[50%_24%] grayscale contrast-110 saturate-0"
+                  src={transmission.portrait.src}
+                  alt={transmission.portrait.alt}
+                />
+                <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--cyan)_22%,transparent),transparent_45%,color-mix(in_srgb,var(--coral)_13%,transparent))] mix-blend-color" />
+                <span className="pointer-events-none absolute inset-0 rounded-full border border-inset border-[rgb(242_238_225_/_18%)]" />
+              </div>
+            ) : (
+              <Planet worldId={signal} />
+            )}
           </motionElement.div>
           <SignalGraph reduceMotion={Boolean(reduceMotion)} />
           <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
@@ -390,6 +402,26 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
               </div>
             ))}
           </dl>
+          {transmission.downloads && (
+            <div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">
+              {transmission.downloads.map((download) => (
+                <a
+                  className="group flex min-h-12 items-center justify-between border border-[var(--cyan)] px-4 font-mono text-[9px] tracking-[0.09em] text-[var(--cyan)] no-underline transition-colors hover:bg-[var(--cyan)] hover:text-[var(--space)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]"
+                  href={download.href}
+                  download
+                  key={download.href}
+                >
+                  {download.label}
+                  <span
+                    aria-hidden="true"
+                    className="text-base transition-transform group-hover:translate-y-0.5"
+                  >
+                    ↓
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
           <blockquote className="mt-[25px] border-l-[3px] border-[var(--coral)] py-1.5 pl-[18px] font-mono text-sm leading-[1.5] font-bold text-[var(--paper)]">
             {transmission.quote}
           </blockquote>
