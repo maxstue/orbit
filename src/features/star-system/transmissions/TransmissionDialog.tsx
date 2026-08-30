@@ -376,32 +376,89 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           <p className="text-[15px] leading-[1.6] text-[#c7c7bd]" id="transmission-lead">
             {transmission.lead}
           </p>
-          <dl className="my-[30px] mt-[35px] border-t border-[var(--line)]">
-            {transmission.details.map((detail) => (
-              <div
-                className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
-                key={detail.label}
-              >
-                <dt className="font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] uppercase">
-                  {detail.label}
-                </dt>
-                <dd className="m-0 font-mono text-xs leading-[1.4]">
-                  {detail.href ? (
-                    <a
-                      className="text-[var(--lime)]"
-                      href={detail.href}
-                      target={detail.href.startsWith('http') ? '_blank' : undefined}
-                      rel={detail.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    >
-                      {detail.value}
-                    </a>
-                  ) : (
-                    detail.value
-                  )}
-                </dd>
+          {transmission.details.length > 0 && (
+            <dl className="my-[30px] mt-[35px] border-t border-[var(--line)]">
+              {transmission.details.map((detail) => (
+                <div
+                  className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
+                  key={detail.label}
+                >
+                  <dt className="font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] uppercase">
+                    {detail.label}
+                  </dt>
+                  <dd className="m-0 font-mono text-xs leading-[1.4]">
+                    {detail.href ? (
+                      <a
+                        className="text-[var(--lime)]"
+                        href={detail.href}
+                        target={detail.href.startsWith('http') ? '_blank' : undefined}
+                        rel={detail.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      >
+                        {detail.value}
+                      </a>
+                    ) : (
+                      detail.value
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          {transmission.missionLog && (
+            <section className="mt-8" aria-label={m.workbench_mission_log_label({}, options)}>
+              <div className="mb-4 flex items-center gap-3 font-mono text-[8px] tracking-[0.15em] text-[var(--cyan)]">
+                <span className="h-px flex-1 bg-[var(--line)]" />
+                {m.workbench_mission_log_label({}, options)}
+                <span className="h-px flex-1 bg-[var(--line)]" />
               </div>
-            ))}
-          </dl>
+              <ol className="relative ml-1 border-l border-[var(--line)] pl-5">
+                {transmission.missionLog.map((mission) => (
+                  <li
+                    className="relative pb-7 last:pb-0"
+                    key={`${mission.period}-${mission.organization}`}
+                  >
+                    <span
+                      className={`absolute top-1 -left-[25px] size-2 rounded-full border ${mission.current ? 'border-[var(--lime)] bg-[var(--lime)] shadow-[0_0_0_5px_rgb(220_239_104_/_10%),0_0_12px_var(--lime)]' : 'border-[var(--dim)] bg-[var(--space)]'}`}
+                      aria-hidden="true"
+                    />
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[8px] tracking-[0.11em]">
+                      <span className="text-[var(--dim)]">{mission.period}</span>
+                      <span
+                        className={mission.current ? 'text-[var(--lime)]' : 'text-[var(--cyan)]'}
+                      >
+                        {mission.current && (
+                          <i className="mr-1.5 inline-block size-1.5 animate-pulse rounded-full bg-current" />
+                        )}
+                        {mission.status}
+                      </span>
+                    </div>
+                    <h3 className="text-lg leading-tight tracking-[-0.025em] text-[var(--paper)]">
+                      {mission.title}
+                    </h3>
+                    <p className="mt-1 font-mono text-[9px] tracking-[0.08em] text-[var(--coral)]">
+                      {mission.organization}
+                    </p>
+                    <p className="mt-3 text-[13px] leading-[1.55] text-[#c7c7bd]">
+                      {mission.summary}
+                    </p>
+                    <ul
+                      className="mt-3 flex flex-wrap gap-1.5"
+                      aria-label={m.workbench_mission_tools_label({}, options)}
+                    >
+                      {mission.tags.map((tag) => (
+                        <li
+                          className="border border-[var(--line)] px-2 py-1 font-mono text-[7px] tracking-[0.08em] text-[var(--dim)]"
+                          key={tag}
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
           {transmission.downloads && (
             <div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">
               {transmission.downloads.map((download) => (
