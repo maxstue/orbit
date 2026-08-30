@@ -13,10 +13,27 @@ describe('transmission content', () => {
       expect(transmission.title.trim()).not.toBe('')
       expect(transmission.lead.trim()).not.toBe('')
       expect(transmission.quote.trim()).not.toBe('')
-      expect(transmission.details).toHaveLength(world.id === 'side-quests' ? 4 : 3)
+      expect(transmission.details).toHaveLength(
+        world.id === 'workbench' ? 0 : world.id === 'side-quests' ? 4 : 3,
+      )
       expect(
         transmission.details.every((detail) => detail.label.trim() && detail.value.trim()),
       ).toBe(true)
+
+      if (world.id === 'workbench') {
+        expect(transmission.missionLog).toHaveLength(3)
+        expect(
+          transmission.missionLog?.every(
+            (mission) =>
+              mission.period.trim() &&
+              mission.status.trim() &&
+              mission.title.trim() &&
+              mission.organization.trim() &&
+              mission.summary.trim() &&
+              mission.tags.length > 0,
+          ),
+        ).toBe(true)
+      }
     }
   })
 
