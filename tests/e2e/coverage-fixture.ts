@@ -57,4 +57,8 @@ export const test = baseTest.extend({
   },
 })
 
+test.beforeEach(async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+})
+
 export const expect = test.expect

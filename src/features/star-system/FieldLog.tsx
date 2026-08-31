@@ -359,7 +359,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                   role="menu"
                   aria-label={m.theme_choose({}, options)}
                 >
-                  <p className="px-2 pt-1 pb-2 font-mono text-[8px] tracking-[0.13em] text-[var(--dim)]">
+                  <p className="px-2 pt-1 pb-2 font-mono text-[8px] tracking-[0.13em] text-[#a7adab]">
                     {m.theme_choose({}, options)}
                   </p>
                   {(['system', 'night', 'day'] as const).map((preference) => (
@@ -457,7 +457,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           >
             <Button
               ref={languageMenuTrigger}
-              className="language-ship group h-auto rounded-none bg-transparent p-0 text-left hover:bg-transparent"
+              className="language-ship group h-auto min-h-11 min-w-11 rounded-none bg-transparent p-0 text-left hover:bg-transparent"
               variant="ghost"
               type="button"
               disabled={isChangingLanguage}

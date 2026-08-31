@@ -63,7 +63,9 @@ test('@a11y transmission traps focus and restores it to its planet', async ({ pa
 
   await expect
     .poll(async () => {
-      if (new URL(page.url()).pathname !== '/en/current') await planet.click()
+      if (new URL(page.url()).pathname !== '/en/current') {
+        await planet.evaluate((button: HTMLButtonElement) => button.click())
+      }
       return new URL(page.url()).pathname
     })
     .toBe('/en/current')

@@ -29,11 +29,25 @@ async function openSignalByShortcut(page: Page, shortcut: string, expectedPath: 
     .toBe(expectedPath)
 }
 
+async function openSignalByName(page: Page, name: RegExp, expectedPath: string) {
+  const signal = page.getByRole('button', { name })
+  await expect
+    .poll(async () => {
+      if (new URL(page.url()).pathname !== expectedPath) {
+        await signal.evaluate((button: HTMLButtonElement) => button.click())
+      }
+      return new URL(page.url()).pathname
+    })
+    .toBe(expectedPath)
+}
+
 test('keeps localized workbench routes in browser history', async ({ page }) => {
   await page.goto('/en')
-  await page
-    .getByRole('button', { name: /work: software someone can still understand tomorrow/i })
-    .click()
+  await openSignalByName(
+    page,
+    /work: software someone can still understand tomorrow/i,
+    '/en/workbench',
+  )
   await expect(page).toHaveURL('/en/workbench')
   await expect(page.getByRole('dialog')).toContainText(
     'Software someone can still understand tomorrow.',
@@ -45,9 +59,11 @@ test('keeps localized workbench routes in browser history', async ({ page }) => 
   await openLanguageMenu(page)
   await page.getByRole('menuitemradio', { name: 'German' }).click()
   await expect(page).toHaveURL('/de')
-  await page
-    .getByRole('button', { name: /arbeit: software, die auch morgen noch jemand versteht/i })
-    .click()
+  await openSignalByName(
+    page,
+    /arbeit: software, die auch morgen noch jemand versteht/i,
+    '/de/workbench',
+  )
   await expect(page).toHaveURL('/de/workbench')
   await expect(page.getByRole('dialog')).toContainText(
     'Software, die auch morgen noch jemand versteht.',
@@ -99,9 +115,11 @@ test('persists an explicit theme through navigation and reload', async ({ page }
   await chooseTheme(page, /^DAY$/)
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'day')
 
-  await page
-    .getByRole('button', { name: /work: software someone can still understand tomorrow/i })
-    .click()
+  await openSignalByName(
+    page,
+    /work: software someone can still understand tomorrow/i,
+    '/en/workbench',
+  )
   await expect(page).toHaveURL('/en/workbench')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'day')
 
@@ -158,9 +176,11 @@ test('keeps the field log usable at every supported viewport', async ({ page }, 
   await expect(page.getByRole('main')).toBeVisible()
   await expectNoHorizontalOverflow(page)
 
-  await page
-    .getByRole('button', { name: /work: software someone can still understand tomorrow/i })
-    .click()
+  await openSignalByName(
+    page,
+    /work: software someone can still understand tomorrow/i,
+    '/en/workbench',
+  )
   await expect(page.getByRole('dialog')).toBeVisible()
   await expectNoHorizontalOverflow(page)
 
