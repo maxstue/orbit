@@ -25,6 +25,7 @@ beforeEach(() => {
 
 test('offers theme and language controls through browser locators', async () => {
   const screen = await render(<FieldLog locale="en" />)
+  expect(screen).toBeDefined()
 
   await screen.getByRole('button', { name: 'Open appearance selection' }).click()
   await expect.element(screen.getByRole('menu', { name: 'Choose appearance' })).toBeVisible()

@@ -46,6 +46,18 @@ const loadMotionFeatures = () =>
 
 const worldHotkeys = ['1', '2', '3', '4', '5'] as const
 
+function ThemeIcon({ preference }: { preference: ThemePreference }) {
+  if (preference === 'system') return <MonitorCog aria-hidden="true" />
+  if (preference === 'night') return <MoonStar aria-hidden="true" />
+  return <Sun aria-hidden="true" />
+}
+
+function getOrbitSizeClass(className: string) {
+  if (className.includes('orbit-1')) return 'size-[min(28vw,430px)] max-[900px]:size-[45vw]'
+  if (className.includes('orbit-2')) return 'size-[min(52vw,780px)] max-[900px]:size-[78vw]'
+  return 'size-[min(76vw,1120px)] max-[900px]:size-[115vw]'
+}
+
 export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const navigate = useNavigate()
   const reduceMotion = useReducedMotion()
@@ -342,13 +354,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                 title={m.theme_current({ theme: getThemeLabel(themePreference) }, options)}
                 onClick={() => setIsThemeMenuOpen((open) => !open)}
               >
-                {themePreference === 'system' ? (
-                  <MonitorCog aria-hidden="true" />
-                ) : themePreference === 'night' ? (
-                  <MoonStar aria-hidden="true" />
-                ) : (
-                  <Sun aria-hidden="true" />
-                )}
+                <ThemeIcon preference={themePreference} />
                 <span className="max-[760px]:hidden">{getThemeLabel(themePreference)}</span>
                 <span aria-hidden="true">⌄</span>
               </Button>
@@ -561,10 +567,11 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             const orbitTransition = reduceMotion
               ? undefined
               : { duration: orbit.duration, ease: 'linear' as const, repeat: Infinity }
+            const orbitSizeClass = getOrbitSizeClass(orbit.className)
 
             return (
               <div
-                className={`pointer-events-none absolute top-[52%] left-[59%] -translate-1/2 max-[900px]:top-[61%] max-[900px]:left-[52%] max-[620px]:top-[67%] ${orbit.className.includes('orbit-1') ? 'size-[min(28vw,430px)] max-[900px]:size-[45vw]' : orbit.className.includes('orbit-2') ? 'size-[min(52vw,780px)] max-[900px]:size-[78vw]' : 'size-[min(76vw,1120px)] max-[900px]:size-[115vw]'}`}
+                className={`pointer-events-none absolute top-[52%] left-[59%] -translate-1/2 max-[900px]:top-[61%] max-[900px]:left-[52%] max-[620px]:top-[67%] ${orbitSizeClass}`}
                 key={world.id}
                 aria-hidden="false"
               >

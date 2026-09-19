@@ -7,7 +7,8 @@ export const siteOrigin = 'https://me.justmax.xyz'
 export const socialPreviewUrl = `${siteOrigin}/social-preview.png`
 
 export function getLocalizedPath(locale: Locale, signal?: WorldId) {
-  return `/${locale}${signal ? `/${signal}` : ''}`
+  const signalPath = signal ? `/${signal}` : ''
+  return `/${locale}${signalPath}`
 }
 
 export function getRouteMetadata(locale: Locale, signal?: WorldId) {

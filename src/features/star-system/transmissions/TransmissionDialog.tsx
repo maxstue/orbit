@@ -262,7 +262,9 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
                 <div className="h-2.5 w-[76%] bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]" />
               </div>
               <p className="mt-6 font-mono text-[7px] tracking-[0.13em] text-[var(--cyan)]">
-                {tuningCopy.label} // {tuningCopy.phase}
+                {tuningCopy.label}
+                {' // '}
+                {tuningCopy.phase}
               </p>
             </motionElement.div>
           </motionElement.div>

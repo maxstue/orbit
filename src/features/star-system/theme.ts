@@ -6,7 +6,9 @@ export type ThemePreference = (typeof themePreferences)[number]
 export type ResolvedTheme = Exclude<ThemePreference, 'system'>
 
 export function isThemePreference(value: string | null | undefined): value is ThemePreference {
-  return themePreferences.some((preference) => preference === value)
+  return (
+    value !== null && value !== undefined && themePreferences.includes(value as ThemePreference)
+  )
 }
 
 export function readThemePreferenceFromCookie(cookieHeader: string): ThemePreference | undefined {

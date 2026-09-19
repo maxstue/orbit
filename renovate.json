@@ -12,10 +12,10 @@
   "enabledManagers": ["npm", "github-actions"],
   "minimumReleaseAge": "2 days",
   "rangeStrategy": "bump",
-  "schedule": ["before 8am on monday"],
+  "schedule": ["before 8am every weekday"],
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 8am on monday"],
+    "schedule": ["before 8am every weekday"],
     "commitMessageAction": "refresh",
     "automerge": true,
     "automergeType": "pr"

@@ -96,7 +96,15 @@ function OrbitalCompanions({
               <span
                 className="pointer-events-auto relative block h-[7px] w-3 cursor-crosshair rounded-[2px] border border-[var(--paper)] bg-[#263536] shadow-[0_0_9px_rgb(90_217_210_/_35%)] before:absolute before:top-1/2 before:right-full before:h-1 before:w-2 before:-translate-y-1/2 before:border before:border-[var(--cyan)] before:bg-[rgb(90_217_210_/_28%)] after:absolute after:top-1/2 after:left-full after:h-1 after:w-2 after:-translate-y-1/2 after:border after:border-[var(--cyan)] after:bg-[rgb(90_217_210_/_28%)]"
                 data-object-cursor="satellite"
+                role="button"
+                tabIndex={-1}
                 onClick={(event) => {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  onObjectCursorChange?.('satellite')
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return
                   event.preventDefault()
                   event.stopPropagation()
                   onObjectCursorChange?.('satellite')
@@ -129,6 +137,10 @@ export function Planet({ onObjectCursorChange, worldId }: PlanetProps) {
     )
   }
 
+  let detailsInset = '-inset-[18px]'
+  if (worldId === 'current') detailsInset = '-inset-[13px]'
+  if (worldId === 'comms') detailsInset = '-inset-[11px]'
+
   return (
     <span
       className={`planet planet-${worldId} relative block rounded-full transition-[transform,box-shadow] duration-[280ms]`}
@@ -136,7 +148,7 @@ export function Planet({ onObjectCursorChange, worldId }: PlanetProps) {
     >
       <i />
       <span
-        className={`planet-details pointer-events-none absolute rounded-full border border-dashed border-[rgb(242_238_225_/_22%)] ${worldId === 'current' ? '-inset-[13px]' : worldId === 'comms' ? '-inset-[11px]' : '-inset-[18px]'}`}
+        className={`planet-details pointer-events-none absolute rounded-full border border-dashed border-[rgb(242_238_225_/_22%)] ${detailsInset}`}
       />
       <OrbitalCompanions worldId={worldId} onObjectCursorChange={onObjectCursorChange} />
     </span>

@@ -29,8 +29,128 @@ type DebrisState = {
   y: number
 }
 
+type DebrisItem = (typeof debris)[number]
+type NearestPlanet = {
+  centerDistance: number
+  edgeDistance: number
+  offsetX: number
+  offsetY: number
+}
+
 const interactionDistance = 90
 const gravityDistance = 180
+
+function updateExplosion(explosion: HTMLElement, state: DebrisState, time: number) {
+  if (state.impactAt < 0) return
+  const progress = Math.min(1, (time - state.impactAt) / 460)
+  explosion.style.opacity = String((1 - progress) * 0.95)
+  explosion.style.transform = `translate3d(${state.impactX}px, ${state.impactY}px, 0) scale(${0.3 + progress * 1.45})`
+  if (progress >= 1) state.impactAt = -1
+}
+
+function startParticle(item: DebrisItem, particle: HTMLElement, state: DebrisState, time: number) {
+  if (state.nextStart < 0) state.nextStart = time + item.delay * 1000
+  if (state.active || time < state.nextStart) return
+
+  state.active = true
+  state.x = item.reverse ? window.innerWidth + 90 : -90
+  state.y = (window.innerHeight * item.top) / 100
+  state.vx = (item.reverse ? -1 : 1) * item.speed
+  state.vy = item.speed * item.slope
+  particle.style.opacity = '0.9'
+}
+
+function findNearestPlanet(rects: DOMRect[], state: DebrisState): NearestPlanet {
+  let nearest = {
+    centerDistance: Number.POSITIVE_INFINITY,
+    edgeDistance: Number.POSITIVE_INFINITY,
+    offsetX: 0,
+    offsetY: 0,
+  }
+
+  for (const rect of rects) {
+    const offsetX = rect.left + rect.width / 2 - state.x
+    const offsetY = rect.top + rect.height / 2 - state.y
+    const centerDistance = Math.hypot(offsetX, offsetY)
+    const edgeDistance = centerDistance - Math.max(rect.width, rect.height) / 2
+    if (edgeDistance < nearest.edgeDistance) {
+      nearest = { centerDistance, edgeDistance, offsetX, offsetY }
+    }
+  }
+
+  return nearest
+}
+
+function registerImpact(item: DebrisItem, particle: HTMLElement, state: DebrisState, time: number) {
+  state.active = false
+  state.impactAt = time
+  state.impactX = state.x
+  state.impactY = state.y
+  state.nextStart = time + item.repeatDelay * 1000
+  particle.style.opacity = '0'
+}
+
+function applyGravity(item: DebrisItem, nearest: NearestPlanet, state: DebrisState, dt: number) {
+  const proximity = Math.max(0, Math.min(1, 1 - nearest.edgeDistance / gravityDistance))
+  if (proximity > 0 && nearest.centerDistance > 0) {
+    const acceleration = 820 * proximity ** 2
+    state.vx += (nearest.offsetX / nearest.centerDistance) * acceleration * dt
+    state.vy += (nearest.offsetY / nearest.centerDistance) * acceleration * dt
+  }
+
+  const velocity = Math.hypot(state.vx, state.vy)
+  const maxVelocity = item.speed * 1.35
+  if (velocity <= maxVelocity) return
+  state.vx = (state.vx / velocity) * maxVelocity
+  state.vy = (state.vy / velocity) * maxVelocity
+}
+
+function renderParticle(
+  item: DebrisItem,
+  elements: { body: HTMLElement; particle: HTMLElement; tail: HTMLElement | null },
+  state: DebrisState,
+  time: number,
+  dt: number,
+  edgeDistance: number,
+) {
+  const proximity = Math.max(0, Math.min(1, 1 - edgeDistance / interactionDistance))
+  const heat = proximity ** 0.58
+  const burnScale = 1 - heat * 0.55
+  const speedFactor = 0.45 + (1 - proximity) * 0.55
+  state.x += state.vx * dt * speedFactor
+  state.y += state.vy * dt * speedFactor
+
+  const coolColor = item.kind === 'meteor' ? 'var(--paper)' : '#777d78'
+  elements.particle.style.transform = `translate3d(${state.x}px, ${state.y}px, 0)`
+  elements.particle.style.opacity = String(0.68 + heat * 0.32)
+  elements.body.style.backgroundColor = `color-mix(in srgb, ${coolColor} ${(1 - heat) * 100}%, #ff6a3d)`
+  elements.body.style.filter = `brightness(${1 + heat * 1.5}) drop-shadow(0 0 ${5 + heat * 18}px color-mix(in srgb, var(--cyan) ${(1 - heat) * 100}%, #ff4f2f)) drop-shadow(0 0 ${heat * 28}px rgb(255 82 42 / ${heat * 0.8}))`
+  elements.body.style.transform =
+    item.kind === 'asteroid'
+      ? `rotate(${time * 0.05}deg) scale(${burnScale})`
+      : `scale(${burnScale})`
+
+  if (elements.tail) {
+    const tailAngle = (Math.atan2(state.vy, state.vx) * 180) / Math.PI + 180
+    elements.tail.style.transform = `rotate(${tailAngle}deg)`
+    elements.tail.style.background = `linear-gradient(90deg,color-mix(in srgb,var(--cyan) ${(1 - heat) * 100}%,#ff6a3d),transparent)`
+    elements.tail.style.filter = `drop-shadow(0 0 ${3 + heat * 9}px rgb(255 91 49 / ${0.25 + heat * 0.65}))`
+  }
+}
+
+function stopOutsideParticle(
+  item: DebrisItem,
+  particle: HTMLElement,
+  state: DebrisState,
+  time: number,
+) {
+  const outsideX = item.reverse ? state.x < -120 : state.x > window.innerWidth + 120
+  const outsideY = state.y < -120 || state.y > window.innerHeight + 120
+  if (!outsideX && !outsideY) return
+  state.active = false
+  state.nextStart = time + item.repeatDelay * 1000
+  particle.style.opacity = '0'
+}
 
 export function SpaceDebris({
   onObjectCursorChange,
@@ -72,99 +192,20 @@ export function SpaceDebris({
       const state = states.current[index]!
       if (!particle || !body || !explosion) return
 
-      if (state.impactAt >= 0) {
-        const progress = Math.min(1, (time - state.impactAt) / 460)
-        explosion.style.opacity = String((1 - progress) * 0.95)
-        explosion.style.transform = `translate3d(${state.impactX}px, ${state.impactY}px, 0) scale(${0.3 + progress * 1.45})`
-        if (progress >= 1) state.impactAt = -1
-      }
-
-      if (state.nextStart < 0) state.nextStart = time + item.delay * 1000
-      if (!state.active && time >= state.nextStart) {
-        state.active = true
-        state.x = item.reverse ? window.innerWidth + 90 : -90
-        state.y = (window.innerHeight * item.top) / 100
-        state.vx = (item.reverse ? -1 : 1) * item.speed
-        state.vy = item.speed * item.slope
-        particle.style.opacity = '0.9'
-      }
+      updateExplosion(explosion, state, time)
+      startParticle(item, particle, state, time)
       if (!state.active) return
 
       const particleRadius = item.kind === 'meteor' ? 3 : 8
-      let nearestEdge = Number.POSITIVE_INFINITY
-      let nearestCenterDistance = Number.POSITIVE_INFINITY
-      let gravityX = 0
-      let gravityY = 0
-      for (const rect of planetRects) {
-        const centerX = rect.left + rect.width / 2
-        const centerY = rect.top + rect.height / 2
-        const planetRadius = Math.max(rect.width, rect.height) / 2
-        const offsetX = centerX - state.x
-        const offsetY = centerY - state.y
-        const centerDistance = Math.hypot(offsetX, offsetY)
-        const edgeDistance = centerDistance - planetRadius
-        if (edgeDistance < nearestEdge) {
-          nearestEdge = edgeDistance
-          nearestCenterDistance = centerDistance
-          gravityX = offsetX
-          gravityY = offsetY
-        }
-      }
-
-      if (nearestEdge <= particleRadius) {
-        state.active = false
-        state.impactAt = time
-        state.impactX = state.x
-        state.impactY = state.y
-        state.nextStart = time + item.repeatDelay * 1000
-        particle.style.opacity = '0'
+      const nearest = findNearestPlanet(planetRects, state)
+      if (nearest.edgeDistance <= particleRadius) {
+        registerImpact(item, particle, state, time)
         return
       }
 
-      const gravityProximity = Math.max(0, Math.min(1, 1 - nearestEdge / gravityDistance))
-      if (gravityProximity > 0 && nearestCenterDistance > 0) {
-        const acceleration = 820 * gravityProximity ** 2
-        state.vx += (gravityX / nearestCenterDistance) * acceleration * dt
-        state.vy += (gravityY / nearestCenterDistance) * acceleration * dt
-      }
-
-      const velocity = Math.hypot(state.vx, state.vy)
-      const maxVelocity = item.speed * 1.35
-      if (velocity > maxVelocity) {
-        state.vx = (state.vx / velocity) * maxVelocity
-        state.vy = (state.vy / velocity) * maxVelocity
-      }
-
-      const proximity = Math.max(0, Math.min(1, 1 - nearestEdge / interactionDistance))
-      const heat = proximity ** 0.58
-      const burnScale = 1 - heat * 0.55
-      const speedFactor = 0.45 + (1 - proximity) * 0.55
-      state.x += state.vx * dt * speedFactor
-      state.y += state.vy * dt * speedFactor
-
-      const coolColor = item.kind === 'meteor' ? 'var(--paper)' : '#777d78'
-      particle.style.transform = `translate3d(${state.x}px, ${state.y}px, 0)`
-      particle.style.opacity = String(0.68 + heat * 0.32)
-      body.style.backgroundColor = `color-mix(in srgb, ${coolColor} ${(1 - heat) * 100}%, #ff6a3d)`
-      body.style.filter = `brightness(${1 + heat * 1.5}) drop-shadow(0 0 ${5 + heat * 18}px color-mix(in srgb, var(--cyan) ${(1 - heat) * 100}%, #ff4f2f)) drop-shadow(0 0 ${heat * 28}px rgb(255 82 42 / ${heat * 0.8}))`
-      body.style.transform =
-        item.kind === 'asteroid'
-          ? `rotate(${time * 0.05}deg) scale(${burnScale})`
-          : `scale(${burnScale})`
-      if (tail) {
-        const tailAngle = (Math.atan2(state.vy, state.vx) * 180) / Math.PI + 180
-        tail.style.transform = `rotate(${tailAngle}deg)`
-        tail.style.background = `linear-gradient(90deg,color-mix(in srgb,var(--cyan) ${(1 - heat) * 100}%,#ff6a3d),transparent)`
-        tail.style.filter = `drop-shadow(0 0 ${3 + heat * 9}px rgb(255 91 49 / ${0.25 + heat * 0.65}))`
-      }
-
-      const outsideX = item.reverse ? state.x < -120 : state.x > window.innerWidth + 120
-      const outsideY = state.y < -120 || state.y > window.innerHeight + 120
-      if (outsideX || outsideY) {
-        state.active = false
-        state.nextStart = time + item.repeatDelay * 1000
-        particle.style.opacity = '0'
-      }
+      applyGravity(item, nearest, state, dt)
+      renderParticle(item, { body, particle, tail }, state, time, dt, nearest.edgeDistance)
+      stopOutsideParticle(item, particle, state, time)
     })
   })
 
@@ -188,7 +229,15 @@ export function SpaceDebris({
             }}
             className="pointer-events-auto absolute top-0 left-0 block cursor-crosshair opacity-0 transition-opacity duration-150"
             data-object-cursor={item.kind}
+            role="button"
+            tabIndex={-1}
             onClick={(event) => {
+              event.stopPropagation()
+              onObjectCursorChange?.(item.kind)
+            }}
+            onKeyDown={(event) => {
+              if (event.key !== 'Enter' && event.key !== ' ') return
+              event.preventDefault()
               event.stopPropagation()
               onObjectCursorChange?.(item.kind)
             }}
