@@ -7,6 +7,9 @@ const wcagTags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22
 const signals = ['home', 'current', 'workbench', 'side-quests', 'comms'] as const
 
 async function expectNoA11yViolations(page: Page, testInfo: TestInfo) {
+  await expect(
+    page.getByRole('button', { name: /appearance selection|darstellung auswählen/i }),
+  ).toBeEnabled()
   const results = await new AxeBuilder({ page }).withTags(wcagTags).analyze()
 
   await testInfo.attach('axe-results', {
@@ -88,6 +91,7 @@ test('@a11y transmission traps focus and restores it to its planet', async ({ pa
 
 test('@a11y visible controls meet the WCAG 2.2 minimum target size', async ({ page }) => {
   await page.goto('/en')
+  await expect(page.getByRole('button', { name: 'Open appearance selection' })).toBeEnabled()
 
   const undersizedControls = await page.getByRole('button').evaluateAll((buttons) =>
     buttons.flatMap((button) => {

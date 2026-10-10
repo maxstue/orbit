@@ -64,11 +64,12 @@ test('uses number, arrow, and escape keys to request signal navigation', async (
 })
 
 test('turns the cursor into a clicked satellite until escape', async () => {
-  await render(<FieldLog locale="en" />)
+  const screen = await render(<FieldLog locale="en" />)
 
-  const satellite = document.querySelector<HTMLElement>('[data-object-cursor="satellite"]')
-  expect(satellite).not.toBeNull()
-  satellite?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
+  const satellite = screen.getByRole('button', { name: 'Use satellite cursor' })
+  const satelliteButton = satellite.element() as HTMLButtonElement
+  expect(satelliteButton.parentElement?.closest('button')).toBeNull()
+  await satellite.click()
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
   expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
@@ -91,4 +92,8 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   )
   expect(document.documentElement.dataset.orbitCursor).toBeUndefined()
   expect(document.body.style.cursor).toBe('')
+
+  satelliteButton.focus()
+  await userEvent.keyboard('{Enter}')
+  expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
 })

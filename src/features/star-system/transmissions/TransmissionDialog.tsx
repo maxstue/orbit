@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { worlds, type Locale, type WorldId } from '../data/worlds'
-import { AnimatePresence, useReducedMotion } from 'motion/react'
+import { AnimatePresence, useIsPresent, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { getWorldCopy } from '../i18n/world-copy'
 import { Planet } from '../Planet'
@@ -65,6 +65,7 @@ function SignalGraph({
 
 export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
   const reduceMotion = useReducedMotion()
+  const isPresent = useIsPresent()
   const dialogRef = useRef<HTMLElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const [isTuning, setIsTuning] = useState(true)
@@ -99,7 +100,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
 
   useEffect(() => {
     const dialog = dialogRef.current
-    if (!dialog) return
+    if (!dialog || !isPresent) return
 
     function trapFocus(event: KeyboardEvent) {
       if (event.key !== 'Tab') return
@@ -124,11 +125,11 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
 
     dialog.addEventListener('keydown', trapFocus)
     return () => dialog.removeEventListener('keydown', trapFocus)
-  }, [])
+  }, [isPresent])
 
   useEffect(() => {
     const dialog = dialogRef.current
-    if (!dialog) return
+    if (!dialog || !isPresent) return
     const activeDialog: HTMLElement = dialog
 
     function keepFocusInDialog(event: FocusEvent) {
@@ -139,7 +140,7 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
 
     document.addEventListener('focusin', keepFocusInDialog)
     return () => document.removeEventListener('focusin', keepFocusInDialog)
-  }, [])
+  }, [isPresent])
 
   return (
     <motionElement.aside

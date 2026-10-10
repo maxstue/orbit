@@ -14,7 +14,7 @@ import { m } from '@/paraglide/messages.js'
 import { getAdjacentWorld, worlds, type Locale, type WorldId } from './data/worlds'
 import { LocalizedLink } from './i18n/LocalizedLink'
 import { getWorldCopy } from './i18n/world-copy'
-import { Planet } from './Planet'
+import { OrbitalCompanions, Planet } from './Planet'
 import { SpaceDebris } from './SpaceDebris'
 import { objectCursorStyles, type ObjectCursor } from './object-cursor'
 import { TransmissionDialog } from './transmissions/TransmissionDialog'
@@ -67,12 +67,12 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   const [isChangingLanguage, setIsChangingLanguage] = useState(false)
   const [themePreference, setThemePreference] = useState<ThemePreference>('system')
   const [objectCursor, setObjectCursor] = useState<ObjectCursor>()
+  const [isHydrated, setIsHydrated] = useState(false)
   const languageMenu = useRef<HTMLDivElement>(null)
   const themeMenu = useRef<HTMLDivElement>(null)
   const languageMenuTrigger = useRef<HTMLButtonElement>(null)
   const themeMenuTrigger = useRef<HTMLButtonElement>(null)
   const languageTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  const focusTimer = useRef<number | undefined>(undefined)
   const previouslySelectedSignal = useRef<WorldId | undefined>(selectedSignal)
   const hasLoadedTheme = useRef(false)
 
@@ -137,6 +137,8 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
 
   useEffect(() => () => clearTimeout(languageTimer.current), [])
 
+  useEffect(() => setIsHydrated(true), [])
+
   useEffect(() => {
     if (objectCursor) {
       const cursor = objectCursorStyles[objectCursor]
@@ -157,16 +159,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
   }, [objectCursor])
 
   useEffect(() => {
-    const closingSignal = previouslySelectedSignal.current
-    previouslySelectedSignal.current = selectedSignal
-
-    if (selectedSignal || !closingSignal) return
-
-    focusTimer.current = window.setTimeout(() => {
-      document.querySelector<HTMLElement>(`[data-signal="${closingSignal}"]`)?.focus()
-    }, 260)
-
-    return () => clearTimeout(focusTimer.current)
+    if (selectedSignal) previouslySelectedSignal.current = selectedSignal
   }, [selectedSignal])
 
   useEffect(() => {
@@ -348,6 +341,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                 variant="ghost"
                 type="button"
                 aria-label={m.theme_switch_label({}, options)}
+                disabled={!isHydrated}
                 aria-expanded={isThemeMenuOpen}
                 aria-controls="theme-menu"
                 aria-haspopup="menu"
@@ -466,7 +460,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
               className="language-ship group h-auto min-h-11 min-w-11 rounded-none bg-transparent p-0 text-left hover:bg-transparent"
               variant="ghost"
               type="button"
-              disabled={isChangingLanguage}
+              disabled={!isHydrated || isChangingLanguage}
               aria-label={m.language_ship_label({}, options)}
               aria-expanded={isLanguageMenuOpen}
               aria-controls="language-bubble"
@@ -552,7 +546,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
             aria-label={m.home_signal_label({}, options)}
             onClick={() => openSignal('home')}
           >
-            <Planet worldId="home" onObjectCursorChange={toggleObjectCursor} />
+            <Planet worldId="home" />
           </Button>
 
           {worlds.slice(1).map((world, index) => {
@@ -595,7 +589,7 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                         aria-label={`${copy.label}: ${copy.description}`}
                         onClick={() => openSignal(world.id)}
                       >
-                        <Planet worldId={world.id} onObjectCursorChange={toggleObjectCursor} />
+                        <Planet worldId={world.id} showCompanions={false} />
                         <motionElement.span
                           className={`world-label pointer-events-none absolute top-1/2 flex w-[210px] -translate-y-1/2 flex-col gap-1 max-[900px]:hidden ${world.id === 'comms' ? 'right-[calc(100%+23px)] text-right' : 'left-[calc(100%+24px)]'}`}
                           initial={
@@ -617,6 +611,13 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
                           </em>
                         </motionElement.span>
                       </Button>
+                      <OrbitalCompanions
+                        worldId={world.id}
+                        onObjectCursorChange={isHydrated ? toggleObjectCursor : undefined}
+                        satelliteLabel={
+                          locale === 'de' ? 'Satelliten-Cursor verwenden' : 'Use satellite cursor'
+                        }
+                      />
                     </motionElement.div>
                   </div>
                 </motionElement.div>
@@ -662,7 +663,14 @@ export function FieldLog({ locale, selectedSignal }: FieldLogProps) {
           onClick={closeTransmission}
         />
 
-        <AnimatePresence initial={false}>
+        <AnimatePresence
+          initial={false}
+          onExitComplete={() => {
+            if (selectedSignal) return
+            const signal = previouslySelectedSignal.current
+            document.querySelector<HTMLElement>(`[data-signal="${signal}"]`)?.focus()
+          }}
+        >
           {selectedSignal && (
             <TransmissionDialog
               key="transmission"

@@ -13,15 +13,22 @@ export function createSentryClient(router: TanStackRouter) {
     dsn,
     dataCollection: {
       userInfo: false,
+      cookies: false,
+      httpHeaders: { request: false, response: false },
       httpBodies: [],
+      urlQueryParams: false,
+      genAI: { inputs: false, outputs: false },
+      databaseQueryData: false,
+      queues: false,
+      graphQL: { document: false, variables: false },
     },
-    enableLogs: true,
     environment:
       readOptionalSetting(import.meta.env.VITE_SENTRY_ENVIRONMENT) ?? import.meta.env.MODE,
     integrations: [Sentry.tanstackRouterBrowserTracingIntegration(router)],
     release: readOptionalSetting(import.meta.env.VITE_SENTRY_RELEASE),
-    sendDefaultPii: false,
     tracesSampleRate: sentryTraceSampleRate,
+    // Keep transaction sanitization active with Sentry 11.
+    traceLifecycle: 'static',
     beforeSend: sanitizeSentryEvent,
     beforeSendTransaction: sanitizeSentryEvent,
   })

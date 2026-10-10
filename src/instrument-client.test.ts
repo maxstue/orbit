@@ -39,7 +39,18 @@ describe('createSentryClient', () => {
     expect(sentry.init).toHaveBeenCalledWith(
       expect.objectContaining({
         dsn: 'https://public@example.invalid/1',
-        sendDefaultPii: false,
+        dataCollection: {
+          userInfo: false,
+          cookies: false,
+          httpHeaders: { request: false, response: false },
+          httpBodies: [],
+          urlQueryParams: false,
+          genAI: { inputs: false, outputs: false },
+          databaseQueryData: false,
+          queues: false,
+          graphQL: { document: false, variables: false },
+        },
+        traceLifecycle: 'static',
         tracesSampleRate: 0.05,
       }),
     )
