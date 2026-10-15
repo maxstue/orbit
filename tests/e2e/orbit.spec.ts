@@ -217,6 +217,7 @@ test('switches view shortcuts without duplicate registrations', async ({ page })
   await expect(page.getByRole('button', { name: 'Open appearance selection' })).toBeEnabled()
 
   for (let cycle = 0; cycle < 2; cycle++) {
+    await expect(page.getByRole('button', { name: 'Open language selection' })).toBeEnabled()
     await page.getByRole('link', { name: 'READING MODE', exact: true }).click()
     await expect(page.getByRole('heading', { name: "Hey, I'm Max." })).toBeVisible()
     await expect

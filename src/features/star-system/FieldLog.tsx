@@ -1,13 +1,14 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import { useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
-import { AnimatePresence, LazyMotion, domAnimation, useReducedMotion } from 'motion/react'
+import { AnimatePresence, LazyMotion, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { MonitorCog, MoonStar, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { updateObservabilityContext } from '@/lib/observability/context'
 import { m } from '@/paraglide/messages.js'
+import { Errors } from '@/lib/observability/errors'
 
 import { worlds, type Locale, type WorldId } from './data/worlds'
 import { LocalizedLink } from './i18n/LocalizedLink'
@@ -27,6 +28,9 @@ const OrbitScene = lazy(() => loadOrbitScene().then((module) => ({ default: modu
 const ReadingMode = lazy(() =>
   loadReadingMode().then((module) => ({ default: module.ReadingMode })),
 )
+
+const loadMotionFeatures = () =>
+  import('./transmissions/motion-features').then((module) => module.default)
 
 const worldHotkeys = ['1', '2', '3', '4', '5'] as const
 
@@ -103,6 +107,20 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
   useEffect(() => setIsHydrated(true), [])
 
   useEffect(() => {
+    const preloadMotion = () => {
+      void loadMotionFeatures().catch((error: unknown) =>
+        Errors.captureUiDegradation('motion-init', error),
+      )
+    }
+    const idleCallback = window.requestIdleCallback?.(preloadMotion)
+    if (idleCallback === undefined) {
+      const timer = window.setTimeout(preloadMotion, 250)
+      return () => window.clearTimeout(timer)
+    }
+    return () => window.cancelIdleCallback(idleCallback)
+  }, [])
+
+  useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const updateContext = () =>
       updateObservabilityContext({
@@ -166,7 +184,7 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
   }, [isThemeMenuOpen, closeThemeMenu])
 
   return (
-    <LazyMotion features={domAnimation} strict>
+    <LazyMotion features={loadMotionFeatures} strict>
       <main
         className={`system booted relative min-h-svh bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)] ${isReading ? 'reading flex flex-col' : 'overflow-hidden'}`}
       >
