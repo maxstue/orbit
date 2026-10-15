@@ -1,10 +1,16 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import { worlds, type Locale, type WorldId } from '../data/worlds'
 import { AnimatePresence, useIsPresent, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { getWorldCopy } from '../i18n/world-copy'
 import { Planet } from '../Planet'
 import { getTransmission } from './content'
+import {
+  MissionLog,
+  TransmissionDetails,
+  TransmissionDownloads,
+  TransmissionQuote,
+} from './TransmissionContent'
 import { getTransmissionMotion } from './transmission-motion'
 import { Button } from '@/components/ui/button'
 import { m } from '@/paraglide/messages.js'
@@ -14,6 +20,8 @@ type TransmissionDialogProps = {
   signal: WorldId
   onClose: () => void
   onSelect: (signal: WorldId) => void
+  /** Extra header control next to DISCONNECT, e.g. the switch into reading mode. */
+  headerAction?: ReactNode
 }
 
 const signalGraphHeights = [42, 78, 55, 92, 48, 84, 36, 68, 57, 88, 45, 73, 38, 82, 62, 94, 51, 76]
@@ -63,7 +71,13 @@ function SignalGraph({
   )
 }
 
-export function TransmissionDialog({ locale, signal, onClose, onSelect }: TransmissionDialogProps) {
+export function TransmissionDialog({
+  locale,
+  signal,
+  onClose,
+  onSelect,
+  headerAction,
+}: TransmissionDialogProps) {
   const reduceMotion = useReducedMotion()
   const isPresent = useIsPresent()
   const dialogRef = useRef<HTMLElement>(null)
@@ -280,19 +294,22 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           {m.incoming_transmission({}, options)}
         </div>
         <span className="text-[var(--cyan)] max-[620px]:hidden">{transmission.channel}</span>
-        <Button
-          ref={closeButtonRef}
-          className="h-auto min-h-11 min-w-11 justify-self-end rounded-none px-0 py-0 text-[inherit] tracking-[inherit] hover:bg-transparent max-[620px]:text-[0]"
-          variant="ghost"
-          type="button"
-          onClick={onClose}
-          aria-label={m.close_transmission({}, options)}
-        >
-          {m.disconnect({}, options)}{' '}
-          <kbd className="ml-[9px] border p-[4px_7px] font-mono text-[8px] shadow-[2px_2px]">
-            ESC
-          </kbd>
-        </Button>
+        <div className="flex items-center justify-self-end gap-6 max-[620px]:gap-2">
+          {headerAction}
+          <Button
+            ref={closeButtonRef}
+            className="h-auto min-h-11 min-w-11 rounded-none px-0 py-0 text-[inherit] tracking-[inherit] hover:bg-transparent max-[620px]:text-[0]"
+            variant="ghost"
+            type="button"
+            onClick={onClose}
+            aria-label={m.close_transmission({}, options)}
+          >
+            {m.disconnect({}, options)}{' '}
+            <kbd className="ml-[9px] border p-[4px_7px] font-mono text-[8px] shadow-[2px_2px]">
+              ESC
+            </kbd>
+          </Button>
+        </div>
       </header>
 
       <motionElement.div
@@ -379,112 +396,12 @@ export function TransmissionDialog({ locale, signal, onClose, onSelect }: Transm
           <p className="text-[15px] leading-[1.6] text-[#c7c7bd]" id="transmission-lead">
             {transmission.lead}
           </p>
-          {transmission.details.length > 0 && (
-            <dl className="my-[30px] mt-[35px] border-t border-[var(--line)]">
-              {transmission.details.map((detail) => (
-                <div
-                  className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
-                  key={detail.label}
-                >
-                  <dt className="font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] uppercase">
-                    {detail.label}
-                  </dt>
-                  <dd className="m-0 font-mono text-xs leading-[1.4]">
-                    {detail.href ? (
-                      <a
-                        className="text-[var(--lime)]"
-                        href={detail.href}
-                        target={detail.href.startsWith('http') ? '_blank' : undefined}
-                        rel={detail.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      >
-                        {detail.value}
-                      </a>
-                    ) : (
-                      detail.value
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          )}
+          <TransmissionDetails details={transmission.details} />
           {transmission.missionLog && (
-            <section className="mt-8" aria-label={m.workbench_mission_log_label({}, options)}>
-              <div className="mb-4 flex items-center gap-3 font-mono text-[8px] tracking-[0.15em] text-[var(--cyan)]">
-                <span className="h-px flex-1 bg-[var(--line)]" />
-                {m.workbench_mission_log_label({}, options)}
-                <span className="h-px flex-1 bg-[var(--line)]" />
-              </div>
-              <ol className="relative ml-1 border-l border-[var(--line)] pl-5">
-                {transmission.missionLog.map((mission) => (
-                  <li
-                    className="relative pb-7 last:pb-0"
-                    key={`${mission.period}-${mission.organization}`}
-                  >
-                    <span
-                      className={`absolute top-1 -left-[25px] size-2 rounded-full border ${mission.current ? 'border-[var(--lime)] bg-[var(--lime)] shadow-[0_0_0_5px_rgb(220_239_104_/_10%),0_0_12px_var(--lime)]' : 'border-[var(--dim)] bg-[var(--space)]'}`}
-                      aria-hidden="true"
-                    />
-                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[8px] tracking-[0.11em]">
-                      <span className="text-[var(--dim)]">{mission.period}</span>
-                      <span
-                        className={mission.current ? 'text-[var(--lime)]' : 'text-[var(--cyan)]'}
-                      >
-                        {mission.current && (
-                          <i className="mr-1.5 inline-block size-1.5 animate-pulse rounded-full bg-current" />
-                        )}
-                        {mission.status}
-                      </span>
-                    </div>
-                    <h3 className="text-lg leading-tight tracking-[-0.025em] text-[var(--paper)]">
-                      {mission.title}
-                    </h3>
-                    <p className="mt-1 font-mono text-[9px] tracking-[0.08em] text-[var(--coral)]">
-                      {mission.organization}
-                    </p>
-                    <p className="mt-3 text-[13px] leading-[1.55] text-[#c7c7bd]">
-                      {mission.summary}
-                    </p>
-                    <ul
-                      className="mt-3 flex flex-wrap gap-1.5"
-                      aria-label={m.workbench_mission_tools_label({}, options)}
-                    >
-                      {mission.tags.map((tag) => (
-                        <li
-                          className="border border-[var(--line)] px-2 py-1 font-mono text-[7px] tracking-[0.08em] text-[var(--dim)]"
-                          key={tag}
-                        >
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ol>
-            </section>
+            <MissionLog missions={transmission.missionLog} locale={locale} />
           )}
-          {transmission.downloads && (
-            <div className="grid grid-cols-2 gap-3 max-[620px]:grid-cols-1">
-              {transmission.downloads.map((download) => (
-                <a
-                  className="group flex min-h-12 items-center justify-between border border-[var(--cyan)] px-4 font-mono text-[9px] tracking-[0.09em] text-[var(--cyan)] no-underline transition-colors hover:bg-[var(--cyan)] hover:text-[var(--space)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]"
-                  href={download.href}
-                  download
-                  key={download.href}
-                >
-                  {download.label}
-                  <span
-                    aria-hidden="true"
-                    className="text-base transition-transform group-hover:translate-y-0.5"
-                  >
-                    ↓
-                  </span>
-                </a>
-              ))}
-            </div>
-          )}
-          <blockquote className="mt-[25px] border-l-[3px] border-[var(--coral)] py-1.5 pl-[18px] font-mono text-sm leading-[1.5] font-bold text-[var(--paper)]">
-            {transmission.quote}
-          </blockquote>
+          {transmission.downloads && <TransmissionDownloads downloads={transmission.downloads} />}
+          <TransmissionQuote quote={transmission.quote} />
         </motionElement.article>
       </motionElement.div>
 

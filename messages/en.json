@@ -5,7 +5,6 @@
   "choose_destination_prefix": "Choose a",
   "choose_destination_accent": "destination.",
   "field_intro": "Every orbit carries a small piece of me. Select a planet, open its signal, and look around.",
-  "about_system": "ABOUT THIS SYSTEM",
   "orbit_destinations": "Orbit destinations",
   "meta_home_title": "Max's Orbit",
   "meta_home_description": "Welcome to Max's orbit — work, current focus, side quests, and a way to say hi.",
@@ -165,5 +164,18 @@
   "theme_current": "Theme: {theme}",
   "theme_switch_label": "Open appearance selection",
   "theme_choose": "Choose appearance",
-  "theme_active": "ACTIVE"
+  "theme_active": "ACTIVE",
+  "view_switch_label": "View",
+  "view_orbit": "ORBIT VIEW",
+  "view_reading": "READING MODE",
+  "reading_kicker": "FIELD LOG / READING MODE",
+  "reading_title_prefix": "Every signal,",
+  "reading_title_accent": "decoded.",
+  "reading_intro": "Every signal carries a small piece of me – who I am, what I build, and what keeps me going away from the screen. Just scroll down and read.",
+  "reading_index_label": "CONTENTS · 05 SIGNALS",
+  "reading_index_navigation": "Transmissions in reading mode",
+  "reading_signal_count": "SIGNAL {current} / {total}",
+  "reading_end": "END OF TRANSMISSION",
+  "reading_back_to_orbit": "RETURN TO ORBIT ↗",
+  "language_switch_label": "Language"
 }

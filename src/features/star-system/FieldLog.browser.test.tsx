@@ -40,7 +40,9 @@ test('offers theme and language controls through browser locators', async () => 
 })
 
 test('uses number, arrow, and escape keys to request signal navigation', async () => {
-  await render(<FieldLog locale="en" selectedSignal="workbench" />)
+  const screen = await render(<FieldLog locale="en" selectedSignal="workbench" />)
+  // The orbit scene is lazy loaded and owns the navigation keys.
+  await expect.element(screen.getByRole('dialog')).toBeVisible()
 
   await userEvent.keyboard('3')
   await userEvent.keyboard('{ArrowRight}')
@@ -67,6 +69,7 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   const screen = await render(<FieldLog locale="en" />)
 
   const satellite = screen.getByRole('button', { name: 'Use satellite cursor' })
+  await expect.element(satellite).toBeInTheDocument()
   const satelliteButton = satellite.element() as HTMLButtonElement
   expect(satelliteButton.parentElement?.closest('button')).toBeNull()
   await satellite.click()
