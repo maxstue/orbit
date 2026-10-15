@@ -158,7 +158,7 @@ export function SpaceDebris({
   onObjectCursorChange?: (cursor: ObjectCursor) => void
 }) {
   const reduceMotion = useReducedMotion()
-  const particleRefs = useRef<Array<HTMLSpanElement | null>>([])
+  const particleRefs = useRef<Array<HTMLButtonElement | null>>([])
   const bodyRefs = useRef<Array<HTMLElement | null>>([])
   const tailRefs = useRef<Array<HTMLElement | null>>([])
   const explosionRefs = useRef<Array<HTMLSpanElement | null>>([])
@@ -223,21 +223,15 @@ export function SpaceDebris({
           >
             <i className="relative block size-3 -translate-1/2 rounded-full border border-[#ffbd68] bg-[radial-gradient(circle,#fff4bd_0_8%,#ff9a50_28%,#ff4f2f_52%,transparent_72%)] shadow-[0_0_6px_#ffb15c,0_0_14px_#ff5b35,0_0_24px_rgb(255_79_47_/_58%)] before:absolute before:top-1/2 before:left-1/2 before:h-px before:w-6 before:-translate-1/2 before:bg-[linear-gradient(90deg,transparent,#ffbd68,transparent)] after:absolute after:top-1/2 after:left-1/2 after:h-6 after:w-px after:-translate-1/2 after:bg-[linear-gradient(transparent,#ffbd68,transparent)]" />
           </span>
-          <span
+          <button
+            type="button"
             ref={(element) => {
               particleRefs.current[index] = element
             }}
-            className="pointer-events-auto absolute top-0 left-0 block cursor-crosshair opacity-0 transition-opacity duration-150"
+            className="pointer-events-auto absolute top-0 left-0 block cursor-crosshair border-0 bg-transparent p-0 opacity-0 transition-opacity duration-150"
             data-object-cursor={item.kind}
-            role="button"
             tabIndex={-1}
             onClick={(event) => {
-              event.stopPropagation()
-              onObjectCursorChange?.(item.kind)
-            }}
-            onKeyDown={(event) => {
-              if (event.key !== 'Enter' && event.key !== ' ') return
-              event.preventDefault()
               event.stopPropagation()
               onObjectCursorChange?.(item.kind)
             }}
@@ -260,7 +254,7 @@ export function SpaceDebris({
                   : 'relative block h-3 w-4 [clip-path:polygon(18%_0,78%_8%,100%_42%,81%_88%,36%_100%,0_68%,6%_25%)] bg-[#777d78] shadow-[inset_-4px_-3px_rgb(12_16_17_/_38%),0_0_10px_rgb(242_238_225_/_13%)] after:absolute after:top-[2px] after:left-[4px] after:size-[3px] after:rounded-full after:bg-[rgb(12_16_17_/_28%)]'
               }
             />
-          </span>
+          </button>
         </span>
       ))}
     </div>

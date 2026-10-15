@@ -83,6 +83,28 @@ export function OrbitalCompanions({
       <span className="relative block h-[7px] w-3 rounded-[2px] border border-[var(--paper)] bg-[#263536] shadow-[0_0_9px_rgb(90_217_210_/_35%)] before:absolute before:top-1/2 before:right-full before:h-1 before:w-2 before:-translate-y-1/2 before:border before:border-[var(--cyan)] before:bg-[rgb(90_217_210_/_28%)] after:absolute after:top-1/2 after:left-full after:h-1 after:w-2 after:-translate-y-1/2 after:border after:border-[var(--cyan)] after:bg-[rgb(90_217_210_/_28%)]" />
     )
 
+    let companionVisual = (
+      <span
+        className={`block rounded-full border border-[rgb(242_238_225_/_65%)] shadow-[inset_-2px_-2px_rgb(0_0_0_/_20%),0_0_8px_rgb(242_238_225_/_18%)] ${companion.visualClassName}`}
+      />
+    )
+    if (companion.kind === 'satellite') {
+      companionVisual = satelliteVisual
+      if (onObjectCursorChange) {
+        companionVisual = (
+          <button
+            type="button"
+            aria-label={satelliteLabel}
+            className="pointer-events-auto absolute top-1/2 left-1/2 grid size-7 -translate-1/2 cursor-crosshair place-items-center border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]"
+            data-object-cursor="satellite"
+            onClick={() => onObjectCursorChange('satellite')}
+          >
+            {satelliteVisual}
+          </button>
+        )
+      }
+    }
+
     return (
       <span
         className={`pointer-events-none absolute top-1/2 left-1/2 z-4 -translate-1/2 ${companion.orbitClassName}`}
@@ -98,27 +120,7 @@ export function OrbitalCompanions({
               : { duration: companion.duration, ease: 'linear', repeat: Infinity }
           }
         >
-          <span className="absolute top-1/2 -right-px -translate-y-1/2">
-            {companion.kind === 'satellite' ? (
-              onObjectCursorChange ? (
-                <button
-                  type="button"
-                  aria-label={satelliteLabel}
-                  className="pointer-events-auto absolute top-1/2 left-1/2 grid size-7 -translate-1/2 cursor-crosshair place-items-center border-0 bg-transparent p-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lime)]"
-                  data-object-cursor="satellite"
-                  onClick={() => onObjectCursorChange('satellite')}
-                >
-                  {satelliteVisual}
-                </button>
-              ) : (
-                satelliteVisual
-              )
-            ) : (
-              <span
-                className={`block rounded-full border border-[rgb(242_238_225_/_65%)] shadow-[inset_-2px_-2px_rgb(0_0_0_/_20%),0_0_8px_rgb(242_238_225_/_18%)] ${companion.visualClassName}`}
-              />
-            )}
-          </span>
+          <span className="absolute top-1/2 -right-px -translate-y-1/2">{companionVisual}</span>
         </motionElement.span>
       </span>
     )

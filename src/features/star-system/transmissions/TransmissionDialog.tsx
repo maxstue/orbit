@@ -71,6 +71,191 @@ function SignalGraph({
   )
 }
 
+function TransmissionTuning({
+  locale,
+  signal,
+  tuningFrame,
+}: {
+  locale: Locale
+  signal: WorldId
+  tuningFrame: number
+}) {
+  const reduceMotion = useReducedMotion()
+  const activeIndex = worlds.findIndex((world) => world.id === signal)
+  const tuningCopy =
+    locale === 'de'
+      ? { label: 'SIGNAL WIRD SYNCHRONISIERT', phase: 'TRÄGERWELLE WIRD DEKODIERT' }
+      : { label: 'ACQUIRING SIGNAL', phase: 'DECODING CARRIER WAVE' }
+  return (
+    <motionElement.div
+      className="pointer-events-none absolute top-16 right-0 bottom-[58px] left-0 z-6 grid grid-cols-[250px_1fr] gap-[45px] overflow-hidden bg-[var(--transmission-background)] px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:top-[58px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7"
+      role="status"
+      aria-live="polite"
+      initial={reduceMotion ? false : { opacity: 0 }}
+      animate={{ opacity: reduceMotion ? 1 : [0.72, 1, 0.86, 1] }}
+      exit={{ opacity: 0 }}
+      transition={{
+        duration: reduceMotion ? 0 : 0.38,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+    >
+      {!reduceMotion && (
+        <motionElement.div
+          className="absolute inset-y-0 z-2 w-[46%] bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--cyan)_28%,transparent),color-mix(in_srgb,var(--paper)_14%,transparent),transparent)] opacity-80 mix-blend-screen blur-sm transition-[left] duration-100 ease-linear"
+          aria-hidden="true"
+          style={{ left: `${-42 + tuningFrame * 15}%` }}
+        />
+      )}
+      <div
+        className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
+        aria-hidden="true"
+      >
+        <div className="grid h-[190px] place-items-center max-[620px]:h-[95px]">
+          <div className="relative grid size-[132px] place-items-center rounded-full border border-dashed border-[color-mix(in_srgb,var(--cyan)_42%,transparent)] max-[620px]:size-[74px]">
+            <motionElement.div
+              className={`signal-planet signal-planet-${signal} absolute inset-0 z-0 grid place-items-center saturate-50`}
+              initial={reduceMotion ? false : { opacity: 0, scale: 1.14, filter: 'blur(4px)' }}
+              animate={{ opacity: 0.25, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.48,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <Planet worldId={signal} />
+            </motionElement.div>
+            <div className="absolute inset-[13%] z-1 rounded-full border border-[color-mix(in_srgb,var(--cyan)_24%,transparent)]" />
+            <div className="absolute top-1/2 left-1/2 z-1 h-px w-[76%] -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
+            <div className="absolute top-1/2 left-1/2 z-1 h-[76%] w-px -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
+            <div
+              className="absolute inset-0 z-2 rounded-full transition-transform duration-100 ease-linear"
+              style={{ transform: `rotate(${reduceMotion ? 0 : tuningFrame * 12}deg)` }}
+            >
+              <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0_82%,color-mix(in_srgb,var(--cyan)_30%,transparent)_92%,transparent_100%)]" />
+              <i className="absolute top-0 left-1/2 h-1/2 w-px -translate-x-1/2 bg-[linear-gradient(to_bottom,var(--cyan),transparent)] shadow-[0_0_7px_var(--cyan)]" />
+              <i className="absolute top-[-3px] left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-[var(--lime)] shadow-[0_0_9px_var(--lime)]" />
+            </div>
+          </div>
+        </div>
+        <SignalGraph loading loadingFrame={tuningFrame} reduceMotion={Boolean(reduceMotion)} />
+        <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
+          SIGNAL SEARCH // {String(activeIndex + 1).padStart(2, '0')}
+        </small>
+      </div>
+
+      <motionElement.div
+        aria-hidden="true"
+        animate={reduceMotion ? undefined : { opacity: [0.62, 0.9, 0.7, 1] }}
+        transition={{
+          delay: 0.12,
+          duration: 1.2,
+          ease: 'easeInOut',
+          repeat: Infinity,
+          repeatType: 'mirror',
+        }}
+      >
+        <div className="mb-5 h-2 w-28 bg-[color-mix(in_srgb,var(--coral)_38%,transparent)]" />
+        <div className="mb-3 h-10 w-[82%] bg-[color-mix(in_srgb,var(--paper)_16%,transparent)] max-[620px]:h-7" />
+        <div className="mb-8 h-10 w-[58%] bg-[color-mix(in_srgb,var(--paper)_11%,transparent)] max-[620px]:h-7" />
+
+        <div className="space-y-3">
+          <div className="h-2.5 w-full bg-[color-mix(in_srgb,var(--paper)_16%,transparent)]" />
+          <div className="h-2.5 w-[92%] bg-[color-mix(in_srgb,var(--paper)_13%,transparent)]" />
+          <div className="h-2.5 w-[68%] bg-[color-mix(in_srgb,var(--paper)_10%,transparent)]" />
+        </div>
+
+        <div className="mt-[35px] border-t border-[var(--line)]">
+          {[74, 88, 62, 80].map((width, index) => (
+            <div
+              className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
+              key={index}
+            >
+              <div className="h-2 w-14 bg-[color-mix(in_srgb,var(--dim)_28%,transparent)]" />
+              <div
+                className="h-2 bg-[color-mix(in_srgb,var(--cyan)_24%,transparent)]"
+                style={{ width: `${width}%` }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-7 border-l-[3px] border-[color-mix(in_srgb,var(--coral)_38%,transparent)] py-1 pl-[18px]">
+          <div className="h-2.5 w-[76%] bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]" />
+        </div>
+        <p className="mt-6 font-mono text-[7px] tracking-[0.13em] text-[var(--cyan)]">
+          {tuningCopy.label}
+          {' // '}
+          {tuningCopy.phase}
+        </p>
+      </motionElement.div>
+    </motionElement.div>
+  )
+}
+
+function TransmissionVisual({
+  locale,
+  signal,
+  isTuning,
+}: {
+  locale: Locale
+  signal: WorldId
+  isTuning: boolean
+}) {
+  const reduceMotion = useReducedMotion()
+  const transmission = getTransmission(signal, locale)
+  const options = { locale }
+  return (
+    <motionElement.div
+      className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
+      aria-hidden="true"
+    >
+      <motionElement.div
+        className={`signal-planet signal-planet-${signal} grid h-[190px] place-items-center bg-[radial-gradient(circle,rgb(90_217_210_/_12%),transparent_65%)] max-[620px]:h-[95px]`}
+        animate={
+          reduceMotion
+            ? undefined
+            : {
+                opacity: isTuning ? 0 : 1,
+                scale: isTuning ? 0.94 : 1,
+                filter: isTuning ? 'blur(3px)' : 'blur(0px)',
+                y: [0, -3, 0, 2, 0],
+                rotate: signal === 'home' ? [-1.5, 1.5, -1.5] : [0, 360],
+              }
+        }
+        transition={{
+          opacity: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+          scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+          filter: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+          y: { duration: 7, ease: 'easeInOut', repeat: Infinity },
+          rotate: {
+            duration: signal === 'home' ? 9 : 36,
+            ease: signal === 'home' ? 'easeInOut' : 'linear',
+            repeat: Infinity,
+          },
+        }}
+      >
+        {transmission.portrait ? (
+          <div className="portrait-scan relative size-[115px] overflow-hidden rounded-full border border-[rgb(255_226_167_/_88%)] bg-[var(--space)] shadow-[0_0_0_7px_rgb(90_217_210_/_8%),0_0_30px_rgb(90_217_210_/_16%)] max-[620px]:size-[74px]">
+            <img
+              className="h-full w-full object-cover object-[50%_24%] grayscale contrast-110 saturate-0"
+              src={transmission.portrait.src}
+              alt={transmission.portrait.alt}
+            />
+            <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--cyan)_22%,transparent),transparent_45%,color-mix(in_srgb,var(--coral)_13%,transparent))] mix-blend-color" />
+            <span className="pointer-events-none absolute inset-0 rounded-full border border-inset border-[rgb(242_238_225_/_18%)]" />
+          </div>
+        ) : (
+          <Planet worldId={signal} />
+        )}
+      </motionElement.div>
+      <SignalGraph reduceMotion={Boolean(reduceMotion)} />
+      <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
+        {m.signal_locked({}, options)}
+      </small>
+    </motionElement.div>
+  )
+}
+
 export function TransmissionDialog({
   locale,
   signal,
@@ -90,10 +275,6 @@ export function TransmissionDialog({
   const next = worlds[(activeIndex + 1) % worlds.length]
   const options = { locale }
   const panelMotion = getTransmissionMotion(reduceMotion)
-  const tuningCopy =
-    locale === 'de'
-      ? { label: 'SIGNAL WIRD SYNCHRONISIERT', phase: 'TRÄGERWELLE WIRD DEKODIERT' }
-      : { label: 'ACQUIRING SIGNAL', phase: 'DECODING CARRIER WAVE' }
 
   useLayoutEffect(() => {
     setIsTuning(true)
@@ -175,114 +356,7 @@ export function TransmissionDialog({
       />
       <AnimatePresence initial={false}>
         {isTuning && (
-          <motionElement.div
-            className="pointer-events-none absolute top-16 right-0 bottom-[58px] left-0 z-6 grid grid-cols-[250px_1fr] gap-[45px] overflow-hidden bg-[var(--transmission-background)] px-12 py-[50px] max-[900px]:grid-cols-[190px_1fr] max-[900px]:gap-[30px] max-[900px]:px-[30px] max-[900px]:py-[35px] max-[620px]:top-[58px] max-[620px]:block max-[620px]:px-[23px] max-[620px]:py-7"
-            role="status"
-            aria-live="polite"
-            initial={reduceMotion ? false : { opacity: 0 }}
-            animate={{ opacity: reduceMotion ? 1 : [0.72, 1, 0.86, 1] }}
-            exit={{ opacity: 0 }}
-            transition={{
-              duration: reduceMotion ? 0 : 0.38,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            {!reduceMotion && (
-              <motionElement.div
-                className="absolute inset-y-0 z-2 w-[46%] bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--cyan)_28%,transparent),color-mix(in_srgb,var(--paper)_14%,transparent),transparent)] opacity-80 mix-blend-screen blur-sm transition-[left] duration-100 ease-linear"
-                aria-hidden="true"
-                style={{ left: `${-42 + tuningFrame * 15}%` }}
-              />
-            )}
-            <div
-              className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
-              aria-hidden="true"
-            >
-              <div className="grid h-[190px] place-items-center max-[620px]:h-[95px]">
-                <div className="relative grid size-[132px] place-items-center rounded-full border border-dashed border-[color-mix(in_srgb,var(--cyan)_42%,transparent)] max-[620px]:size-[74px]">
-                  <motionElement.div
-                    className={`signal-planet signal-planet-${signal} absolute inset-0 z-0 grid place-items-center saturate-50`}
-                    initial={
-                      reduceMotion ? false : { opacity: 0, scale: 1.14, filter: 'blur(4px)' }
-                    }
-                    animate={{ opacity: 0.25, scale: 1, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, scale: 0.96, filter: 'blur(2px)' }}
-                    transition={{
-                      duration: reduceMotion ? 0 : 0.48,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    <Planet worldId={signal} />
-                  </motionElement.div>
-                  <div className="absolute inset-[13%] z-1 rounded-full border border-[color-mix(in_srgb,var(--cyan)_24%,transparent)]" />
-                  <div className="absolute top-1/2 left-1/2 z-1 h-px w-[76%] -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
-                  <div className="absolute top-1/2 left-1/2 z-1 h-[76%] w-px -translate-1/2 bg-[color-mix(in_srgb,var(--cyan)_22%,transparent)]" />
-                  <div
-                    className="absolute inset-0 z-2 rounded-full transition-transform duration-100 ease-linear"
-                    style={{ transform: `rotate(${reduceMotion ? 0 : tuningFrame * 12}deg)` }}
-                  >
-                    <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_0deg,transparent_0_82%,color-mix(in_srgb,var(--cyan)_30%,transparent)_92%,transparent_100%)]" />
-                    <i className="absolute top-0 left-1/2 h-1/2 w-px -translate-x-1/2 bg-[linear-gradient(to_bottom,var(--cyan),transparent)] shadow-[0_0_7px_var(--cyan)]" />
-                    <i className="absolute top-[-3px] left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-[var(--lime)] shadow-[0_0_9px_var(--lime)]" />
-                  </div>
-                </div>
-              </div>
-              <SignalGraph
-                loading
-                loadingFrame={tuningFrame}
-                reduceMotion={Boolean(reduceMotion)}
-              />
-              <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
-                SIGNAL SEARCH // {String(activeIndex + 1).padStart(2, '0')}
-              </small>
-            </div>
-
-            <motionElement.div
-              aria-hidden="true"
-              animate={reduceMotion ? undefined : { opacity: [0.62, 0.9, 0.7, 1] }}
-              transition={{
-                delay: 0.12,
-                duration: 1.2,
-                ease: 'easeInOut',
-                repeat: Infinity,
-                repeatType: 'mirror',
-              }}
-            >
-              <div className="mb-5 h-2 w-28 bg-[color-mix(in_srgb,var(--coral)_38%,transparent)]" />
-              <div className="mb-3 h-10 w-[82%] bg-[color-mix(in_srgb,var(--paper)_16%,transparent)] max-[620px]:h-7" />
-              <div className="mb-8 h-10 w-[58%] bg-[color-mix(in_srgb,var(--paper)_11%,transparent)] max-[620px]:h-7" />
-
-              <div className="space-y-3">
-                <div className="h-2.5 w-full bg-[color-mix(in_srgb,var(--paper)_16%,transparent)]" />
-                <div className="h-2.5 w-[92%] bg-[color-mix(in_srgb,var(--paper)_13%,transparent)]" />
-                <div className="h-2.5 w-[68%] bg-[color-mix(in_srgb,var(--paper)_10%,transparent)]" />
-              </div>
-
-              <div className="mt-[35px] border-t border-[var(--line)]">
-                {[74, 88, 62, 80].map((width, index) => (
-                  <div
-                    className="grid grid-cols-[110px_1fr] gap-4 border-b border-[var(--line)] py-3.5 max-[620px]:grid-cols-[90px_1fr]"
-                    key={index}
-                  >
-                    <div className="h-2 w-14 bg-[color-mix(in_srgb,var(--dim)_28%,transparent)]" />
-                    <div
-                      className="h-2 bg-[color-mix(in_srgb,var(--cyan)_24%,transparent)]"
-                      style={{ width: `${width}%` }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-7 border-l-[3px] border-[color-mix(in_srgb,var(--coral)_38%,transparent)] py-1 pl-[18px]">
-                <div className="h-2.5 w-[76%] bg-[color-mix(in_srgb,var(--paper)_14%,transparent)]" />
-              </div>
-              <p className="mt-6 font-mono text-[7px] tracking-[0.13em] text-[var(--cyan)]">
-                {tuningCopy.label}
-                {' // '}
-                {tuningCopy.phase}
-              </p>
-            </motionElement.div>
-          </motionElement.div>
+          <TransmissionTuning locale={locale} signal={signal} tuningFrame={tuningFrame} />
         )}
       </AnimatePresence>
       <header className="relative z-5 grid grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[22px] font-mono text-[8px] tracking-[0.12em] max-[620px]:grid-cols-[1fr_auto] max-[620px]:px-[15px]">
@@ -325,54 +399,7 @@ export function TransmissionDialog({
           ease: [0.22, 1, 0.36, 1],
         }}
       >
-        <motionElement.div
-          className="border-r border-[var(--line)] pr-[38px] max-[900px]:pr-[25px] max-[620px]:mb-[25px] max-[620px]:grid max-[620px]:grid-cols-[95px_1fr] max-[620px]:items-center max-[620px]:border-r-0 max-[620px]:border-b max-[620px]:pr-0 max-[620px]:pb-5"
-          aria-hidden="true"
-        >
-          <motionElement.div
-            className={`signal-planet signal-planet-${signal} grid h-[190px] place-items-center bg-[radial-gradient(circle,rgb(90_217_210_/_12%),transparent_65%)] max-[620px]:h-[95px]`}
-            animate={
-              reduceMotion
-                ? undefined
-                : {
-                    opacity: isTuning ? 0 : 1,
-                    scale: isTuning ? 0.94 : 1,
-                    filter: isTuning ? 'blur(3px)' : 'blur(0px)',
-                    y: [0, -3, 0, 2, 0],
-                    rotate: signal === 'home' ? [-1.5, 1.5, -1.5] : [0, 360],
-                  }
-            }
-            transition={{
-              opacity: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-              scale: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-              filter: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-              y: { duration: 7, ease: 'easeInOut', repeat: Infinity },
-              rotate: {
-                duration: signal === 'home' ? 9 : 36,
-                ease: signal === 'home' ? 'easeInOut' : 'linear',
-                repeat: Infinity,
-              },
-            }}
-          >
-            {transmission.portrait ? (
-              <div className="portrait-scan relative size-[115px] overflow-hidden rounded-full border border-[rgb(255_226_167_/_88%)] bg-[var(--space)] shadow-[0_0_0_7px_rgb(90_217_210_/_8%),0_0_30px_rgb(90_217_210_/_16%)] max-[620px]:size-[74px]">
-                <img
-                  className="h-full w-full object-cover object-[50%_24%] grayscale contrast-110 saturate-0"
-                  src={transmission.portrait.src}
-                  alt={transmission.portrait.alt}
-                />
-                <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,color-mix(in_srgb,var(--cyan)_22%,transparent),transparent_45%,color-mix(in_srgb,var(--coral)_13%,transparent))] mix-blend-color" />
-                <span className="pointer-events-none absolute inset-0 rounded-full border border-inset border-[rgb(242_238_225_/_18%)]" />
-              </div>
-            ) : (
-              <Planet worldId={signal} />
-            )}
-          </motionElement.div>
-          <SignalGraph reduceMotion={Boolean(reduceMotion)} />
-          <small className="font-mono text-[7px] tracking-[0.11em] text-[var(--dim)] max-[620px]:col-start-2">
-            {m.signal_locked({}, options)}
-          </small>
-        </motionElement.div>
+        <TransmissionVisual locale={locale} signal={signal} isTuning={isTuning} />
 
         <motionElement.article
           animate={{

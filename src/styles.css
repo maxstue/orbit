@@ -431,7 +431,7 @@
 }
 
 html[data-orbit-cursor] * {
-  cursor: inherit !important;
+  cursor: inherit;
 }
 
 @media (width <= 620px) {
@@ -454,9 +454,11 @@ html[data-orbit-cursor] * {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
+  :root *,
+  :root *::before,
+  :root *::after {
+    transition: none;
+    animation: none;
   }
   .alien-glyphs {
     opacity: 0;

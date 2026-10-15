@@ -1,3 +1,4 @@
+import '@/styles.css'
 import type { ReactNode } from 'react'
 import { beforeEach, expect, test, vi } from 'vite-plus/test'
 import { userEvent } from 'vite-plus/test/browser'
@@ -9,6 +10,8 @@ const metrics = vi.hoisted(() => ({ captureObjectCursor: vi.fn() }))
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: { children: ReactNode }) => <a href="/en">{children}</a>,
   useNavigate: () => navigation.navigate,
+  useRouterState: ({ select }: { select: (state: { location: { hash: string } }) => unknown }) =>
+    select({ location: { hash: '' } }),
 }))
 
 vi.mock('@/lib/observability/metrics', () => ({ Metrics: metrics }))
@@ -72,7 +75,8 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   await expect.element(satellite).toBeInTheDocument()
   const satelliteButton = satellite.element() as HTMLButtonElement
   expect(satelliteButton.parentElement?.closest('button')).toBeNull()
-  await satellite.click()
+  // The satellite continuously orbits, so it never reaches Playwright's stable state.
+  await satellite.click({ force: true })
   await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
 
   expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
@@ -84,6 +88,7 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   )
   expect(document.body.style.cursor).toContain('/cursors/satellite.svg')
   expect(getComputedStyle(document.querySelector('h1')!).cursor).toContain('/cursors/satellite.svg')
+  expect(getComputedStyle(satelliteButton).cursor).toContain('/cursors/satellite.svg')
   expect(navigation.navigate).not.toHaveBeenCalled()
 
   await userEvent.keyboard('{Escape}')
@@ -99,4 +104,51 @@ test('turns the cursor into a clicked satellite until escape', async () => {
   satelliteButton.focus()
   await userEvent.keyboard('{Enter}')
   expect(document.documentElement.dataset.orbitCursor).toBe('satellite')
+})
+
+test('hands shortcuts between views without duplicate registrations or callbacks', async () => {
+  const warnings = vi.spyOn(console, 'warn')
+  try {
+    const screen = await render(<FieldLog locale="en" />)
+    await expect.element(screen.getByRole('button', { name: 'Open home signal' })).toBeVisible()
+
+    for (let cycle = 0; cycle < 2; cycle++) {
+      await screen.rerender(<FieldLog locale="en" view="reading" />)
+      await expect
+        .element(screen.getByRole('button', { name: 'Open home signal' }))
+        .not.toBeInTheDocument()
+      await expect.element(screen.getByRole('heading', { name: "Hey, I'm Max." })).toBeVisible()
+      navigation.navigate.mockClear()
+      await userEvent.keyboard('3')
+      expect(navigation.navigate).toHaveBeenCalledExactlyOnceWith({
+        to: '/$locale',
+        params: { locale: 'en' },
+        search: { view: 'reading' },
+        hash: 'workbench',
+      })
+      await screen.getByRole('button', { name: 'Open appearance selection' }).click()
+      await userEvent.keyboard('{Escape}')
+      await expect
+        .element(screen.getByRole('menu', { name: 'Choose appearance' }))
+        .not.toBeInTheDocument()
+
+      await screen.rerender(<FieldLog locale="en" />)
+      await expect.element(screen.getByRole('button', { name: 'Open home signal' })).toBeVisible()
+      navigation.navigate.mockClear()
+      await userEvent.keyboard('3')
+      expect(navigation.navigate).toHaveBeenCalledExactlyOnceWith({
+        to: '/$locale/$signal',
+        params: { locale: 'en', signal: 'workbench' },
+        resetScroll: false,
+      })
+    }
+
+    expect(
+      warnings.mock.calls.filter((args) =>
+        args.some((arg) => String(arg).includes('already registered')),
+      ),
+    ).toEqual([])
+  } finally {
+    warnings.mockRestore()
+  }
 })

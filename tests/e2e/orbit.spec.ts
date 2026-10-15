@@ -130,6 +130,7 @@ test('persists an explicit theme through navigation and reload', async ({ page }
 test('honors reduced motion while keeping transmissions usable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/en')
+  await expect(page.getByRole('button', { name: 'Open appearance selection' })).toBeEnabled()
   await page.getByRole('button', { name: /current: what has my attention right now/i }).click()
 
   const dialog = page.getByRole('dialog')
@@ -204,3 +205,36 @@ async function createJavaScriptDisabledPage(browser: Browser) {
   const context = await browser.newContext({ javaScriptEnabled: false })
   return context.newPage()
 }
+
+test('switches view shortcuts without duplicate registrations', async ({ page }) => {
+  const shortcutWarnings: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'warning' && message.text().includes('already registered')) {
+      shortcutWarnings.push(message.text())
+    }
+  })
+  await page.goto('/en')
+  await expect(page.getByRole('button', { name: 'Open appearance selection' })).toBeEnabled()
+
+  for (let cycle = 0; cycle < 2; cycle++) {
+    await page.getByRole('link', { name: 'READING MODE', exact: true }).click()
+    await expect(page.getByRole('heading', { name: "Hey, I'm Max." })).toBeVisible()
+    await expect
+      .poll(async () => {
+        await page.keyboard.press('3')
+        return new URL(page.url()).hash
+      })
+      .toBe('#workbench')
+    await expect(page).toHaveURL('/en?view=reading#workbench')
+    await expect(page.locator('#workbench')).toBeFocused()
+
+    await page.getByRole('link', { name: 'ORBIT VIEW', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Open home signal' })).toBeVisible()
+    await openSignalByShortcut(page, '3', '/en/workbench')
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toBeHidden()
+  }
+
+  expect(shortcutWarnings).toEqual([])
+})

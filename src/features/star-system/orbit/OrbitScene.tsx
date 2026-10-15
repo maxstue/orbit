@@ -49,6 +49,64 @@ function getOrbitSizeClass(className: string) {
   return 'size-[min(76vw,1120px)] max-[900px]:size-[115vw]'
 }
 
+function OrbitIntro({ locale }: { locale: Locale }) {
+  const reduceMotion = useReducedMotion()
+  const options = { locale }
+  return (
+    <motionElement.div
+      className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]"
+      initial={reduceMotion ? false : { opacity: 0, x: -12, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+      transition={{
+        duration: reduceMotion ? 0 : 1.05,
+        delay: reduceMotion ? 0 : 0.28,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <span className="font-mono text-[9px] font-bold tracking-[0.15em] text-[var(--dim)]">
+        {m.field_log({}, options)}
+      </span>
+      <h1 className="my-[18px] mb-[22px] text-[clamp(3rem,5.2vw,6rem)] leading-[0.86] tracking-[-0.065em] max-[900px]:text-[12vw] max-[620px]:text-[15vw]">
+        {m.choose_destination_prefix({}, options)}{' '}
+        <em className="text-[var(--coral)] not-italic">
+          {m.choose_destination_accent({}, options)}
+        </em>
+      </h1>
+      <p className="max-w-[350px] font-mono text-xs leading-[1.55] text-[#a7adab] max-[620px]:max-w-[78vw]">
+        {m.field_intro({}, options)}
+      </p>
+    </motionElement.div>
+  )
+}
+
+function OrbitLegend({ locale }: { locale: Locale }) {
+  const reduceMotion = useReducedMotion()
+  const options = { locale }
+  return (
+    <motionElement.div
+      className="absolute bottom-[4vh] left-[4vw] flex items-center gap-6 font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] max-[900px]:hidden"
+      aria-hidden="true"
+      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: reduceMotion ? 0 : 0.98,
+        delay: reduceMotion ? 0 : 0.34,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+    >
+      <span>
+        <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--paper)]" />{' '}
+        {m.legend_navigable({}, options)}
+      </span>
+      <span>
+        <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--lime)]" />{' '}
+        {m.legend_live({}, options)}
+      </span>
+      <small className="border-l border-[#3b4140] pl-6">{m.legend_hint({}, options)}</small>
+    </motionElement.div>
+  )
+}
+
 /** Planets, debris, the language ship and the transmission dialog – only loaded in orbit view. */
 export function OrbitScene({
   locale,
@@ -247,29 +305,7 @@ export function OrbitScene({
           ease: [0.16, 1, 0.3, 1],
         }}
       >
-        <motionElement.div
-          className="absolute top-[7vh] left-[5vw] z-4 max-w-[390px] max-[900px]:top-[4vh] max-[900px]:left-[7vw]"
-          initial={reduceMotion ? false : { opacity: 0, x: -12, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-          transition={{
-            duration: reduceMotion ? 0 : 1.05,
-            delay: reduceMotion ? 0 : 0.28,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <span className="font-mono text-[9px] font-bold tracking-[0.15em] text-[var(--dim)]">
-            {m.field_log({}, options)}
-          </span>
-          <h1 className="my-[18px] mb-[22px] text-[clamp(3rem,5.2vw,6rem)] leading-[0.86] tracking-[-0.065em] max-[900px]:text-[12vw] max-[620px]:text-[15vw]">
-            {m.choose_destination_prefix({}, options)}{' '}
-            <em className="text-[var(--coral)] not-italic">
-              {m.choose_destination_accent({}, options)}
-            </em>
-          </h1>
-          <p className="max-w-[350px] font-mono text-xs leading-[1.55] text-[#a7adab] max-[620px]:max-w-[78vw]">
-            {m.field_intro({}, options)}
-          </p>
-        </motionElement.div>
+        <OrbitIntro locale={locale} />
 
         <div
           className="orbit orbit-1 absolute top-[52%] left-[59%] -z-1 size-[min(28vw,430px)] -translate-1/2 rounded-full border border-[rgb(242_238_225_/_16%)] max-[900px]:top-[61%] max-[900px]:left-[52%] max-[900px]:size-[45vw]"
@@ -465,27 +501,7 @@ export function OrbitScene({
           )
         })}
 
-        <motionElement.div
-          className="absolute bottom-[4vh] left-[4vw] flex items-center gap-6 font-mono text-[8px] tracking-[0.1em] text-[var(--dim)] max-[900px]:hidden"
-          aria-hidden="true"
-          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: reduceMotion ? 0 : 0.98,
-            delay: reduceMotion ? 0 : 0.34,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <span>
-            <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--paper)]" />{' '}
-            {m.legend_navigable({}, options)}
-          </span>
-          <span>
-            <i className="mr-[7px] inline-block size-[7px] rounded-full bg-[var(--lime)]" />{' '}
-            {m.legend_live({}, options)}
-          </span>
-          <small className="border-l border-[#3b4140] pl-6">{m.legend_hint({}, options)}</small>
-        </motionElement.div>
+        <OrbitLegend locale={locale} />
       </motionElement.section>
 
       <p className="sr-only" aria-live="polite" aria-atomic="true">

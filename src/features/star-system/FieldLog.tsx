@@ -1,13 +1,12 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import { useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
-import { AnimatePresence, LazyMotion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, LazyMotion, domAnimation, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
 import { MonitorCog, MoonStar, Sun } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { updateObservabilityContext } from '@/lib/observability/context'
-import { Errors } from '@/lib/observability/errors'
 import { m } from '@/paraglide/messages.js'
 
 import { worlds, type Locale, type WorldId } from './data/worlds'
@@ -29,9 +28,6 @@ const ReadingMode = lazy(() =>
   loadReadingMode().then((module) => ({ default: module.ReadingMode })),
 )
 
-const loadMotionFeatures = () =>
-  import('./transmissions/motion-features').then((module) => module.default)
-
 const worldHotkeys = ['1', '2', '3', '4', '5'] as const
 
 function ThemeIcon({ preference }: { preference: ThemePreference }) {
@@ -40,8 +36,44 @@ function ThemeIcon({ preference }: { preference: ThemePreference }) {
   return <Sun aria-hidden="true" />
 }
 
-export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogProps) {
+// Mount shortcuts with their view so exit animations cannot retain competing registrations.
+function ReadingShortcuts({
+  locale,
+  isThemeMenuOpen,
+  onCloseThemeMenu,
+}: {
+  locale: Locale
+  isThemeMenuOpen: boolean
+  onCloseThemeMenu: (options: { restoreFocus: boolean }) => void
+}) {
   const navigate = useNavigate()
+  function jumpToSection(section: WorldId) {
+    void navigate({
+      to: '/$locale',
+      params: { locale },
+      search: { view: 'reading' },
+      hash: section,
+    })
+  }
+
+  useHotkeys(
+    [
+      {
+        hotkey: 'Escape',
+        callback: () => onCloseThemeMenu({ restoreFocus: true }),
+        options: { enabled: isThemeMenuOpen },
+      },
+      ...worlds.map((world, index): UseHotkeyDefinition => ({
+        hotkey: worldHotkeys[index]!,
+        callback: () => jumpToSection(world.id),
+      })),
+    ],
+    { ignoreInputs: true },
+  )
+  return null
+}
+
+export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogProps) {
   const reduceMotion = useReducedMotion()
   const options = { locale }
   const isReading = view === 'reading'
@@ -63,35 +95,12 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
 
   const changeActiveSection = useCallback((section: WorldId) => setActiveSection(section), [])
 
-  function jumpToSection(section: WorldId) {
-    void navigate({
-      to: '/$locale',
-      params: { locale },
-      search: { view: 'reading' },
-      hash: section,
-    })
-  }
-
   const closeThemeMenu = useCallback(({ restoreFocus = false } = {}) => {
     setIsThemeMenuOpen(false)
     if (restoreFocus) themeMenuTrigger.current?.focus()
   }, [])
 
   useEffect(() => setIsHydrated(true), [])
-
-  useEffect(() => {
-    const preloadMotion = () => {
-      void loadMotionFeatures().catch((error: unknown) =>
-        Errors.captureUiDegradation('motion-init', error),
-      )
-    }
-    const idleCallback = window.requestIdleCallback?.(preloadMotion)
-    if (idleCallback === undefined) {
-      const timer = window.setTimeout(preloadMotion, 250)
-      return () => window.clearTimeout(timer)
-    }
-    return () => window.cancelIdleCallback(idleCallback)
-  }, [])
 
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -156,26 +165,8 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
     return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
   }, [isThemeMenuOpen, closeThemeMenu])
 
-  // Orbit view registers its own keys in OrbitScene; these only exist while reading.
-  useHotkeys(
-    isReading
-      ? [
-          {
-            hotkey: 'Escape',
-            callback: () => closeThemeMenu({ restoreFocus: true }),
-            options: { enabled: isThemeMenuOpen },
-          },
-          ...worlds.map((world, index): UseHotkeyDefinition => ({
-            hotkey: worldHotkeys[index]!,
-            callback: () => jumpToSection(world.id),
-          })),
-        ]
-      : [],
-    { ignoreInputs: true },
-  )
-
   return (
-    <LazyMotion features={loadMotionFeatures} strict>
+    <LazyMotion features={domAnimation} strict>
       <main
         className={`system booted relative min-h-svh bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)] ${isReading ? 'reading flex flex-col' : 'overflow-hidden'}`}
       >
@@ -283,6 +274,11 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           {isReading ? (
             <Suspense key="reading" fallback={null}>
+              <ReadingShortcuts
+                locale={locale}
+                isThemeMenuOpen={isThemeMenuOpen}
+                onCloseThemeMenu={closeThemeMenu}
+              />
               <ReadingMode
                 locale={locale}
                 activeSection={activeSection}
