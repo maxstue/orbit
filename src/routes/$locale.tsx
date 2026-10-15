@@ -9,10 +9,12 @@ import { useEffect } from 'react'
 
 import { FieldLog } from '@/features/star-system/FieldLog'
 import { localeSchema, worldIdSchema } from '@/features/star-system/data/worlds'
+import { getViewMode, parseViewSearch } from '@/features/star-system/view'
 import { m } from '@/paraglide/messages.js'
 import { Errors } from '@/lib/observability/errors'
 
 export const Route = createFileRoute('/$locale')({
+  validateSearch: parseViewSearch,
   beforeLoad: ({ params }) => {
     const locale = localeSchema.safeParse(params.locale)
     if (!locale.success) throw notFound()
@@ -27,10 +29,11 @@ function LocaleLayout() {
   const { locale } = Route.useRouteContext()
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const selectedSignal = worldIdSchema.safeParse(pathname.split('/').filter(Boolean)[1]).data
+  const view = getViewMode(Route.useSearch())
 
   return (
     <>
-      <FieldLog locale={locale} selectedSignal={selectedSignal} />
+      <FieldLog locale={locale} selectedSignal={selectedSignal} view={view} />
       <Outlet />
     </>
   )

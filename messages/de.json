@@ -5,7 +5,6 @@
   "choose_destination_prefix": "Wähle einen",
   "choose_destination_accent": "Zielplaneten.",
   "field_intro": "Jeder Orbit trägt ein kleines Stück von mir. Anklicken, Signal öffnen und ein bisschen umsehen.",
-  "about_system": "ABOUT THIS SYSTEM",
   "orbit_destinations": "Ziele im Orbit",
   "meta_home_title": "Max' Orbit",
   "meta_home_description": "Willkommen in Max' Orbit — Arbeit, aktueller Fokus, Nebenmissionen und eine Möglichkeit, Hallo zu sagen.",
@@ -165,5 +164,18 @@
   "theme_current": "Darstellung: {theme}",
   "theme_switch_label": "Darstellung auswählen",
   "theme_choose": "Darstellung auswählen",
-  "theme_active": "AKTIV"
+  "theme_active": "AKTIV",
+  "view_switch_label": "Ansicht",
+  "view_orbit": "ORBITANSICHT",
+  "view_reading": "LESEMODUS",
+  "reading_kicker": "FIELD LOG / LESEMODUS",
+  "reading_title_prefix": "Alle Signale,",
+  "reading_title_accent": "dekodiert.",
+  "reading_intro": "Jedes Signal trägt ein kleines Stück von mir – wer ich bin, woran ich baue und was mich abseits des Bildschirms antreibt. Einfach runterscrollen und lesen.",
+  "reading_index_label": "INHALT · 05 SIGNALE",
+  "reading_index_navigation": "Transmissionen im Lesemodus",
+  "reading_signal_count": "SIGNAL {current} / {total}",
+  "reading_end": "ENDE DER ÜBERTRAGUNG",
+  "reading_back_to_orbit": "ZURÜCK IN DEN ORBIT ↗",
+  "language_switch_label": "Sprache"
 }
