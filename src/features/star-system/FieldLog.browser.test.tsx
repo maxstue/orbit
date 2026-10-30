@@ -30,15 +30,15 @@ test('offers theme and language controls through browser locators', async () => 
   const screen = await render(<FieldLog locale="en" />)
   expect(screen).toBeDefined()
 
-  await screen.getByRole('button', { name: 'Open appearance selection' }).click()
+  await screen.getByRole('button', { name: /SYSTEM — Open appearance selection/ }).click()
   await expect.element(screen.getByRole('menu', { name: 'Choose appearance' })).toBeVisible()
 
   await screen.getByRole('menuitemradio', { name: 'DAY' }).click()
   await expect
-    .element(screen.getByRole('button', { name: 'Open appearance selection' }))
+    .element(screen.getByRole('button', { name: /DAY — Open appearance selection/ }))
     .toHaveAttribute('title', 'Theme: DAY')
 
-  await screen.getByRole('button', { name: 'Open language selection' }).click()
+  await screen.getByRole('button', { name: /LINGUA RELAY — Open language selection/ }).click()
   await expect.element(screen.getByRole('menu', { name: 'Choose a language' })).toBeVisible()
 })
 
@@ -126,7 +126,7 @@ test('hands shortcuts between views without duplicate registrations or callbacks
         search: { view: 'reading' },
         hash: 'workbench',
       })
-      await screen.getByRole('button', { name: 'Open appearance selection' }).click()
+      await screen.getByRole('button', { name: /SYSTEM — Open appearance selection/ }).click()
       await userEvent.keyboard('{Escape}')
       await expect
         .element(screen.getByRole('menu', { name: 'Choose appearance' }))

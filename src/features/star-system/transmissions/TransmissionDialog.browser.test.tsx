@@ -12,7 +12,7 @@ test('exposes a labelled modal transmission, traps focus, and reports navigation
   )
 
   const dialog = screen.getByRole('dialog', { name: "Hey, I'm Max." })
-  const close = screen.getByRole('button', { name: 'Close transmission' })
+  const close = screen.getByRole('button', { name: 'DISCONNECT ESC — Close transmission' })
 
   await expect.element(dialog).toBeVisible()
   await expect.element(dialog).toHaveAttribute('aria-modal', 'true')

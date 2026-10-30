@@ -45,18 +45,18 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
+    "@axe-core/playwright": "^4.14.0",
     "@cloudflare/vite-plugin": "catalog:",
     "@cloudflare/workers-types": "catalog:",
     "@inlang/plugin-message-format": "catalog:",
-    "@playwright/test": "^1.64.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/router-cli": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "@vitest/browser-playwright": "5.0.3",
+    "@vitest/browser-playwright": "5.0.5",
     "@vitest/coverage-v8": "catalog:",
     "nyc": "catalog:",
     "tailwindcss": "catalog:",
@@ -70,7 +70,7 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "12.10.1",
+      "version": "12.16.1",
       "onFail": "download"
     }
   }
