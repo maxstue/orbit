@@ -194,6 +194,8 @@ test('matches the stable night and day system views', async ({ page }, testInfo)
     'Visual baselines are kept for desktop only.',
   )
 
+  // Keep continuously orbiting planets at their starting positions in both themes.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/en')
   await expect(page.locator('main.system')).toHaveScreenshot('deep-space.png')
 
