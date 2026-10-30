@@ -376,7 +376,7 @@ export function TransmissionDialog({
             variant="ghost"
             type="button"
             onClick={onClose}
-            aria-label={m.close_transmission({}, options)}
+            aria-label={`${m.disconnect({}, options)} ESC — ${m.close_transmission({}, options)}`}
           >
             {m.disconnect({}, options)}{' '}
             <kbd className="ml-[9px] border p-[4px_7px] font-mono text-[8px] shadow-[2px_2px]">
@@ -456,7 +456,7 @@ export function TransmissionDialog({
               data-active={world.id === signal}
               type="button"
               key={world.id}
-              aria-label={`${getWorldCopy(world.id, locale).label} ${m.open_signal_suffix({}, options)}`}
+              aria-label={`${String(index + 1).padStart(2, '0')} — ${getWorldCopy(world.id, locale).label} ${m.open_signal_suffix({}, options)}`}
               aria-current={world.id === signal ? 'page' : undefined}
               onClick={() => onSelect(world.id)}
             >

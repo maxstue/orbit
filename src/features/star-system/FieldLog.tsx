@@ -218,7 +218,7 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
           <LocalizedLink
             locale={locale}
             className="font-mono text-[21px] font-black no-underline [&>span]:text-[var(--coral)]"
-            aria-label="Orbit home"
+            aria-label="max_ — Orbit home"
           >
             max<span>_</span>
           </LocalizedLink>
@@ -243,7 +243,7 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
                 className="h-auto min-h-11 min-w-11 gap-[7px] rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent [&_svg]:size-3.5 [&_svg]:stroke-[1.6]"
                 variant="ghost"
                 type="button"
-                aria-label={m.theme_switch_label({}, options)}
+                aria-label={`${getThemeLabel(themePreference)} — ${m.theme_switch_label({}, options)}`}
                 disabled={!isHydrated}
                 aria-expanded={isThemeMenuOpen}
                 aria-controls="theme-menu"

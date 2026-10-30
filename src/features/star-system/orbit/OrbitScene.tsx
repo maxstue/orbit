@@ -337,7 +337,7 @@ export function OrbitScene({
             variant="ghost"
             type="button"
             disabled={!isHydrated || isChangingLanguage}
-            aria-label={m.language_ship_label({}, options)}
+            aria-label={`${isChangingLanguage ? m.language_ship_processing({}, options) : m.language_ship_ready({}, options)} — ${m.language_ship_label({}, options)}`}
             aria-expanded={isLanguageMenuOpen}
             aria-controls="language-bubble"
             aria-haspopup="menu"
@@ -462,7 +462,7 @@ export function OrbitScene({
                       data-signal={world.id}
                       variant="ghost"
                       type="button"
-                      aria-label={`${copy.label}: ${copy.description}`}
+                      aria-label={`${copy.label}: ${copy.description} — ${String(index + 2).padStart(2, '0')} · ${copy.label} ${copy.title} ${m.open_transmission({}, options)}`}
                       onClick={() => openSignal(world.id)}
                     >
                       <Planet worldId={world.id} showCompanions={false} />
@@ -480,8 +480,8 @@ export function OrbitScene({
                       >
                         <small className="font-mono text-[8px] tracking-[0.12em] text-[var(--dim)]">
                           {String(index + 2).padStart(2, '0')} · {copy.label}
-                        </small>
-                        <strong className="text-[15px]">{copy.title}</strong>
+                        </small>{' '}
+                        <strong className="text-[15px]">{copy.title}</strong>{' '}
                         <em className="-translate-x-1.5 font-mono text-[8px] tracking-[0.12em] text-[var(--cyan)] not-italic opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100">
                           {m.open_transmission({}, options)}
                         </em>
