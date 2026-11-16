@@ -29,7 +29,7 @@ jobs:
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: 26.13.0
+          node-version: 26.13.1
           cache: true
           run-install: false
 
@@ -82,7 +82,7 @@ jobs:
 
       - name: Publish SonarQube Cloud analysis
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: SonarSource/sonarqube-scan-action@4d1dc0c91ee400dcf8a6dddf2f705ac36542e304 # v8.4.0
+        uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
         with:
           args: >
             -Dsonar.projectKey=maxstue_orbit
@@ -117,7 +117,7 @@ jobs:
       - name: Set up Vite+
         uses: voidzero-dev/setup-vp@cab1ab9eaff52d4857875f4f2c016e36af8f2c76 # v1.22.0
         with:
-          node-version: 26.13.0
+          node-version: 26.13.1
           cache: true
           run-install: false
 
