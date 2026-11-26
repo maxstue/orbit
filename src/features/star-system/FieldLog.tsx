@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
-import { useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
+import { HotkeysProvider, useHotkeys, type UseHotkeyDefinition } from '@tanstack/react-hotkeys'
 import { useNavigate } from '@tanstack/react-router'
 import { AnimatePresence, LazyMotion, useReducedMotion } from 'motion/react'
 import * as motionElement from 'motion/react-m'
@@ -183,156 +183,169 @@ export function FieldLog({ locale, selectedSignal, view = 'orbit' }: FieldLogPro
     return () => document.removeEventListener('pointerdown', closeOnOutsideClick)
   }, [isThemeMenuOpen, closeThemeMenu])
 
+  // A named scope lets the Escape hotkeys close the app's own role="dialog" layers; global-scope
+  // hotkeys yield Escape to any open ARIA dialog or menu.
   return (
-    <LazyMotion features={loadMotionFeatures} strict>
-      <main
-        className={`system booted relative min-h-svh bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)] ${isReading ? 'reading flex flex-col' : 'overflow-hidden'}`}
-      >
-        <AnimatePresence initial={false}>
-          {!isReading && (
-            <motionElement.div
-              key="stars"
-              className="pointer-events-none absolute inset-0"
-              aria-hidden="true"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.6, ease: 'easeOut' }}
-            >
-              <div className="stars-a absolute inset-0" />
-              <div className="stars-b absolute inset-0 opacity-40" />
-            </motionElement.div>
-          )}
-        </AnimatePresence>
-
-        <motionElement.header
-          className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
-          initial={reduceMotion ? false : { opacity: 0, y: -10, filter: 'blur(4px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{
-            duration: reduceMotion ? 0 : 1.02,
-            delay: reduceMotion ? 0 : 0.26,
-            ease: [0.16, 1, 0.3, 1],
-          }}
+    <HotkeysProvider scope="field-log">
+      <LazyMotion features={loadMotionFeatures} strict>
+        <main
+          className={`system booted relative min-h-svh bg-[radial-gradient(circle_at_52%_47%,#1b2525_0,#101617_26%,var(--space)_68%)] text-[var(--paper)] ${isReading ? 'reading flex flex-col' : 'overflow-hidden'}`}
         >
-          <LocalizedLink
-            locale={locale}
-            className="font-mono text-[21px] font-black no-underline [&>span]:text-[var(--coral)]"
-            aria-label="max_ — Orbit home"
-          >
-            max<span>_</span>
-          </LocalizedLink>
-          <p className="font-mono text-[9px] tracking-[0.12em] text-[var(--dim)] max-[900px]:hidden">
-            <i
-              className="mr-[9px] inline-block size-[7px] rounded-full bg-[var(--lime)] shadow-[0_0_0_5px_rgb(220_239_104_/_10%)]"
-              aria-hidden="true"
-            />{' '}
-            {m.system_status({}, options)}
-          </p>
-          <div className="flex items-center justify-self-end gap-5 max-[620px]:gap-3">
-            {/* View-specific controls sit left of the switch so it never shifts when toggling. */}
-            {isReading && <LanguageSwitch locale={locale} section={activeSection} />}
-            <ViewSwitch
-              locale={locale}
-              view={view}
-              signal={isReading ? undefined : selectedSignal}
-            />
-            <div className="relative" ref={themeMenu}>
-              <Button
-                ref={themeMenuTrigger}
-                className="h-auto min-h-11 min-w-11 gap-[7px] rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent [&_svg]:size-3.5 [&_svg]:stroke-[1.6]"
-                variant="ghost"
-                type="button"
-                aria-label={`${getThemeLabel(themePreference)} — ${m.theme_switch_label({}, options)}`}
-                disabled={!isHydrated}
-                aria-expanded={isThemeMenuOpen}
-                aria-controls="theme-menu"
-                aria-haspopup="menu"
-                title={m.theme_current({ theme: getThemeLabel(themePreference) }, options)}
-                onClick={() => setIsThemeMenuOpen((open) => !open)}
+          <AnimatePresence initial={false}>
+            {!isReading && (
+              <motionElement.div
+                key="stars"
+                className="pointer-events-none absolute inset-0"
+                aria-hidden="true"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.6, ease: 'easeOut' }}
               >
-                <ThemeIcon preference={themePreference} />
-                <span className="max-[760px]:hidden">{getThemeLabel(themePreference)}</span>
-                <span aria-hidden="true">⌄</span>
-              </Button>
-              {isThemeMenuOpen && (
-                <div
-                  id="theme-menu"
-                  className="theme-menu absolute top-[calc(100%+18px)] right-0 z-10 w-44 border border-[var(--line)] bg-[var(--space)] p-2 shadow-[7px_8px_0_rgb(0_0_0_/_18%)]"
-                  role="menu"
-                  aria-label={m.theme_choose({}, options)}
+                <div className="stars-a absolute inset-0" />
+                <div className="stars-b absolute inset-0 opacity-40" />
+              </motionElement.div>
+            )}
+          </AnimatePresence>
+
+          <motionElement.header
+            className="relative z-5 grid h-19 grid-cols-[1fr_auto_1fr] items-center border-b border-[var(--line)] px-[3vw] max-[900px]:grid-cols-[1fr_auto] max-[620px]:h-16"
+            initial={reduceMotion ? false : { opacity: 0, y: -10, filter: 'blur(4px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            transition={{
+              duration: reduceMotion ? 0 : 1.02,
+              delay: reduceMotion ? 0 : 0.26,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <LocalizedLink
+              locale={locale}
+              className="font-mono text-[21px] font-black no-underline [&>span]:text-[var(--coral)]"
+              aria-label="max_ — Orbit home"
+            >
+              max<span>_</span>
+            </LocalizedLink>
+            <p className="font-mono text-[9px] tracking-[0.12em] text-[var(--dim)] max-[900px]:hidden">
+              <i
+                className="mr-[9px] inline-block size-[7px] rounded-full bg-[var(--lime)] shadow-[0_0_0_5px_rgb(220_239_104_/_10%)]"
+                aria-hidden="true"
+              />{' '}
+              {m.system_status({}, options)}
+            </p>
+            <div className="flex items-center justify-self-end gap-5 max-[620px]:gap-3">
+              {/* View-specific controls sit left of the switch so it never shifts when toggling. */}
+              {isReading && <LanguageSwitch locale={locale} section={activeSection} />}
+              <ViewSwitch
+                locale={locale}
+                view={view}
+                signal={isReading ? undefined : selectedSignal}
+              />
+              <div
+                className="relative"
+                ref={themeMenu}
+                // A menu button owns Escape while focus is on it or in its menu; hotkeys yield it here.
+                onKeyDown={(event) => {
+                  if (event.key !== 'Escape' || !isThemeMenuOpen) return
+                  event.preventDefault()
+                  closeThemeMenu({ restoreFocus: true })
+                }}
+              >
+                <Button
+                  ref={themeMenuTrigger}
+                  className="h-auto min-h-11 min-w-11 gap-[7px] rounded-none px-0 py-0 font-mono text-[9px] tracking-[0.1em] hover:bg-transparent [&_svg]:size-3.5 [&_svg]:stroke-[1.6]"
+                  variant="ghost"
+                  type="button"
+                  aria-label={`${getThemeLabel(themePreference)} — ${m.theme_switch_label({}, options)}`}
+                  disabled={!isHydrated}
+                  aria-expanded={isThemeMenuOpen}
+                  aria-controls="theme-menu"
+                  aria-haspopup="menu"
+                  title={m.theme_current({ theme: getThemeLabel(themePreference) }, options)}
+                  onClick={() => setIsThemeMenuOpen((open) => !open)}
                 >
-                  <p className="px-2 pt-1 pb-2 font-mono text-[8px] tracking-[0.13em] text-[#a7adab]">
-                    {m.theme_choose({}, options)}
-                  </p>
-                  {(['system', 'night', 'day'] as const).map((preference) => (
-                    <Button
-                      className="flex min-h-11 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
-                      variant="ghost"
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={themePreference === preference}
-                      key={preference}
-                      onClick={() => changeTheme(preference)}
-                    >
-                      {getThemeLabel(preference)}
-                      {themePreference === preference && (
-                        <small className="text-[7px] text-[var(--lime)]">
-                          {m.theme_active({}, options)}
-                        </small>
-                      )}
-                    </Button>
-                  ))}
-                </div>
-              )}
+                  <ThemeIcon preference={themePreference} />
+                  <span className="max-[760px]:hidden">{getThemeLabel(themePreference)}</span>
+                  <span aria-hidden="true">⌄</span>
+                </Button>
+                {isThemeMenuOpen && (
+                  <div
+                    id="theme-menu"
+                    className="theme-menu absolute top-[calc(100%+18px)] right-0 z-10 w-44 border border-[var(--line)] bg-[var(--space)] p-2 shadow-[7px_8px_0_rgb(0_0_0_/_18%)]"
+                    role="menu"
+                    aria-label={m.theme_choose({}, options)}
+                  >
+                    <p className="px-2 pt-1 pb-2 font-mono text-[8px] tracking-[0.13em] text-[#a7adab]">
+                      {m.theme_choose({}, options)}
+                    </p>
+                    {(['system', 'night', 'day'] as const).map((preference) => (
+                      <Button
+                        className="flex min-h-11 w-full justify-between rounded-none border-t border-[var(--line)] px-2 font-mono text-[9px] tracking-[0.1em] hover:bg-[rgb(90_217_210_/_8%)]"
+                        variant="ghost"
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={themePreference === preference}
+                        key={preference}
+                        onClick={() => changeTheme(preference)}
+                      >
+                        {getThemeLabel(preference)}
+                        {themePreference === preference && (
+                          <small className="text-[7px] text-[var(--lime)]">
+                            {m.theme_active({}, options)}
+                          </small>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </motionElement.header>
+          </motionElement.header>
 
-        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
-          {isReading ? (
-            <Suspense key="reading" fallback={null}>
-              <ReadingShortcuts
-                locale={locale}
-                isThemeMenuOpen={isThemeMenuOpen}
-                onCloseThemeMenu={closeThemeMenu}
-              />
-              <ReadingMode
-                locale={locale}
-                activeSection={activeSection}
-                isEntering={hasSwitchedView}
-                onActiveSectionChange={changeActiveSection}
-              />
-            </Suspense>
-          ) : (
-            <Suspense key="orbit" fallback={null}>
-              <OrbitScene
-                locale={locale}
-                selectedSignal={selectedSignal}
-                isHydrated={isHydrated}
-                isEntering={hasSwitchedView}
-                isThemeMenuOpen={isThemeMenuOpen}
-                onCloseThemeMenu={closeThemeMenu}
-              />
-            </Suspense>
-          )}
-        </AnimatePresence>
+          <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+            {isReading ? (
+              <Suspense key="reading" fallback={null}>
+                <ReadingShortcuts
+                  locale={locale}
+                  isThemeMenuOpen={isThemeMenuOpen}
+                  onCloseThemeMenu={closeThemeMenu}
+                />
+                <ReadingMode
+                  locale={locale}
+                  activeSection={activeSection}
+                  isEntering={hasSwitchedView}
+                  onActiveSectionChange={changeActiveSection}
+                />
+              </Suspense>
+            ) : (
+              <Suspense key="orbit" fallback={null}>
+                <OrbitScene
+                  locale={locale}
+                  selectedSignal={selectedSignal}
+                  isHydrated={isHydrated}
+                  isEntering={hasSwitchedView}
+                  isThemeMenuOpen={isThemeMenuOpen}
+                  onCloseThemeMenu={closeThemeMenu}
+                />
+              </Suspense>
+            )}
+          </AnimatePresence>
 
-        <motionElement.footer
-          className={`${isReading ? 'relative mt-auto' : 'absolute right-0 bottom-0 left-0'} flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden`}
-          initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: reduceMotion ? 0 : 0.98,
-            delay: reduceMotion ? 0 : 0.37,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-        >
-          <span>{m.footer_left({}, options)}</span>
-          <span>{m.footer_center({}, options)}</span>
-          <span>{m.footer_right({}, options)}</span>
-        </motionElement.footer>
-      </main>
-    </LazyMotion>
+          <motionElement.footer
+            className={`${isReading ? 'relative mt-auto' : 'absolute right-0 bottom-0 left-0'} flex h-[30px] items-center justify-between border-t border-[var(--line)] px-[3vw] font-mono text-[7px] tracking-[0.1em] text-[#646b69] max-[620px]:[&>span:nth-child(n+2)]:hidden`}
+            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.98,
+              delay: reduceMotion ? 0 : 0.37,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            <span>{m.footer_left({}, options)}</span>
+            <span>{m.footer_center({}, options)}</span>
+            <span>{m.footer_right({}, options)}</span>
+          </motionElement.footer>
+        </main>
+      </LazyMotion>
+    </HotkeysProvider>
   )
 }

@@ -322,6 +322,12 @@ export function OrbitScene({
 
         <motionElement.div
           ref={languageMenu}
+          // A menu button owns Escape while focus is on it or in its menu; hotkeys yield it here.
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape' || !isLanguageMenuOpen) return
+            event.preventDefault()
+            closeLanguageMenu({ restoreFocus: true })
+          }}
           className="absolute top-[27%] right-[3vw] z-4 max-[900px]:top-[31%] max-[900px]:right-[4vw] max-[620px]:top-[36%]"
           initial={reduceMotion ? false : { opacity: 0, scale: 0.9, filter: 'blur(3px)' }}
           animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
