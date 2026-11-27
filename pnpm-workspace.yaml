@@ -7,9 +7,9 @@ allowBuilds:
 catalog:
   '@base-ui/react': ^1.9.0
   '@cloudflare/vite-plugin': 1.70.1
-  '@cloudflare/workers-types': 5.20261124.1
+  '@cloudflare/workers-types': 5.20261125.1
   '@inlang/paraglide-js': ^2.29.3
-  '@inlang/plugin-message-format': ^4.6.1
+  '@inlang/plugin-message-format': ^4.6.2
   '@sentry/cloudflare': 11.17.0
   '@sentry/tanstackstart-react': 11.17.0
   '@tailwindcss/vite': ^4.3.5
@@ -17,14 +17,14 @@ catalog:
   '@tanstack/react-router': ^1.170.46
   '@tanstack/react-start': ^1.169.7
   '@tanstack/router-cli': ^1.168.0
-  '@types/node': ^26.6.6
-  '@types/react': ^19.3.0
+  '@types/node': ^26.6.10
+  '@types/react': ^19.3.2
   '@types/react-dom': ^19.3.0
   '@vitejs/plugin-react': ^6.3.0
   '@vitest/coverage-v8': 5.1.1
   class-variance-authority: ^0.7.1
   clsx: ^2.1.1
-  lucide-react: ^1.79.0
+  lucide-react: ^1.80.0
   motion: ^14.14.0
   nyc: ^18.0.0
   react: ^19.3.1
